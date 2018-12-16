@@ -16,8 +16,8 @@ module RipperParser
       end
 
       CALL_OP_MAP = {
-        '.': :call,
-        '::': :call,
+        '.': :send,
+        '::': :send,
         '&.': :safe_call
       }.freeze
 
@@ -38,7 +38,7 @@ module RipperParser
         _, ident, arglist = exp.shift 3
         with_position_from_node_symbol(ident) do |method|
           args = handle_argument_list(arglist)
-          s(:call, nil, method, *args)
+          s(:send, nil, method, *args)
         end
       end
 
@@ -57,7 +57,7 @@ module RipperParser
           if method == @kwrest
             s(:lvar, method)
           else
-            s(:call, nil, method)
+            s(:send, nil, method)
           end
         end
       end
@@ -65,7 +65,7 @@ module RipperParser
       def process_fcall(exp)
         _, ident = exp.shift 2
         with_position_from_node_symbol(ident) do |method|
-          s(:call, nil, method)
+          s(:send, nil, method)
         end
       end
 

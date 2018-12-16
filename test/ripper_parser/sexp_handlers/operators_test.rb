@@ -5,10 +5,10 @@ describe RipperParser::Parser do
     describe 'for negated operators' do
       specify do
         'foo !~ bar'.must_be_parsed_as s(:not,
-                                         s(:call,
-                                           s(:call, nil, :foo),
+                                         s(:send,
+                                           s(:send, nil, :foo),
                                            :=~,
-                                           s(:call, nil, :bar)))
+                                           s(:send, nil, :bar)))
       end
     end
 
@@ -16,123 +16,123 @@ describe RipperParser::Parser do
       it 'handles :and' do
         'foo and bar'.
           must_be_parsed_as s(:and,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'handles double :and' do
         'foo and bar and baz'.
           must_be_parsed_as s(:and,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               s(:and,
-                                s(:call, nil, :bar),
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
 
       it 'handles :or' do
         'foo or bar'.
           must_be_parsed_as s(:or,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'handles double :or' do
         'foo or bar or baz'.
           must_be_parsed_as s(:or,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               s(:or,
-                                s(:call, nil, :bar),
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
 
       it 'handles :or after :and' do
         'foo and bar or baz'.
           must_be_parsed_as s(:or,
                               s(:and,
-                                s(:call, nil, :foo),
-                                s(:call, nil, :bar)),
-                              s(:call, nil, :baz))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'handles :and after :or' do
         'foo or bar and baz'.
           must_be_parsed_as s(:and,
                               s(:or,
-                                s(:call, nil, :foo),
-                                s(:call, nil, :bar)),
-                              s(:call, nil, :baz))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'converts :&& to :and' do
         'foo && bar'.
           must_be_parsed_as s(:and,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'handles :|| after :&&' do
         'foo && bar || baz'.
           must_be_parsed_as s(:or,
                               s(:and,
-                                s(:call, nil, :foo),
-                                s(:call, nil, :bar)),
-                              s(:call, nil, :baz))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'handles :&& after :||' do
         'foo || bar && baz'.
           must_be_parsed_as s(:or,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               s(:and,
-                                s(:call, nil, :bar),
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
 
       it 'handles :|| with parentheses' do
         '(foo || bar) || baz'.
           must_be_parsed_as s(:or,
                               s(:or,
-                                s(:call, nil, :foo),
-                                s(:call, nil, :bar)),
-                              s(:call, nil, :baz))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'handles nested :|| with parentheses' do
         'foo || (bar || baz) || qux'.
           must_be_parsed_as  s(:or,
-                               s(:call, nil, :foo),
+                               s(:send, nil, :foo),
                                s(:or,
-                                 s(:or, s(:call, nil, :bar), s(:call, nil, :baz)),
-                                 s(:call, nil, :qux)))
+                                 s(:or, s(:send, nil, :bar), s(:send, nil, :baz)),
+                                 s(:send, nil, :qux)))
       end
 
       it 'converts :|| to :or' do
         'foo || bar'.
           must_be_parsed_as s(:or,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'handles triple :and' do
         'foo and bar and baz and qux'.
           must_be_parsed_as s(:and,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               s(:and,
-                                s(:call, nil, :bar),
+                                s(:send, nil, :bar),
                                 s(:and,
-                                  s(:call, nil, :baz),
-                                  s(:call, nil, :qux))))
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))))
       end
 
       it 'handles triple :&&' do
         'foo && bar && baz && qux'.
           must_be_parsed_as s(:and,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               s(:and,
-                                s(:call, nil, :bar),
+                                s(:send, nil, :bar),
                                 s(:and,
-                                  s(:call, nil, :baz),
-                                  s(:call, nil, :qux))))
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))))
       end
     end
 
@@ -164,8 +164,8 @@ describe RipperParser::Parser do
       it 'handles non-literals' do
         'foo..bar'.
           must_be_parsed_as s(:dot2,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
     end
 
@@ -197,39 +197,39 @@ describe RipperParser::Parser do
       it 'handles non-literals' do
         'foo...bar'.
           must_be_parsed_as s(:dot3,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
     end
 
     describe 'for unary numerical operators' do
       it 'handles unary minus with an integer literal' do
-        '- 1'.must_be_parsed_as s(:call, s(:lit, 1), :-@)
+        '- 1'.must_be_parsed_as s(:send, s(:lit, 1), :-@)
       end
 
       it 'handles unary minus with a float literal' do
-        '- 3.14'.must_be_parsed_as s(:call, s(:lit, 3.14), :-@)
+        '- 3.14'.must_be_parsed_as s(:send, s(:lit, 3.14), :-@)
       end
 
       it 'handles unary minus with a non-literal' do
         '-foo'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :-@)
       end
 
       it 'handles unary minus with a negative number literal' do
-        '- -1'.must_be_parsed_as s(:call, s(:lit, -1), :-@)
+        '- -1'.must_be_parsed_as s(:send, s(:lit, -1), :-@)
       end
 
       it 'handles unary plus with a number literal' do
-        '+ 1'.must_be_parsed_as s(:call, s(:lit, 1), :+@)
+        '+ 1'.must_be_parsed_as s(:send, s(:lit, 1), :+@)
       end
 
       it 'handles unary plus with a non-literal' do
         '+foo'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :+@)
       end
     end

@@ -65,7 +65,7 @@ describe RipperParser::Parser do
           '/foo#{bar}baz/'.
             must_be_parsed_as s(:dregx,
                                 'foo',
-                                s(:evstr, s(:call, nil, :bar)),
+                                s(:evstr, s(:send, nil, :bar)),
                                 s(:str, 'baz'))
         end
 
@@ -73,7 +73,7 @@ describe RipperParser::Parser do
           '/foo#{bar}/ixm'.
             must_be_parsed_as s(:dregx,
                                 'foo',
-                                s(:evstr, s(:call, nil, :bar)),
+                                s(:evstr, s(:send, nil, :bar)),
                                 7)
         end
 
@@ -82,7 +82,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:dregx,
                                 'foo',
                                 s(:evstr,
-                                  s(:call, nil, :bar)), 32)
+                                  s(:send, nil, :bar)), 32)
         end
 
         it 'works with the unicode-encoding flag' do
@@ -90,7 +90,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:dregx,
                                 'foo',
                                 s(:evstr,
-                                  s(:call, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), 16)
         end
 
         it 'works with the euc-encoding flag' do
@@ -98,7 +98,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:dregx,
                                 'foo',
                                 s(:evstr,
-                                  s(:call, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), 16)
         end
 
         it 'works with the sjis-encoding flag' do
@@ -106,14 +106,14 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:dregx,
                                 'foo',
                                 s(:evstr,
-                                  s(:call, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), 16)
         end
 
         it 'works for a regex literal with interpolate-once flag' do
           '/foo#{bar}/o'.
             must_be_parsed_as s(:dregx_once,
                                 'foo',
-                                s(:evstr, s(:call, nil, :bar)))
+                                s(:evstr, s(:send, nil, :bar)))
         end
 
         it 'works with an empty interpolation' do
@@ -297,7 +297,7 @@ describe RipperParser::Parser do
               must_be_parsed_as s(:dstr,
                                   '',
                                   s(:evstr,
-                                    s(:call, nil, :foo)))
+                                    s(:send, nil, :foo)))
           end
 
           it 'works for basic interpolated strings' do
@@ -305,24 +305,24 @@ describe RipperParser::Parser do
               must_be_parsed_as s(:dstr,
                                   'foo',
                                   s(:evstr,
-                                    s(:call, nil, :bar)))
+                                    s(:send, nil, :bar)))
           end
 
           it 'works for strings with several interpolations' do
             '"foo#{bar}baz#{qux}"'.
               must_be_parsed_as s(:dstr,
                                   'foo',
-                                  s(:evstr, s(:call, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :bar)),
                                   s(:str, 'baz'),
-                                  s(:evstr, s(:call, nil, :qux)))
+                                  s(:evstr, s(:send, nil, :qux)))
           end
 
           it 'correctly handles two interpolations in a row' do
             "\"\#{bar}\#{qux}\"".
               must_be_parsed_as s(:dstr,
                                   '',
-                                  s(:evstr, s(:call, nil, :bar)),
-                                  s(:evstr, s(:call, nil, :qux)))
+                                  s(:evstr, s(:send, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :qux)))
           end
 
           it 'works with an empty interpolation' do
@@ -340,7 +340,7 @@ describe RipperParser::Parser do
           '"#{foo}\\n"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :foo)),
+                                s(:evstr, s(:send, nil, :foo)),
                                 s(:str, "\n"))
         end
 
@@ -356,7 +356,7 @@ describe RipperParser::Parser do
           '"#{foo}2\302\275"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :foo)),
+                                s(:evstr, s(:send, nil, :foo)),
                                 s(:str, '2½'))
         end
 
@@ -364,7 +364,7 @@ describe RipperParser::Parser do
           '"#{foo}2\302\275"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :foo)),
+                                s(:evstr, s(:send, nil, :foo)),
                                 s(:str, "2\xC2\xBD".force_encoding('ascii-8bit'))),
                               extra_compatible: true
         end
@@ -373,7 +373,7 @@ describe RipperParser::Parser do
           '"#{foo}\0"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :foo)),
+                                s(:evstr, s(:send, nil, :foo)),
                                 s(:str, "\u0000"))
         end
 
@@ -381,7 +381,7 @@ describe RipperParser::Parser do
           '"#{foo}\0"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :foo)),
+                                s(:evstr, s(:send, nil, :foo)),
                                 s(:str, "\x00".force_encoding('ascii-8bit'))),
                               extra_compatible: true
         end
@@ -457,7 +457,7 @@ describe RipperParser::Parser do
           "\"foo\" \"bar\#{baz}\"".
             must_be_parsed_as s(:dstr,
                                 'foobar',
-                                s(:evstr, s(:call, nil, :baz)))
+                                s(:evstr, s(:send, nil, :baz)))
         end
 
         describe 'when the left string has interpolations' do
@@ -465,7 +465,7 @@ describe RipperParser::Parser do
             "\"foo\#{bar}\" \"baz\"".
               must_be_parsed_as s(:dstr,
                                   'foo',
-                                  s(:evstr, s(:call, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :bar)),
                                   s(:str, 'baz'))
           end
 
@@ -473,7 +473,7 @@ describe RipperParser::Parser do
             "\"foo\#{bar}\" \"\"".
               must_be_parsed_as s(:dstr,
                                   'foo',
-                                  s(:evstr, s(:call, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :bar)),
                                   s(:str, ''))
           end
         end
@@ -483,17 +483,17 @@ describe RipperParser::Parser do
             "\"foo\#{bar}\" \"baz\#{qux}\"".
               must_be_parsed_as s(:dstr,
                                   'foo',
-                                  s(:evstr, s(:call, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :bar)),
                                   s(:str, 'baz'),
-                                  s(:evstr, s(:call, nil, :qux)))
+                                  s(:evstr, s(:send, nil, :qux)))
           end
 
           it 'removes empty substrings from the concatenation' do
             "\"foo\#{bar}\" \"\#{qux}\"".
               must_be_parsed_as s(:dstr,
                                   'foo',
-                                  s(:evstr, s(:call, nil, :bar)),
-                                  s(:evstr, s(:call, nil, :qux)))
+                                  s(:evstr, s(:send, nil, :bar)),
+                                  s(:evstr, s(:send, nil, :qux)))
           end
         end
       end
@@ -590,7 +590,7 @@ describe RipperParser::Parser do
         "%W(foo \#{bar} baz)".
           must_be_parsed_as  s(:array,
                                s(:str, 'foo'),
-                               s(:dstr, '', s(:evstr, s(:call, nil, :bar))),
+                               s(:dstr, '', s(:evstr, s(:send, nil, :bar))),
                                s(:str, 'baz'))
       end
 
@@ -608,7 +608,7 @@ describe RipperParser::Parser do
                               s(:str, 'foo'),
                               s(:dstr,
                                 '',
-                                s(:evstr, s(:call, nil, :bar)),
+                                s(:evstr, s(:send, nil, :bar)),
                                 s(:str, 'baz')))
       end
 
@@ -661,7 +661,7 @@ describe RipperParser::Parser do
         "%I(foo \#{bar} baz)".
           must_be_parsed_as s(:array,
                               s(:sym, :foo),
-                              s(:dsym, '', s(:evstr, s(:call, nil, :bar))),
+                              s(:dsym, '', s(:evstr, s(:send, nil, :bar))),
                               s(:sym, :baz))
       end
 
@@ -671,7 +671,7 @@ describe RipperParser::Parser do
                               s(:sym, :foo),
                               s(:dsym,
                                 '',
-                                s(:evstr, s(:call, nil, :bar)),
+                                s(:evstr, s(:send, nil, :bar)),
                                 s(:str, 'baz')))
       end
 
@@ -745,7 +745,7 @@ describe RipperParser::Parser do
         ':"foo#{bar}"'.
           must_be_parsed_as s(:dsym,
                               'foo',
-                              s(:evstr, s(:call, nil, :bar)))
+                              s(:evstr, s(:send, nil, :bar)))
       end
 
       it 'works for dsyms with escape sequences' do
@@ -779,7 +779,7 @@ describe RipperParser::Parser do
         '`foo#{bar}`'.
           must_be_parsed_as s(:dxstr,
                               'foo',
-                              s(:evstr, s(:call, nil, :bar)))
+                              s(:evstr, s(:send, nil, :bar)))
       end
 
       it 'works for backtick strings with escape sequences' do
@@ -797,14 +797,14 @@ describe RipperParser::Parser do
       it 'works for a simple case with splat' do
         '[*foo]'.
           must_be_parsed_as s(:array,
-                              s(:splat, s(:call, nil, :foo)))
+                              s(:splat, s(:send, nil, :foo)))
       end
 
       it 'works for a multi-element case with splat' do
         '[foo, *bar]'.
           must_be_parsed_as s(:array,
-                              s(:call, nil, :foo),
-                              s(:splat, s(:call, nil, :bar)))
+                              s(:send, nil, :foo),
+                              s(:splat, s(:send, nil, :bar)))
       end
     end
 
@@ -817,41 +817,41 @@ describe RipperParser::Parser do
       it 'works for a hash with one pair' do
         '{foo => bar}'.
           must_be_parsed_as s(:hash,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'works for a hash with multiple pairs' do
         '{foo => bar, baz => qux}'.
           must_be_parsed_as s(:hash,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar),
-                              s(:call, nil, :baz),
-                              s(:call, nil, :qux))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar),
+                              s(:send, nil, :baz),
+                              s(:send, nil, :qux))
       end
 
       it 'works for a hash with label keys' do
         '{foo: bar, baz: qux}'.
           must_be_parsed_as s(:hash,
                               s(:sym, :foo),
-                              s(:call, nil, :bar),
+                              s(:send, nil, :bar),
                               s(:sym, :baz),
-                              s(:call, nil, :qux))
+                              s(:send, nil, :qux))
       end
 
       it 'works for a hash with dynamic label keys' do
         "{'foo': bar}".
           must_be_parsed_as s(:hash,
                               s(:sym, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :bar))
       end
 
       it 'works for a hash with splat' do
         '{foo: bar, baz: qux, **quux}'.
           must_be_parsed_as s(:hash,
-                              s(:sym, :foo), s(:call, nil, :bar),
-                              s(:sym, :baz), s(:call, nil, :qux),
-                              s(:kwsplat, s(:call, nil, :quux)))
+                              s(:sym, :foo), s(:send, nil, :bar),
+                              s(:sym, :baz), s(:send, nil, :qux),
+                              s(:kwsplat, s(:send, nil, :quux)))
       end
     end
 
