@@ -180,7 +180,9 @@ module RipperParser
 
     # symbol-like sexps
     def process_at_const(exp)
-      make_identifier(:const, exp)
+      with_position_from_node_symbol(exp) do |ident|
+        s(:const, nil, ident)
+      end
     end
 
     def process_at_cvar(exp)
@@ -207,7 +209,7 @@ module RipperParser
       sym, pos = extract_node_symbol_with_position(exp)
       result = case sym
                when :__ENCODING__
-                 s(:colon2, s(:const, :Encoding), :UTF_8)
+                 s(:colon2, s(:const, nil, :Encoding), :UTF_8)
                when :__FILE__
                  s(:str, @filename)
                when :__LINE__
@@ -235,7 +237,6 @@ module RipperParser
     def const_ref_to_const_with_line_number(const_ref)
       const = process(const_ref)
       line = const.line
-      const = const[1] if const.sexp_type == :const
       return const, line
     end
 

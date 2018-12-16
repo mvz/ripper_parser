@@ -335,7 +335,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:rescue,
                               s(:call, nil, :foo),
                               s(:resbody,
-                                s(:array, s(:const, :Bar)),
+                                s(:array, s(:const, nil, :Bar)),
                                 s(:call, nil, :baz)))
       end
 
@@ -345,7 +345,7 @@ describe RipperParser::Parser do
                               s(:call, nil, :foo),
                               s(:resbody,
                                 s(:array,
-                                  s(:const, :Bar),
+                                  s(:const, nil, :Bar),
                                   s(:lasgn, :e, s(:gvar, :$!))),
                                 s(:call, nil, :baz)))
       end
@@ -355,7 +355,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:rescue,
                               s(:call, nil, :foo),
                               s(:resbody,
-                                s(:array, s(:const, :Bar), s(:const, :Baz)),
+                                s(:array, s(:const, nil, :Bar), s(:const, nil, :Baz)),
                                 s(:call, nil, :qux)))
       end
 
@@ -375,7 +375,7 @@ describe RipperParser::Parser do
                               s(:resbody,
                                 s(:array,
                                   s(:splat, s(:call, nil, :bar)),
-                                  s(:const, :Baz)),
+                                  s(:const, nil, :Baz)),
                                 s(:call, nil, :qux)))
       end
 
@@ -485,12 +485,12 @@ describe RipperParser::Parser do
       it 'works with assignment with class method call with argument without brackets' do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
-                       s(:lasgn, :foo, s(:call, s(:const, :Bar), :baz, s(:call, nil, :qux))),
+                       s(:lasgn, :foo, s(:call, s(:const, nil, :Bar), :baz, s(:call, nil, :qux))),
                        s(:resbody, s(:array), s(:call, nil, :quuz)))
                    else
                      s(:lasgn, :foo,
                        s(:rescue,
-                         s(:call, s(:const, :Bar), :baz, s(:call, nil, :qux)),
+                         s(:call, s(:const, nil, :Bar), :baz, s(:call, nil, :qux)),
                          s(:resbody, s(:array), s(:call, nil, :quuz))))
                    end
         'foo = Bar.baz qux rescue quuz'.
@@ -543,7 +543,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:rescue,
                                 s(:lasgn,
                                   :foo,
-                                  s(:call, s(:const, :Bar), :baz, s(:call, nil, :qux))),
+                                  s(:call, s(:const, nil, :Bar), :baz, s(:call, nil, :qux))),
                                 s(:resbody, s(:array), s(:call, nil, :quuz))),
                               extra_compatible: true
         end

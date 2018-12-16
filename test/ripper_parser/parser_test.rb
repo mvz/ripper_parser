@@ -18,7 +18,7 @@ describe RipperParser::Parser do
       it 'works with a namespaced class name' do
         'class Foo::Bar; end'.
           must_be_parsed_as s(:class,
-                              s(:colon2, s(:const, :Foo), :Bar),
+                              s(:colon2, s(:const, nil, :Foo), :Bar),
                               nil)
       end
 
@@ -28,10 +28,15 @@ describe RipperParser::Parser do
     end
 
     describe 'for a module declaration' do
+      it 'works with a simple module name' do
+        'module Foo; end'.
+          must_be_parsed_as s(:module, s(:const, nil, :Foo))
+      end
+
       it 'works with a namespaced module name' do
         'module Foo::Bar; end'.
           must_be_parsed_as s(:module,
-                              s(:colon2, s(:const, :Foo), :Bar))
+                              s(:colon2, s(:const, nil, :Foo), :Bar))
       end
     end
 
@@ -251,7 +256,7 @@ describe RipperParser::Parser do
     describe 'for the __ENCODING__ keyword' do
       it 'evaluates to the equivalent of Encoding::UTF_8' do
         '__ENCODING__'.
-          must_be_parsed_as s(:colon2, s(:const, :Encoding), :UTF_8)
+          must_be_parsed_as s(:colon2, s(:const, nil, :Encoding), :UTF_8)
       end
     end
 
@@ -308,7 +313,7 @@ describe RipperParser::Parser do
       it 'works with a three-level constant lookup' do
         'Foo::Bar::Baz'.
           must_be_parsed_as s(:colon2,
-                              s(:colon2, s(:const, :Foo), :Bar),
+                              s(:colon2, s(:const, nil, :Foo), :Bar),
                               :Baz)
       end
 
@@ -518,7 +523,7 @@ describe RipperParser::Parser do
       it 'works with constants' do
         'Foo, Bar = baz'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:cdecl, :Foo), s(:cdecl, :Bar)),
+                              s(:array, s(:casgn, nil, :Foo), s(:casgn, nil, :Bar)),
                               s(:to_ary, s(:call, nil, :baz)))
       end
 
@@ -630,7 +635,7 @@ describe RipperParser::Parser do
 
       it 'matches comments to the correct entity' do
         result = parser.parse "# Foo\nclass Foo\n# Bar\ndef bar\nend\nend"
-        result.must_equal s(:class, :Foo, nil,
+        result.must_equal s(:class, s(:const, nil, :Foo), nil,
                             s(:defn, :bar,
                               s(:args), s(:nil)))
         result.comments.must_equal "# Foo\n"
@@ -663,7 +668,7 @@ describe RipperParser::Parser do
           end
         END
         result.must_equal s(:class,
-                            :Foo,
+                            s(:const, nil, :Foo),
                             nil,
                             s(:defn, :foo, s(:args), s(:call, nil, :bar)),
                             s(:defn, :bar, s(:args), s(:call, nil, :baz)))

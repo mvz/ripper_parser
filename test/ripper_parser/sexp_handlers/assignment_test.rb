@@ -5,14 +5,14 @@ describe RipperParser::Parser do
     describe 'for single assignment' do
       it 'works when assigning to a namespaced constant' do
         'Foo::Bar = baz'.
-          must_be_parsed_as s(:cdecl,
-                              s(:colon2, s(:const, :Foo), :Bar),
+          must_be_parsed_as s(:casgn,
+                              s(:colon2, s(:const, nil, :Foo), :Bar),
                               s(:call, nil, :baz))
       end
 
       it 'works when assigning to constant in the root namespace' do
         '::Foo = bar'.
-          must_be_parsed_as s(:cdecl,
+          must_be_parsed_as s(:casgn,
                               s(:colon3, :Foo),
                               s(:call, nil, :bar))
       end
@@ -78,7 +78,8 @@ describe RipperParser::Parser do
 
       it 'works when assigning to a constant' do
         'FOO = bar'.
-          must_be_parsed_as s(:cdecl,
+          must_be_parsed_as s(:casgn,
+                              nil,
                               :FOO,
                               s(:call, nil, :bar))
       end

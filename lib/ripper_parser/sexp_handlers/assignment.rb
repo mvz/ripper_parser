@@ -159,7 +159,7 @@ module RipperParser
 
       ASSIGNMENT_SUB_TYPE_MAP = {
         ivar: :iasgn,
-        const: :cdecl,
+        const: :casgn,
         lvar: :lasgn,
         cvar: :cvdecl,
         gvar: :gasgn
@@ -170,7 +170,7 @@ module RipperParser
       }.freeze
 
       def create_assignment_sub_type(lvalue, value)
-        s(map_assignment_lvalue_type(lvalue.sexp_type), lvalue[1], value)
+        s(map_assignment_lvalue_type(lvalue.sexp_type), *lvalue.sexp_body, value)
       end
 
       def map_assignment_lvalue_type(type)
