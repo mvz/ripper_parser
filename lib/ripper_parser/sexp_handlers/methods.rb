@@ -54,15 +54,7 @@ module RipperParser
       def process_undef(exp)
         _, args = exp.shift 2
 
-        args.map! do |sub_exp|
-          s(:undef, process(sub_exp))
-        end
-
-        if args.size == 1
-          args[0]
-        else
-          s(:block, *args)
-        end
+        s(:undef, *map_process_list(args))
       end
 
       def process_alias(exp)

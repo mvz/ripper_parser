@@ -229,16 +229,16 @@ describe RipperParser::Parser do
 
       it 'works with multiple bareword identifiers' do
         'undef foo, bar'.
-          must_be_parsed_as s(:block,
-                              s(:undef, s(:sym, :foo)),
-                              s(:undef, s(:sym, :bar)))
+          must_be_parsed_as s(:undef,
+                              s(:sym, :foo),
+                              s(:sym, :bar))
       end
 
       it 'works with multiple bareword symbols' do
         'undef :foo, :bar'.
-          must_be_parsed_as s(:block,
-                              s(:undef, s(:sym, :foo)),
-                              s(:undef, s(:sym, :bar)))
+          must_be_parsed_as s(:undef,
+                              s(:sym, :foo),
+                              s(:sym, :bar))
       end
     end
   end
