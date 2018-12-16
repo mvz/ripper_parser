@@ -46,11 +46,12 @@ describe 'Using RipperParser and Parser' do
     end
 
     it 'gives the same result' do
-      imitation.must_equal original
+      formatted(imitation).must_equal formatted(original)
     end
 
     it 'gives the same result with comments' do
-      to_comments(imitation).must_equal to_comments(original)
+      formatted(to_comments(imitation)).
+        must_equal formatted(to_comments(original))
     end
   end
 end

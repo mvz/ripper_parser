@@ -158,7 +158,7 @@ describe RipperParser::Parser do
       describe 'with blocks' do
         it 'works for a do block' do
           'foo.bar do baz; end'.
-            must_be_parsed_as s(:iter,
+            must_be_parsed_as s(:block,
                                 s(:send,
                                   s(:send, nil, :foo),
                                   :bar),
@@ -168,7 +168,7 @@ describe RipperParser::Parser do
 
         it 'works for a do block with several statements' do
           'foo.bar do baz; qux; end'.
-            must_be_parsed_as s(:iter,
+            must_be_parsed_as s(:block,
                                 s(:send,
                                   s(:send, nil, :foo),
                                   :bar),

@@ -211,9 +211,9 @@ module RipperParser
       def make_iter(call, args, stmt)
         args ||= 0
         if stmt.empty?
-          s(:iter, call, args)
+          s(:block, call, args)
         else
-          s(:iter, call, args, stmt)
+          s(:block, call, args, stmt)
         end
       end
 

@@ -146,13 +146,13 @@ module RipperParser
     def process_BEGIN(exp)
       _, body = exp.shift 2
       body = reject_void_stmt map_process_list body.sexp_body
-      s(:iter, s(:preexe), s(:args), *body)
+      s(:block, s(:preexe), s(:args), *body)
     end
 
     def process_END(exp)
       _, body = exp.shift 2
       body = map_process_list_compact body.sexp_body
-      s(:iter, s(:postexe), 0, *body)
+      s(:block, s(:postexe), 0, *body)
     end
 
     # number literals

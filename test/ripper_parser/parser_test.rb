@@ -288,19 +288,19 @@ describe RipperParser::Parser do
     describe 'for the END keyword' do
       it 'converts to a :postexe iterator' do
         'END { foo }'.
-          must_be_parsed_as s(:iter, s(:postexe), 0, s(:send, nil, :foo))
+          must_be_parsed_as s(:block, s(:postexe), 0, s(:send, nil, :foo))
       end
     end
 
     describe 'for the BEGIN keyword' do
       it 'converts to a :preexe iterator' do
         'BEGIN { foo }'.
-          must_be_parsed_as s(:iter, s(:preexe), s(:args), s(:send, nil, :foo))
+          must_be_parsed_as s(:block, s(:preexe), s(:args), s(:send, nil, :foo))
       end
 
       it 'works with an empty block' do
         'BEGIN { }'.
-          must_be_parsed_as s(:iter, s(:preexe), s(:args))
+          must_be_parsed_as s(:block, s(:preexe), s(:args))
       end
     end
 
@@ -823,7 +823,7 @@ describe RipperParser::Parser do
 
       it 'assigns line numbers to nested sexps without their own line numbers' do
         result = parser.parse "foo(bar) do\nnext baz\nend\n"
-        result.must_equal s(:iter,
+        result.must_equal s(:block,
                             s(:send, nil, :foo, s(:send, nil, :bar)),
                             0,
                             s(:next, s(:send, nil, :baz)))
