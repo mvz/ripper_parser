@@ -682,7 +682,7 @@ describe RipperParser::Parser do
         result.must_equal s(:defn,
                             :bar,
                             s(:args),
-                            s(:lit, :class))
+                            s(:sym, :class))
         result.comments.must_equal "# Foo\n"
       end
 

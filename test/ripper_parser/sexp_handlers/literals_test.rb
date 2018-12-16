@@ -348,7 +348,7 @@ describe RipperParser::Parser do
           '"#{[:foo, \'bar\']}\\n"'.
             must_be_parsed_as s(:dstr,
                                 '',
-                                s(:evstr, s(:array, s(:lit, :foo), s(:str, 'bar'))),
+                                s(:evstr, s(:array, s(:sym, :foo), s(:str, 'bar'))),
                                 s(:str, "\n"))
         end
 
@@ -630,45 +630,45 @@ describe RipperParser::Parser do
     describe 'for symbol list literals with %i delimiter' do
       it 'works for the simple case' do
         '%i(foo bar)'.
-          must_be_parsed_as s(:array, s(:lit, :foo), s(:lit, :bar))
+          must_be_parsed_as s(:array, s(:sym, :foo), s(:sym, :bar))
       end
 
       it 'does not perform interpolation' do
         '%i(foo\\nbar baz)'.
-          must_be_parsed_as s(:array, s(:lit, :"foo\\nbar"), s(:lit, :baz))
+          must_be_parsed_as s(:array, s(:sym, :"foo\\nbar"), s(:sym, :baz))
       end
 
       it 'handles line continuation' do
         "%i(foo\\\nbar baz)".
-          must_be_parsed_as s(:array, s(:lit, :"foo\nbar"), s(:lit, :baz))
+          must_be_parsed_as s(:array, s(:sym, :"foo\nbar"), s(:sym, :baz))
       end
     end
 
     describe 'for symbol list literals with %I delimiter' do
       it 'works for the simple case' do
         '%I(foo bar)'.
-          must_be_parsed_as s(:array, s(:lit, :foo), s(:lit, :bar))
+          must_be_parsed_as s(:array, s(:sym, :foo), s(:sym, :bar))
       end
 
       it 'correctly handles escape sequences' do
         '%I(foo\nbar baz)'.
           must_be_parsed_as s(:array,
-                              s(:lit, :"foo\nbar"),
-                              s(:lit, :baz))
+                              s(:sym, :"foo\nbar"),
+                              s(:sym, :baz))
       end
 
       it 'correctly handles interpolation' do
         "%I(foo \#{bar} baz)".
           must_be_parsed_as s(:array,
-                              s(:lit, :foo),
+                              s(:sym, :foo),
                               s(:dsym, '', s(:evstr, s(:call, nil, :bar))),
-                              s(:lit, :baz))
+                              s(:sym, :baz))
       end
 
       it 'correctly handles in-word interpolation' do
         "%I(foo \#{bar}baz)".
           must_be_parsed_as s(:array,
-                              s(:lit, :foo),
+                              s(:sym, :foo),
                               s(:dsym,
                                 '',
                                 s(:evstr, s(:call, nil, :bar)),
@@ -678,8 +678,8 @@ describe RipperParser::Parser do
       it 'correctly handles line continuation' do
         "%I(foo\\\nbar baz)".
           must_be_parsed_as s(:array,
-                              s(:lit, :"foo\nbar"),
-                              s(:lit, :baz))
+                              s(:sym, :"foo\nbar"),
+                              s(:sym, :baz))
       end
     end
 
@@ -728,17 +728,17 @@ describe RipperParser::Parser do
     describe 'for symbol literals' do
       it 'works for simple symbols' do
         ':foo'.
-          must_be_parsed_as s(:lit, :foo)
+          must_be_parsed_as s(:sym, :foo)
       end
 
       it 'works for symbols that look like instance variable names' do
         ':@foo'.
-          must_be_parsed_as s(:lit, :@foo)
+          must_be_parsed_as s(:sym, :@foo)
       end
 
       it 'works for simple dsyms' do
         ':"foo"'.
-          must_be_parsed_as s(:lit, :foo)
+          must_be_parsed_as s(:sym, :foo)
       end
 
       it 'works for dsyms with interpolations' do
@@ -750,22 +750,22 @@ describe RipperParser::Parser do
 
       it 'works for dsyms with escape sequences' do
         ':"foo\nbar"'.
-          must_be_parsed_as s(:lit, :"foo\nbar")
+          must_be_parsed_as s(:sym, :"foo\nbar")
       end
 
       it 'works with single quoted dsyms' do
         ":'foo'".
-          must_be_parsed_as s(:lit, :foo)
+          must_be_parsed_as s(:sym, :foo)
       end
 
       it 'works with single quoted dsyms with escaped single quotes' do
         ":'foo\\'bar'".
-          must_be_parsed_as s(:lit, :'foo\'bar')
+          must_be_parsed_as s(:sym, :'foo\'bar')
       end
 
       it 'works with single quoted dsyms with embedded backslashes' do
         ":'foo\\abar'".
-          must_be_parsed_as s(:lit, :"foo\\abar")
+          must_be_parsed_as s(:sym, :"foo\\abar")
       end
     end
 
@@ -833,24 +833,24 @@ describe RipperParser::Parser do
       it 'works for a hash with label keys' do
         '{foo: bar, baz: qux}'.
           must_be_parsed_as s(:hash,
-                              s(:lit, :foo),
+                              s(:sym, :foo),
                               s(:call, nil, :bar),
-                              s(:lit, :baz),
+                              s(:sym, :baz),
                               s(:call, nil, :qux))
       end
 
       it 'works for a hash with dynamic label keys' do
         "{'foo': bar}".
           must_be_parsed_as s(:hash,
-                              s(:lit, :foo),
+                              s(:sym, :foo),
                               s(:call, nil, :bar))
       end
 
       it 'works for a hash with splat' do
         '{foo: bar, baz: qux, **quux}'.
           must_be_parsed_as s(:hash,
-                              s(:lit, :foo), s(:call, nil, :bar),
-                              s(:lit, :baz), s(:call, nil, :qux),
+                              s(:sym, :foo), s(:call, nil, :bar),
+                              s(:sym, :baz), s(:call, nil, :qux),
                               s(:kwsplat, s(:call, nil, :quux)))
       end
     end

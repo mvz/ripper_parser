@@ -65,7 +65,7 @@ describe RipperParser::Parser do
                                 nil,
                                 :foo,
                                 s(:call, nil, :bar),
-                                s(:hash, s(:lit, :baz), s(:call, nil, :qux)))
+                                s(:hash, s(:sym, :baz), s(:call, nil, :qux)))
         end
 
         it 'works with several named arguments' do
@@ -75,8 +75,8 @@ describe RipperParser::Parser do
                                 :foo,
                                 s(:call, nil, :bar),
                                 s(:hash,
-                                  s(:lit, :baz), s(:call, nil, :qux),
-                                  s(:lit, :quux), s(:call, nil, :quuz)))
+                                  s(:sym, :baz), s(:call, nil, :qux),
+                                  s(:sym, :quux), s(:call, nil, :quuz)))
         end
 
         it 'works with a double splat argument' do
@@ -96,7 +96,7 @@ describe RipperParser::Parser do
                                 :foo,
                                 s(:call, nil, :bar),
                                 s(:hash,
-                                  s(:lit, :baz), s(:call, nil, :qux),
+                                  s(:sym, :baz), s(:call, nil, :qux),
                                   s(:kwsplat, s(:call, nil, :quuz))))
         end
       end

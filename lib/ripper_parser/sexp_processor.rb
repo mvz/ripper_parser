@@ -175,7 +175,8 @@ module RipperParser
     end
 
     def process_at_label(exp)
-      make_literal(exp) { |val| val.chop.to_sym }
+      _, val, pos = exp.shift 3
+      with_position(pos, s(:sym, val.chop.to_sym))
     end
 
     # symbol-like sexps

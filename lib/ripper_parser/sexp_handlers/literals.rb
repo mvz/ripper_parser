@@ -216,7 +216,7 @@ module RipperParser
         type, *body = *process(node)
         case type
         when :str, :xstr
-          s(:lit, body.first.to_sym)
+          s(:sym, body.first.to_sym)
         when :dstr, :dxstr
           s(:dsym, *body)
         else
@@ -227,11 +227,11 @@ module RipperParser
       def handle_symbol_content(node)
         if node.sexp_type == :'@kw'
           symbol, position = extract_node_symbol_with_position(node)
-          with_line_number(position, s(:lit, symbol))
+          with_line_number(position, s(:sym, symbol))
         else
           processed = process(node)
           symbol = processed[1].to_sym
-          with_line_number(processed.line, s(:lit, symbol))
+          with_line_number(processed.line, s(:sym, symbol))
         end
       end
 

@@ -190,24 +190,24 @@ describe RipperParser::Parser do
       it 'works with regular barewords' do
         'alias foo bar'.
           must_be_parsed_as s(:alias,
-                              s(:lit, :foo), s(:lit, :bar))
+                              s(:sym, :foo), s(:sym, :bar))
       end
 
       it 'works with symbols' do
         'alias :foo :bar'.
           must_be_parsed_as s(:alias,
-                              s(:lit, :foo), s(:lit, :bar))
+                              s(:sym, :foo), s(:sym, :bar))
       end
 
       it 'works with operator barewords' do
         'alias + -'.
           must_be_parsed_as s(:alias,
-                              s(:lit, :+), s(:lit, :-))
+                              s(:sym, :+), s(:sym, :-))
       end
 
       it 'treats keywords as symbols' do
         'alias next foo'.
-          must_be_parsed_as s(:alias, s(:lit, :next), s(:lit, :foo))
+          must_be_parsed_as s(:alias, s(:sym, :next), s(:sym, :foo))
       end
 
       it 'works with global variables' do
@@ -219,26 +219,26 @@ describe RipperParser::Parser do
     describe 'for the undef statement' do
       it 'works with a single bareword identifier' do
         'undef foo'.
-          must_be_parsed_as s(:undef, s(:lit, :foo))
+          must_be_parsed_as s(:undef, s(:sym, :foo))
       end
 
       it 'works with a single symbol' do
         'undef :foo'.
-          must_be_parsed_as s(:undef, s(:lit, :foo))
+          must_be_parsed_as s(:undef, s(:sym, :foo))
       end
 
       it 'works with multiple bareword identifiers' do
         'undef foo, bar'.
           must_be_parsed_as s(:block,
-                              s(:undef, s(:lit, :foo)),
-                              s(:undef, s(:lit, :bar)))
+                              s(:undef, s(:sym, :foo)),
+                              s(:undef, s(:sym, :bar)))
       end
 
       it 'works with multiple bareword symbols' do
         'undef :foo, :bar'.
           must_be_parsed_as s(:block,
-                              s(:undef, s(:lit, :foo)),
-                              s(:undef, s(:lit, :bar)))
+                              s(:undef, s(:sym, :foo)),
+                              s(:undef, s(:sym, :bar)))
       end
     end
   end
