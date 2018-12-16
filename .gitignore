@@ -1,0 +1,9 @@
+Gemfile.lock
+ripper_parser-*.gem
+coverage/
+.bundle/
+bin/
+.yardoc/
+doc/*
+!doc/dependency_decisions.yml
+tmp/

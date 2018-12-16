@@ -1,0 +1,74 @@
+AllCops:
+  Exclude:
+    - 'test/samples/*'
+  TargetRubyVersion: 2.2
+
+# Dot at end of line makes it clearer that the line is not done
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+# Don't force lonely closing parentheses
+Layout/MultilineMethodCallBraceLayout:
+  EnforcedStyle: same_line
+
+# Allow if (foo = get_foo) style
+Lint/AssignmentInCondition:
+  AllowSafeAssignment: true
+
+# These test files contain many literal strings that represent Ruby source with
+# interpolation.
+Lint/InterpolationCheck:
+  Exclude:
+    - 'test/**/*.rb'
+
+# Test describe blocks can be any size
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
+
+# Set a lenient line length limit
+Metrics/LineLength:
+  Max: 95
+
+# Allow any name: It's just a string
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+# Allow process_BEGIN and friends
+# FIXME: Should be able to disable this inline!
+Naming/MethodName:
+  Enabled: false
+
+# Allow and/or for control flow only
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+# Require at least two dependent lines before suggesting a guard clause
+Style/GuardClause:
+  MinBodyLength: 2
+
+# Avoid offenses on s().
+Style/MethodCallWithoutArgsParentheses:
+  IgnoredMethods: ['s']
+
+# This cop gives confusing results for objects that may not be numbers.
+Style/NumericPredicate:
+  Enabled: false
+
+# Allow explicit return with multiple return values
+Style/RedundantReturn:
+  AllowMultipleReturnValues: true
+
+# Always use raise to raise exceptions
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+# This cop gives too many false positives
+Style/FormatStringToken:
+  Enabled: false
+
+# Prefer symbols to look like symbols
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+inherit_from: .rubocop_todo.yml
