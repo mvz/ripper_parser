@@ -103,7 +103,7 @@ describe RipperParser::Parser do
         'for foo in bar do; baz; end'.
           must_be_parsed_as s(:for,
                               s(:send, nil, :bar),
-                              s(:lasgn, :foo),
+                              s(:lvasgn, :foo),
                               s(:send, nil, :baz))
       end
 
@@ -111,7 +111,7 @@ describe RipperParser::Parser do
         'for foo in bar; baz; end'.
           must_be_parsed_as s(:for,
                               s(:send, nil, :bar),
-                              s(:lasgn, :foo),
+                              s(:lvasgn, :foo),
                               s(:send, nil, :baz))
       end
 
@@ -119,7 +119,7 @@ describe RipperParser::Parser do
         'for foo in bar; end'.
           must_be_parsed_as s(:for,
                               s(:send, nil, :bar),
-                              s(:lasgn, :foo))
+                              s(:lvasgn, :foo))
       end
     end
 
@@ -358,7 +358,7 @@ describe RipperParser::Parser do
     describe 'for operator assignment' do
       it 'works with +=' do
         'foo += bar'.
-          must_be_parsed_as s(:lasgn,
+          must_be_parsed_as s(:lvasgn,
                               :foo,
                               s(:send,
                                 s(:lvar, :foo),
@@ -368,7 +368,7 @@ describe RipperParser::Parser do
 
       it 'works with -=' do
         'foo -= bar'.
-          must_be_parsed_as s(:lasgn,
+          must_be_parsed_as s(:lvasgn,
                               :foo,
                               s(:send,
                                 s(:lvar, :foo),
@@ -380,7 +380,7 @@ describe RipperParser::Parser do
         'foo ||= bar'.
           must_be_parsed_as s(:op_asgn_or,
                               s(:lvar, :foo),
-                              s(:lasgn, :foo,
+                              s(:lvasgn, :foo,
                                 s(:send, nil, :bar)))
       end
 
@@ -435,7 +435,7 @@ describe RipperParser::Parser do
       it 'works the same number of items on each side' do
         'foo, bar = baz, qux'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
+                              s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                               s(:array,
                                 s(:send, nil, :baz),
                                 s(:send, nil, :qux)))
@@ -444,7 +444,7 @@ describe RipperParser::Parser do
       it 'works with a single item on the right-hand side' do
         'foo, bar = baz'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
+                              s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                               s(:to_ary,
                                 s(:send, nil, :baz)))
       end
@@ -452,7 +452,7 @@ describe RipperParser::Parser do
       it 'works with left-hand splat' do
         'foo, *bar = baz, qux'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:lasgn, :foo), s(:splat, s(:lasgn, :bar))),
+                              s(:array, s(:lvasgn, :foo), s(:splat, s(:lvasgn, :bar))),
                               s(:array,
                                 s(:send, nil, :baz),
                                 s(:send, nil, :qux)))
@@ -461,7 +461,7 @@ describe RipperParser::Parser do
       it 'works with parentheses around the left-hand side' do
         '(foo, bar) = baz'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
+                              s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                               s(:to_ary, s(:send, nil, :baz)))
       end
 
@@ -469,9 +469,9 @@ describe RipperParser::Parser do
         'foo, (bar, baz) = qux'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:lasgn, :foo),
+                                s(:lvasgn, :foo),
                                 s(:masgn,
-                                  s(:array, s(:lasgn, :bar), s(:lasgn, :baz)))),
+                                  s(:array, s(:lvasgn, :bar), s(:lvasgn, :baz)))),
                               s(:to_ary, s(:send, nil, :qux)))
       end
 
@@ -479,8 +479,8 @@ describe RipperParser::Parser do
         'foo, (bar, baz) = [qux, [quz, quuz]]'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:lasgn, :foo),
-                                s(:masgn, s(:array, s(:lasgn, :bar), s(:lasgn, :baz)))),
+                                s(:lvasgn, :foo),
+                                s(:masgn, s(:array, s(:lvasgn, :bar), s(:lvasgn, :baz)))),
                               s(:to_ary,
                                 s(:array,
                                   s(:send, nil, :qux),
@@ -600,7 +600,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :+,
-                              s(:lasgn,
+                              s(:lvasgn,
                                 :bar,
                                 s(:send, nil, :baz)))
       end
@@ -608,7 +608,7 @@ describe RipperParser::Parser do
       it 'handles assignment inside unary operator expressions' do
         '+(foo = bar)'.
           must_be_parsed_as s(:send,
-                              s(:lasgn, :foo, s(:send, nil, :bar)),
+                              s(:lvasgn, :foo, s(:send, nil, :bar)),
                               :+@)
       end
     end

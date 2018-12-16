@@ -19,13 +19,13 @@ describe RipperParser::Parser do
 
       it 'works with blocks' do
         'foo = begin; bar; end'.
-          must_be_parsed_as s(:lasgn, :foo, s(:kwbegin, s(:send, nil, :bar)))
+          must_be_parsed_as s(:lvasgn, :foo, s(:kwbegin, s(:send, nil, :bar)))
       end
 
       describe 'with a right-hand splat' do
         it 'works in the simple case' do
           'foo = *bar'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:svalue,
                                   s(:splat,
                                     s(:send, nil, :bar))))
@@ -33,7 +33,7 @@ describe RipperParser::Parser do
 
         it 'works with blocks' do
           'foo = *begin; bar; end'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:svalue,
                                   s(:splat,
                                     s(:kwbegin,
@@ -44,7 +44,7 @@ describe RipperParser::Parser do
       describe 'with several items on the right hand side' do
         it 'works in the simple case' do
           'foo = bar, baz'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:svalue,
                                   s(:array,
                                     s(:send, nil, :bar),
@@ -53,7 +53,7 @@ describe RipperParser::Parser do
 
         it 'works with a splat' do
           'foo = bar, *baz'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:svalue,
                                   s(:array,
                                     s(:send, nil, :bar),
@@ -65,7 +65,7 @@ describe RipperParser::Parser do
       describe 'with an array literal on the right hand side' do
         specify do
           'foo = [bar, baz]'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:array,
                                   s(:send, nil, :bar),
                                   s(:send, nil, :baz)))
@@ -132,7 +132,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:defn,
                                 :foo,
                                 s(:args,
-                                  s(:lasgn, :bar,
+                                  s(:lvasgn, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
                                 s(:nil))
         end
@@ -143,7 +143,7 @@ describe RipperParser::Parser do
                                 s(:self),
                                 :foo,
                                 s(:args,
-                                  s(:lasgn, :bar,
+                                  s(:lvasgn, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
                                 s(:nil))
         end
@@ -161,7 +161,7 @@ describe RipperParser::Parser do
       specify do
         'foo, * = bar'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:lasgn, :foo), s(:splat)),
+                              s(:array, s(:lvasgn, :foo), s(:splat)),
                               s(:to_ary, s(:send, nil, :bar)))
       end
 
@@ -169,8 +169,8 @@ describe RipperParser::Parser do
         '(foo, *bar) = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:lasgn, :foo),
-                                s(:splat, s(:lasgn, :bar))),
+                                s(:lvasgn, :foo),
+                                s(:splat, s(:lvasgn, :bar))),
                               s(:to_ary, s(:send, nil, :baz)))
       end
 
@@ -178,8 +178,8 @@ describe RipperParser::Parser do
         '*foo, bar = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:splat, s(:lasgn, :foo)),
-                                s(:lasgn, :bar)),
+                                s(:splat, s(:lvasgn, :foo)),
+                                s(:lvasgn, :bar)),
                               s(:to_ary, s(:send, nil, :baz)))
       end
     end
@@ -212,21 +212,21 @@ describe RipperParser::Parser do
         it 'works with boolean operators' do
           'foo &&= bar'.
             must_be_parsed_as s(:op_asgn_and,
-                                s(:lvar, :foo), s(:lasgn, :foo, s(:send, nil, :bar)))
+                                s(:lvar, :foo), s(:lvasgn, :foo, s(:send, nil, :bar)))
         end
 
         it 'works with boolean operators and blocks' do
           'foo &&= begin; bar; end'.
             must_be_parsed_as s(:op_asgn_and,
                                 s(:lvar, :foo),
-                                s(:lasgn, :foo,
+                                s(:lvasgn, :foo,
                                   s(:kwbegin,
                                     s(:send, nil, :bar))))
         end
 
         it 'works with arithmetic operators and blocks' do
           'foo += begin; bar; end'.
-            must_be_parsed_as s(:lasgn, :foo,
+            must_be_parsed_as s(:lvasgn, :foo,
                                 s(:send,
                                   s(:lvar, :foo), :+,
                                   s(:kwbegin,
@@ -240,13 +240,13 @@ describe RipperParser::Parser do
         specify do
           'foo, bar = *baz'.
             must_be_parsed_as s(:masgn,
-                                s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
+                                s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                 s(:splat, s(:send, nil, :baz)))
         end
         specify do
           'foo, bar = baz, *qux'.
             must_be_parsed_as s(:masgn,
-                                s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
+                                s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                 s(:array,
                                   s(:send, nil, :baz),
                                   s(:splat, s(:send, nil, :qux))))

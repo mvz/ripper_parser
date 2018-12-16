@@ -163,7 +163,7 @@ module RipperParser
       def handle_default_arguments(defaults)
         return [] unless defaults
 
-        defaults.map { |sym, val| s(:lasgn, process(sym)[1], process(val)) }
+        defaults.map { |sym, val| s(:lvasgn, process(sym)[1], process(val)) }
       end
 
       def handle_splat(splat)

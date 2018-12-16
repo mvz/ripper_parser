@@ -26,7 +26,7 @@ module RipperParser
         assgn = if var.sexp_type == :masgn
                   var
                 else
-                  s(:lasgn, var[1])
+                  s(:lvasgn, var[1])
                 end
         block = unwrap_nil process(block)
         if block

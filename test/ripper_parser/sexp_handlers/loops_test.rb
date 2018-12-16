@@ -151,7 +151,7 @@ describe RipperParser::Parser do
     describe 'for the for statement' do
       it 'works with a single assignment' do
         'for foo in bar; end'.
-          must_be_parsed_as s(:for, s(:send, nil, :bar), s(:lasgn, :foo))
+          must_be_parsed_as s(:for, s(:send, nil, :bar), s(:lvasgn, :foo))
       end
 
       it 'works with explicit multiple assignment' do
@@ -160,8 +160,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :baz),
                               s(:masgn,
                                 s(:array,
-                                  s(:lasgn, :foo),
-                                  s(:lasgn, :bar))))
+                                  s(:lvasgn, :foo),
+                                  s(:lvasgn, :bar))))
       end
 
       it 'works with multiple assignment with trailing comma' do
@@ -170,7 +170,7 @@ describe RipperParser::Parser do
                               s(:send, nil, :bar),
                               s(:masgn,
                                 s(:array,
-                                  s(:lasgn, :foo))))
+                                  s(:lvasgn, :foo))))
       end
     end
   end

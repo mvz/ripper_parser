@@ -31,7 +31,7 @@ describe RipperParser::Parser do
         'def foo bar=nil; end'.
           must_be_parsed_as s(:defn,
                               :foo,
-                              s(:args, s(:lasgn, :bar, s(:nil))),
+                              s(:args, s(:lvasgn, :bar, s(:nil))),
                               s(:nil))
       end
 
@@ -40,8 +40,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args,
-                                s(:lasgn, :bar, s(:int, 1)),
-                                s(:lasgn, :baz, s(:int, 2))),
+                                s(:lvasgn, :bar, s(:int, 1)),
+                                s(:lvasgn, :baz, s(:int, 2))),
                               s(:nil))
       end
 
@@ -89,7 +89,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args,
-                                s(:lasgn, :bar, s(:int, 1)),
+                                s(:lvasgn, :bar, s(:int, 1)),
                                 :"&baz"),
                               s(:nil))
       end
@@ -99,7 +99,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args,
-                                s(:lasgn, :bar, s(:int, 1)),
+                                s(:lvasgn, :bar, s(:int, 1)),
                                 :baz),
                               s(:nil))
       end
@@ -117,7 +117,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args,
-                                s(:lasgn, :bar, s(:int, 1)),
+                                s(:lvasgn, :bar, s(:int, 1)),
                                 :"*baz"),
                               s(:nil))
       end
@@ -127,7 +127,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args,
-                                s(:lasgn, :bar, s(:int, 1)),
+                                s(:lvasgn, :bar, s(:int, 1)),
                                 :"*baz", :qux, :quuz),
                               s(:nil))
       end

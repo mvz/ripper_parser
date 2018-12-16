@@ -112,7 +112,7 @@ module RipperParser
               args = item[1]
               args.shift
               s(:masgn, *convert_special_args(args))
-            when :lasgn
+            when :lvasgn
               if item.length == 2
                 item[1]
               else

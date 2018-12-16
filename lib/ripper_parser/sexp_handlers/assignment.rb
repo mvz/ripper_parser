@@ -160,7 +160,7 @@ module RipperParser
       ASSIGNMENT_SUB_TYPE_MAP = {
         ivar: :iasgn,
         const: :casgn,
-        lvar: :lasgn,
+        lvar: :lvasgn,
         cvar: :cvdecl,
         gvar: :gasgn
       }.freeze
