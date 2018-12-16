@@ -119,7 +119,7 @@ module RipperParser
 
     def process_top_const_ref(exp)
       _, ref = exp.shift 2
-      s(:colon3, extract_node_symbol(ref))
+      s(:cbase, extract_node_symbol(ref))
     end
 
     def process_top_const_field(exp)

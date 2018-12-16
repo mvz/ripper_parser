@@ -308,7 +308,7 @@ describe RipperParser::Parser do
     describe 'for constant lookups' do
       it 'works when explicitely starting from the root namespace' do
         '::Foo'.
-          must_be_parsed_as s(:colon3, :Foo)
+          must_be_parsed_as s(:cbase, :Foo)
       end
 
       it 'works with a three-level constant lookup' do
