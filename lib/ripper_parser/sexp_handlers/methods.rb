@@ -87,9 +87,9 @@ module RipperParser
       end
 
       SPECIAL_ARG_MARKER = {
-        splat: '*',
-        dsplat: '**',
-        blockarg: '&'
+        splat: :restarg,
+        dsplat: :kwrestarg,
+        blockarg: :blockarg
       }.freeze
 
       def convert_special_args(args)
@@ -99,7 +99,7 @@ module RipperParser
           else
             case item.sexp_type
             when :lvar
-              item[1]
+              s(:arg, item[1])
             when :masgn
               args = item[1]
               args.shift
@@ -111,9 +111,13 @@ module RipperParser
                 item
               end
             when *SPECIAL_ARG_MARKER.keys
-              marker = SPECIAL_ARG_MARKER[item.sexp_type]
+              type = SPECIAL_ARG_MARKER[item.sexp_type]
               name = extract_node_symbol item[1]
-              :"#{marker}#{name}"
+              if name
+                s(type, name)
+              else
+                s(type)
+              end
             else
               item
             end
@@ -122,8 +126,8 @@ module RipperParser
       end
 
       def kwrest_param(params)
-        found = params.find { |param| param.to_s =~ /^\*\*(.*)/ }
-        Regexp.last_match[1].to_sym if found
+        found = params.sexp_body.find { |param| param.sexp_type == :kwrestarg }
+        found[1] if found
       end
 
       def with_kwrest(kwrest)

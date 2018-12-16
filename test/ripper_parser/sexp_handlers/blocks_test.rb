@@ -51,21 +51,21 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
                               s(:args,
-                                s(:masgn, :bar, :"*baz")), nil)
+                                s(:masgn, :bar, s(:restarg, :baz))), nil)
       end
 
       specify do
         'foo do |bar,*| end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar, :"*"), nil)
+                              s(:args, s(:arg, :bar), s(:restarg)), nil)
       end
 
       specify do
         'foo do |bar, &baz| end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar, :"&baz"), nil)
+                              s(:args, s(:arg, :bar), s(:blockarg, :baz)), nil)
       end
 
       it 'handles absent parameter specs' do
@@ -88,7 +88,7 @@ describe RipperParser::Parser do
         'foo do |bar, | end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar), nil)
+                              s(:args, s(:arg, :bar)), nil)
       end
 
       it 'works with zero arguments' do
@@ -102,28 +102,28 @@ describe RipperParser::Parser do
         'foo do |bar|; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar), nil)
+                              s(:args, s(:arg, :bar)), nil)
       end
 
       it 'works with multiple arguments' do
         'foo do |bar, baz|; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar, :baz), nil)
+                              s(:args, s(:arg, :bar), s(:arg, :baz)), nil)
       end
 
       it 'works with a single splat argument' do
         'foo do |*bar|; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :"*bar"), nil)
+                              s(:args, s(:restarg, :bar)), nil)
       end
 
       it 'works with a combination of regular arguments and a splat argument' do
         'foo do |bar, *baz|; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, :bar, :"*baz"), nil)
+                              s(:args, s(:arg, :bar), s(:restarg, :baz)), nil)
       end
     end
 
@@ -758,7 +758,7 @@ describe RipperParser::Parser do
         '->(foo) { bar }'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :lambda),
-                              s(:args, :foo),
+                              s(:args, s(:arg, :foo)),
                               s(:send, nil, :bar))
       end
 
@@ -782,14 +782,14 @@ describe RipperParser::Parser do
         '->(foo) { }'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :lambda),
-                              s(:args, :foo), nil)
+                              s(:args, s(:arg, :foo)), nil)
       end
 
       it 'works when there are several statements in the body' do
         '->(foo) { bar; baz }'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :lambda),
-                              s(:args, :foo),
+                              s(:args, s(:arg, :foo)),
                               s(:block,
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)))

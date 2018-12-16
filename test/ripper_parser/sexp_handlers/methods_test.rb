@@ -7,7 +7,7 @@ describe RipperParser::Parser do
         'def foo(**bar); bar; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :"**bar"),
+                              s(:args, s(:kwrestarg, :bar)),
                               s(:lvar, :bar))
       end
 
@@ -15,7 +15,7 @@ describe RipperParser::Parser do
         'def foo(bar, **baz); baz; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :bar, :"**baz"),
+                              s(:args, s(:arg, :bar), s(:kwrestarg, :baz)),
                               s(:lvar, :baz))
       end
 
@@ -23,7 +23,7 @@ describe RipperParser::Parser do
         'def foo(**bar, &baz); bar; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :"**bar", :"&baz"),
+                              s(:args, s(:kwrestarg, :bar), s(:blockarg, :baz)),
                               s(:lvar, :bar))
       end
 
@@ -47,24 +47,25 @@ describe RipperParser::Parser do
 
       it 'works with parentheses around the parameter list' do
         'def foo(bar); end'.
-          must_be_parsed_as s(:def, :foo, s(:args, :bar), s(:nil))
+          must_be_parsed_as s(:def, :foo, s(:args, s(:arg, :bar)), s(:nil))
       end
 
       it 'works with a simple splat' do
         'def foo *bar; end'.
-          must_be_parsed_as s(:def, :foo, s(:args, :"*bar"), s(:nil))
+          must_be_parsed_as s(:def, :foo, s(:args, s(:restarg, :bar)), s(:nil))
       end
 
       it 'works with a regular argument plus splat' do
         'def foo bar, *baz; end'.
-          must_be_parsed_as s(:def, :foo, s(:args, :bar, :"*baz"), s(:nil))
+          must_be_parsed_as s(:def, :foo,
+                              s(:args, s(:arg, :bar), s(:restarg, :baz)), s(:nil))
       end
 
       it 'works with a nameless splat' do
         'def foo *; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :"*"),
+                              s(:args, s(:restarg)),
                               s(:nil))
       end
 
@@ -72,7 +73,7 @@ describe RipperParser::Parser do
         'def foo &bar; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :"&bar"),
+                              s(:args, s(:blockarg, :bar)),
                               s(:nil))
       end
 
@@ -80,7 +81,7 @@ describe RipperParser::Parser do
         'def foo bar, &baz; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :bar, :"&baz"),
+                              s(:args, s(:arg, :bar), s(:blockarg, :baz)),
                               s(:nil))
       end
 
@@ -90,7 +91,7 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
-                                :"&baz"),
+                                s(:blockarg, :baz)),
                               s(:nil))
       end
 
@@ -100,7 +101,7 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
-                                :baz),
+                                s(:arg, :baz)),
                               s(:nil))
       end
 
@@ -108,7 +109,7 @@ describe RipperParser::Parser do
         'def foo *bar, &baz; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :"*bar", :"&baz"),
+                              s(:args, s(:restarg, :bar), s(:blockarg, :baz)),
                               s(:nil))
       end
 
@@ -118,7 +119,7 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
-                                :"*baz"),
+                                s(:restarg, :baz)),
                               s(:nil))
       end
 
@@ -128,7 +129,9 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
-                                :"*baz", :qux, :quuz),
+                                s(:restarg, :baz),
+                                s(:arg, :qux),
+                                s(:arg, :quuz)),
                               s(:nil))
       end
 
@@ -154,7 +157,7 @@ describe RipperParser::Parser do
         'def foo **bar; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, :'**bar'),
+                              s(:args, s(:kwrestarg, :bar)),
                               s(:nil))
       end
 
