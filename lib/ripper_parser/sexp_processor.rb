@@ -105,7 +105,7 @@ module RipperParser
 
     def process_const_path_ref(exp)
       _, left, right = exp.shift 3
-      s(:colon2, process(left), extract_node_symbol(right))
+      s(:const, process(left), extract_node_symbol(right))
     end
 
     def process_const_path_field(exp)
@@ -211,7 +211,7 @@ module RipperParser
       sym, pos = extract_node_symbol_with_position(exp)
       result = case sym
                when :__ENCODING__
-                 s(:colon2, s(:const, nil, :Encoding), :UTF_8)
+                 s(:const, s(:const, nil, :Encoding), :UTF_8)
                when :__FILE__
                  s(:str, @filename)
                when :__LINE__

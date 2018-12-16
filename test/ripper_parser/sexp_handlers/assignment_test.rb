@@ -6,7 +6,7 @@ describe RipperParser::Parser do
       it 'works when assigning to a namespaced constant' do
         'Foo::Bar = baz'.
           must_be_parsed_as s(:casgn,
-                              s(:colon2, s(:const, nil, :Foo), :Bar),
+                              s(:const, s(:const, nil, :Foo), :Bar),
                               s(:send, nil, :baz))
       end
 

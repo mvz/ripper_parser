@@ -18,7 +18,7 @@ describe RipperParser::Parser do
       it 'works with a namespaced class name' do
         'class Foo::Bar; end'.
           must_be_parsed_as s(:class,
-                              s(:colon2, s(:const, nil, :Foo), :Bar),
+                              s(:const, s(:const, nil, :Foo), :Bar),
                               nil)
       end
 
@@ -36,7 +36,7 @@ describe RipperParser::Parser do
       it 'works with a namespaced module name' do
         'module Foo::Bar; end'.
           must_be_parsed_as s(:module,
-                              s(:colon2, s(:const, nil, :Foo), :Bar))
+                              s(:const, s(:const, nil, :Foo), :Bar))
       end
     end
 
@@ -257,7 +257,7 @@ describe RipperParser::Parser do
     describe 'for the __ENCODING__ keyword' do
       it 'evaluates to the equivalent of Encoding::UTF_8' do
         '__ENCODING__'.
-          must_be_parsed_as s(:colon2, s(:const, nil, :Encoding), :UTF_8)
+          must_be_parsed_as s(:const, s(:const, nil, :Encoding), :UTF_8)
       end
     end
 
@@ -313,13 +313,13 @@ describe RipperParser::Parser do
 
       it 'works with a three-level constant lookup' do
         'Foo::Bar::Baz'.
-          must_be_parsed_as s(:colon2,
-                              s(:colon2, s(:const, nil, :Foo), :Bar),
+          must_be_parsed_as s(:const,
+                              s(:const, s(:const, nil, :Foo), :Bar),
                               :Baz)
       end
 
       it 'works looking up a constant in a non-constant' do
-        'foo::Bar'.must_be_parsed_as s(:colon2,
+        'foo::Bar'.must_be_parsed_as s(:const,
                                        s(:send, nil, :foo),
                                        :Bar)
       end
