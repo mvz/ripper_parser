@@ -15,7 +15,7 @@ module RipperParser
         coll = process(coll)
         idx = process(idx) || s(:arglist)
         idx.shift
-        s(:call, coll, :[], *idx)
+        s(:send, coll, :[], *idx)
       end
     end
   end

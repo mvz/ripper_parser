@@ -29,9 +29,9 @@ module RipperParser
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
         elsif SHIFT_OPERATORS.include? op
-          s(:call, unwrap_begin(process(left)), op, unwrap_begin(process(right)))
+          s(:send, unwrap_begin(process(left)), op, unwrap_begin(process(right)))
         else
-          s(:call, process(left), op, process(right))
+          s(:send, process(left), op, process(right))
         end
       end
 
@@ -39,7 +39,7 @@ module RipperParser
         _, op, arg = exp.shift 3
         arg = process(arg)
         op = UNARY_OPERATOR_MAP[op] || op
-        s(:call, arg, op)
+        s(:send, arg, op)
       end
 
       def process_dot2(exp)
@@ -85,7 +85,7 @@ module RipperParser
         elsif right.sexp_type == :regexp_literal
           s(:match3, process(right), process(left))
         else
-          s(:call, process(left), operator, process(right))
+          s(:send, process(left), operator, process(right))
         end
       end
 

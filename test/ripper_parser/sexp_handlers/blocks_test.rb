@@ -145,14 +145,14 @@ describe RipperParser::Parser do
 
       it 'keeps :begin for the argument of a unary operator' do
         '- begin; foo; end'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               s(:begin, s(:send, nil, :foo)),
                               :-@)
       end
 
       it 'keeps :begin for the first argument of a binary operator' do
         'begin; bar; end + foo'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               s(:begin, s(:send, nil, :bar)),
                               :+,
                               s(:send, nil, :foo))
@@ -160,7 +160,7 @@ describe RipperParser::Parser do
 
       it 'keeps :begin for the second argument of a binary operator' do
         'foo + begin; bar; end'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :+,
                               s(:begin, s(:send, nil, :bar)))
@@ -182,7 +182,7 @@ describe RipperParser::Parser do
 
       it 'does not keep :begin for the first argument of a shift operator' do
         'begin; bar; end << foo'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               s(:send, nil, :bar),
                               :<<,
                               s(:send, nil, :foo))
@@ -190,7 +190,7 @@ describe RipperParser::Parser do
 
       it 'does not keep :begin for the second argument of a shift operator' do
         'foo >> begin; bar; end'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :>>,
                               s(:send, nil, :bar))
@@ -238,7 +238,7 @@ describe RipperParser::Parser do
 
       it 'does not keep :begin for a method receiver' do
         'begin; foo; end.bar'.
-          must_be_parsed_as s(:send, s(:call, nil, :foo), :bar)
+          must_be_parsed_as s(:send, s(:send, nil, :foo), :bar)
       end
     end
 
@@ -464,19 +464,19 @@ describe RipperParser::Parser do
         'foo = bar(baz) rescue qux'.
           must_be_parsed_as s(:lasgn, :foo,
                               s(:rescue,
-                                s(:send, nil, :bar, s(:call, nil, :baz)),
+                                s(:send, nil, :bar, s(:send, nil, :baz)),
                                 s(:resbody, s(:array), s(:send, nil, :qux))))
       end
 
       it 'works with assignment with argument without brackets' do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
-                       s(:lasgn, :foo, s(:send, nil, :bar, s(:call, nil, :baz))),
+                       s(:lasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
                        s(:resbody, s(:array), s(:send, nil, :qux)))
                    else
                      s(:lasgn, :foo,
                        s(:rescue,
-                         s(:send, nil, :bar, s(:call, nil, :baz)),
+                         s(:send, nil, :bar, s(:send, nil, :baz)),
                          s(:resbody, s(:array), s(:send, nil, :qux))))
                    end
         'foo = bar baz rescue qux'.must_be_parsed_as expected
@@ -485,12 +485,12 @@ describe RipperParser::Parser do
       it 'works with assignment with class method call with argument without brackets' do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
-                       s(:lasgn, :foo, s(:send, s(:const, nil, :Bar), :baz, s(:call, nil, :qux))),
+                       s(:lasgn, :foo, s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
                        s(:resbody, s(:array), s(:send, nil, :quuz)))
                    else
                      s(:lasgn, :foo,
                        s(:rescue,
-                         s(:send, s(:const, nil, :Bar), :baz, s(:call, nil, :qux)),
+                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
                          s(:resbody, s(:array), s(:send, nil, :quuz))))
                    end
         'foo = Bar.baz qux rescue quuz'.
@@ -525,7 +525,7 @@ describe RipperParser::Parser do
           'foo = bar(baz) rescue qux'.
             must_be_parsed_as s(:lasgn, :foo,
                                 s(:rescue,
-                                  s(:send, nil, :bar, s(:call, nil, :baz)),
+                                  s(:send, nil, :bar, s(:send, nil, :baz)),
                                   s(:resbody, s(:array), s(:send, nil, :qux)))),
                               extra_compatible: true
         end
@@ -533,7 +533,7 @@ describe RipperParser::Parser do
         it 'works with assignment with argument without brackets' do
           'foo = bar baz rescue qux'.
             must_be_parsed_as s(:rescue,
-                                s(:lasgn, :foo, s(:send, nil, :bar, s(:call, nil, :baz))),
+                                s(:lasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
                                 s(:resbody, s(:array), s(:send, nil, :qux))),
                               extra_compatible: true
         end
@@ -543,7 +543,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:rescue,
                                 s(:lasgn,
                                   :foo,
-                                  s(:send, s(:const, nil, :Bar), :baz, s(:call, nil, :qux))),
+                                  s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
                                 s(:resbody, s(:array), s(:send, nil, :quuz))),
                               extra_compatible: true
         end

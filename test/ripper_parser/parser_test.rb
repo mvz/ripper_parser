@@ -55,7 +55,7 @@ describe RipperParser::Parser do
       it 'works with one argument' do
         'return foo'.
           must_be_parsed_as s(:return,
-                              s(:call, nil, :foo))
+                              s(:send, nil, :foo))
       end
 
       it 'works with a splat argument' do
@@ -63,38 +63,38 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:return,
                               s(:svalue,
                                 s(:splat,
-                                  s(:call, nil, :foo))))
+                                  s(:send, nil, :foo))))
       end
 
       it 'works with multiple arguments' do
         'return foo, bar'.
           must_be_parsed_as s(:return,
                               s(:array,
-                                s(:call, nil, :foo),
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)))
       end
 
       it 'works with a regular argument and a splat argument' do
         'return foo, *bar'.
           must_be_parsed_as s(:return,
                               s(:array,
-                                s(:call, nil, :foo),
+                                s(:send, nil, :foo),
                                 s(:splat,
-                                  s(:call, nil, :bar))))
+                                  s(:send, nil, :bar))))
       end
 
       it 'works with a function call with parentheses' do
         'return foo(bar)'.
           must_be_parsed_as s(:return,
-                              s(:call, nil, :foo,
-                                s(:call, nil, :bar)))
+                              s(:send, nil, :foo,
+                                s(:send, nil, :bar)))
       end
 
       it 'works with a function call without parentheses' do
         'return foo bar'.
           must_be_parsed_as s(:return,
-                              s(:call, nil, :foo,
-                                s(:call, nil, :bar)))
+                              s(:send, nil, :foo,
+                                s(:send, nil, :bar)))
       end
     end
 
@@ -102,23 +102,23 @@ describe RipperParser::Parser do
       it 'works with do' do
         'for foo in bar do; baz; end'.
           must_be_parsed_as s(:for,
-                              s(:call, nil, :bar),
+                              s(:send, nil, :bar),
                               s(:lasgn, :foo),
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
 
       it 'works without do' do
         'for foo in bar; baz; end'.
           must_be_parsed_as s(:for,
-                              s(:call, nil, :bar),
+                              s(:send, nil, :bar),
                               s(:lasgn, :foo),
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
 
       it 'works with an empty body' do
         'for foo in bar; end'.
           must_be_parsed_as s(:for,
-                              s(:call, nil, :bar),
+                              s(:send, nil, :bar),
                               s(:lasgn, :foo))
       end
     end
@@ -131,68 +131,68 @@ describe RipperParser::Parser do
 
       it 'works with one statement' do
         'begin; foo; end'.
-          must_be_parsed_as s(:call, nil, :foo)
+          must_be_parsed_as s(:send, nil, :foo)
       end
 
       it 'works with multiple statements' do
         'begin; foo; bar; end'.
           must_be_parsed_as s(:block,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
     end
 
     describe 'for arguments' do
       it 'works for a simple case with splat' do
         'foo *bar'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               nil,
                               :foo,
-                              s(:splat, s(:call, nil, :bar)))
+                              s(:splat, s(:send, nil, :bar)))
       end
 
       it 'works for a multi-argument case with splat' do
         'foo bar, *baz'.
-          must_be_parsed_as s(:call,
+          must_be_parsed_as s(:send,
                               nil,
                               :foo,
-                              s(:call, nil, :bar),
-                              s(:splat, s(:call, nil, :baz)))
+                              s(:send, nil, :bar),
+                              s(:splat, s(:send, nil, :baz)))
       end
 
       it 'works for a simple case passing a block' do
         'foo &bar'.
-          must_be_parsed_as s(:call, nil, :foo,
+          must_be_parsed_as s(:send, nil, :foo,
                               s(:block_pass,
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :bar)))
       end
 
       it 'works for a bare hash' do
         'foo bar => baz'.
-          must_be_parsed_as s(:call, nil, :foo,
+          must_be_parsed_as s(:send, nil, :foo,
                               s(:hash,
-                                s(:call, nil, :bar),
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
     end
 
     describe 'for collection indexing' do
       it 'works in the simple case' do
         'foo[bar]'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :[],
-                              s(:call, nil, :bar))
+                              s(:send, nil, :bar))
       end
 
       it 'works without any indexes' do
-        'foo[]'.must_be_parsed_as s(:call, s(:call, nil, :foo),
+        'foo[]'.must_be_parsed_as s(:send, s(:send, nil, :foo),
                                     :[])
       end
 
       it 'works with self[]' do
-        'self[foo]'.must_be_parsed_as s(:call, s(:self), :[],
-                                        s(:call, nil, :foo))
+        'self[foo]'.must_be_parsed_as s(:send, s(:self), :[],
+                                        s(:send, nil, :foo))
       end
     end
 
@@ -209,47 +209,47 @@ describe RipperParser::Parser do
 
       it 'works with one argument and no parentheses' do
         'yield foo'.
-          must_be_parsed_as s(:yield, s(:call, nil, :foo))
+          must_be_parsed_as s(:yield, s(:send, nil, :foo))
       end
 
       it 'works with one argument and parentheses' do
         'yield(foo)'.
-          must_be_parsed_as s(:yield, s(:call, nil, :foo))
+          must_be_parsed_as s(:yield, s(:send, nil, :foo))
       end
 
       it 'works with multiple arguments and no parentheses' do
         'yield foo, bar'.
           must_be_parsed_as s(:yield,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'works with multiple arguments and parentheses' do
         'yield(foo, bar)'.
           must_be_parsed_as s(:yield,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'works with splat' do
         'yield foo, *bar'.
           must_be_parsed_as s(:yield,
-                              s(:call, nil, :foo),
-                              s(:splat, s(:call, nil, :bar)))
+                              s(:send, nil, :foo),
+                              s(:splat, s(:send, nil, :bar)))
       end
 
       it 'works with a function call with parentheses' do
         'yield foo(bar)'.
           must_be_parsed_as s(:yield,
-                              s(:call, nil, :foo,
-                                s(:call, nil, :bar)))
+                              s(:send, nil, :foo,
+                                s(:send, nil, :bar)))
       end
 
       it 'works with a function call without parentheses' do
         'yield foo bar'.
           must_be_parsed_as s(:yield,
-                              s(:call, nil, :foo,
-                                s(:call, nil, :bar)))
+                              s(:send, nil, :foo,
+                                s(:send, nil, :bar)))
       end
     end
 
@@ -288,14 +288,14 @@ describe RipperParser::Parser do
     describe 'for the END keyword' do
       it 'converts to a :postexe iterator' do
         'END { foo }'.
-          must_be_parsed_as s(:iter, s(:postexe), 0, s(:call, nil, :foo))
+          must_be_parsed_as s(:iter, s(:postexe), 0, s(:send, nil, :foo))
       end
     end
 
     describe 'for the BEGIN keyword' do
       it 'converts to a :preexe iterator' do
         'BEGIN { foo }'.
-          must_be_parsed_as s(:iter, s(:preexe), s(:args), s(:call, nil, :foo))
+          must_be_parsed_as s(:iter, s(:preexe), s(:args), s(:send, nil, :foo))
       end
 
       it 'works with an empty block' do
@@ -319,7 +319,7 @@ describe RipperParser::Parser do
 
       it 'works looking up a constant in a non-constant' do
         'foo::Bar'.must_be_parsed_as s(:colon2,
-                                       s(:call, nil, :foo),
+                                       s(:send, nil, :foo),
                                        :Bar)
       end
     end
@@ -359,20 +359,20 @@ describe RipperParser::Parser do
         'foo += bar'.
           must_be_parsed_as s(:lasgn,
                               :foo,
-                              s(:call,
+                              s(:send,
                                 s(:lvar, :foo),
                                 :+,
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :bar)))
       end
 
       it 'works with -=' do
         'foo -= bar'.
           must_be_parsed_as s(:lasgn,
                               :foo,
-                              s(:call,
+                              s(:send,
                                 s(:lvar, :foo),
                                 :-,
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :bar)))
       end
 
       it 'works with ||=' do
@@ -380,53 +380,53 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:op_asgn_or,
                               s(:lvar, :foo),
                               s(:lasgn, :foo,
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :bar)))
       end
 
       it 'works when assigning to an instance variable' do
         '@foo += bar'.
           must_be_parsed_as s(:iasgn,
                               :@foo,
-                              s(:call,
+                              s(:send,
                                 s(:ivar, :@foo),
                                 :+,
-                                s(:call, nil, :bar)))
+                                s(:send, nil, :bar)))
       end
 
       it 'works when assigning to a collection element' do
         'foo[bar] += baz'.
           must_be_parsed_as s(:op_asgn1,
-                              s(:call, nil, :foo),
-                              s(:arglist, s(:call, nil, :bar)),
+                              s(:send, nil, :foo),
+                              s(:arglist, s(:send, nil, :bar)),
                               :+,
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
 
       it 'works with ||= when assigning to a collection element' do
         'foo[bar] ||= baz'.
           must_be_parsed_as s(:op_asgn1,
-                              s(:call, nil, :foo),
-                              s(:arglist, s(:call, nil, :bar)),
+                              s(:send, nil, :foo),
+                              s(:arglist, s(:send, nil, :bar)),
                               :"||",
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
 
       it 'works when assigning to an attribute' do
         'foo.bar += baz'.
           must_be_parsed_as s(:op_asgn2,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               :bar=,
                               :+,
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
 
       it 'works with ||= when assigning to an attribute' do
         'foo.bar ||= baz'.
           must_be_parsed_as s(:op_asgn2,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               :bar=,
                               :"||",
-                              s(:call, nil, :baz))
+                              s(:send, nil, :baz))
       end
     end
 
@@ -436,8 +436,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
                               s(:array,
-                                s(:call, nil, :baz),
-                                s(:call, nil, :qux)))
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
       end
 
       it 'works with a single item on the right-hand side' do
@@ -445,7 +445,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
                               s(:to_ary,
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :baz)))
       end
 
       it 'works with left-hand splat' do
@@ -453,15 +453,15 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:array, s(:lasgn, :foo), s(:splat, s(:lasgn, :bar))),
                               s(:array,
-                                s(:call, nil, :baz),
-                                s(:call, nil, :qux)))
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
       end
 
       it 'works with parentheses around the left-hand side' do
         '(foo, bar) = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array, s(:lasgn, :foo), s(:lasgn, :bar)),
-                              s(:to_ary, s(:call, nil, :baz)))
+                              s(:to_ary, s(:send, nil, :baz)))
       end
 
       it 'works with complex destructuring' do
@@ -471,7 +471,7 @@ describe RipperParser::Parser do
                                 s(:lasgn, :foo),
                                 s(:masgn,
                                   s(:array, s(:lasgn, :bar), s(:lasgn, :baz)))),
-                              s(:to_ary, s(:call, nil, :qux)))
+                              s(:to_ary, s(:send, nil, :qux)))
       end
 
       it 'works with complex destructuring of the value' do
@@ -482,31 +482,31 @@ describe RipperParser::Parser do
                                 s(:masgn, s(:array, s(:lasgn, :bar), s(:lasgn, :baz)))),
                               s(:to_ary,
                                 s(:array,
-                                  s(:call, nil, :qux),
-                                  s(:array, s(:call, nil, :quz), s(:call, nil, :quuz)))))
+                                  s(:send, nil, :qux),
+                                  s(:array, s(:send, nil, :quz), s(:send, nil, :quuz)))))
       end
 
       it 'works with instance variables' do
         '@foo, @bar = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array, s(:iasgn, :@foo), s(:iasgn, :@bar)),
-                              s(:to_ary, s(:call, nil, :baz)))
+                              s(:to_ary, s(:send, nil, :baz)))
       end
 
       it 'works with class variables' do
         '@@foo, @@bar = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array, s(:cvdecl, :@@foo), s(:cvdecl, :@@bar)),
-                              s(:to_ary, s(:call, nil, :baz)))
+                              s(:to_ary, s(:send, nil, :baz)))
       end
 
       it 'works with attributes' do
         'foo.bar, foo.baz = qux'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:attrasgn, s(:call, nil, :foo), :bar=),
-                                s(:attrasgn, s(:call, nil, :foo), :baz=)),
-                              s(:to_ary, s(:call, nil, :qux)))
+                                s(:attrasgn, s(:send, nil, :foo), :bar=),
+                                s(:attrasgn, s(:send, nil, :foo), :baz=)),
+                              s(:to_ary, s(:send, nil, :qux)))
       end
 
       it 'works with collection elements' do
@@ -514,17 +514,17 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:array,
                                 s(:attrasgn,
-                                  s(:call, nil, :foo), :[]=, s(:lit, 1)),
+                                  s(:send, nil, :foo), :[]=, s(:lit, 1)),
                                 s(:attrasgn,
-                                  s(:call, nil, :bar), :[]=, s(:lit, 2))),
-                              s(:to_ary, s(:call, nil, :baz)))
+                                  s(:send, nil, :bar), :[]=, s(:lit, 2))),
+                              s(:to_ary, s(:send, nil, :baz)))
       end
 
       it 'works with constants' do
         'Foo, Bar = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array, s(:casgn, nil, :Foo), s(:casgn, nil, :Bar)),
-                              s(:to_ary, s(:call, nil, :baz)))
+                              s(:to_ary, s(:send, nil, :baz)))
       end
 
       it 'works with instance variables and splat' do
@@ -534,80 +534,80 @@ describe RipperParser::Parser do
                                 s(:iasgn, :@foo),
                                 s(:splat, s(:iasgn, :@bar))),
                               s(:to_ary,
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :baz)))
       end
     end
 
     describe 'for operators' do
       it 'handles :!=' do
         'foo != bar'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :!=,
-                              s(:call, nil, :bar))
+                              s(:send, nil, :bar))
       end
 
       it 'handles :=~ with two non-literals' do
         'foo =~ bar'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :=~,
-                              s(:call, nil, :bar))
+                              s(:send, nil, :bar))
       end
 
       it 'handles :=~ with literal regexp on the left hand side' do
         '/foo/ =~ bar'.
           must_be_parsed_as s(:match2,
                               s(:lit, /foo/),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :bar))
       end
 
       it 'handles :=~ with literal regexp on the right hand side' do
         'foo =~ /bar/'.
           must_be_parsed_as s(:match3,
                               s(:lit, /bar/),
-                              s(:call, nil, :foo))
+                              s(:send, nil, :foo))
       end
 
       it 'handles unary !' do
         '!foo'.
-          must_be_parsed_as s(:call, s(:call, nil, :foo), :!)
+          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it 'converts :not to :!' do
         'not foo'.
-          must_be_parsed_as s(:call, s(:call, nil, :foo), :!)
+          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it 'handles unary ! with a number literal' do
         '!1'.
-          must_be_parsed_as s(:call, s(:lit, 1), :!)
+          must_be_parsed_as s(:send, s(:lit, 1), :!)
       end
 
       it 'handles the ternary operator' do
         'foo ? bar : baz'.
           must_be_parsed_as s(:if,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar),
-                              s(:call, nil, :baz))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar),
+                              s(:send, nil, :baz))
       end
     end
 
     describe 'for expressions' do
       it 'handles assignment inside binary operator expressions' do
         'foo + (bar = baz)'.
-          must_be_parsed_as s(:call,
-                              s(:call, nil, :foo),
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
                               :+,
                               s(:lasgn,
                                 :bar,
-                                s(:call, nil, :baz)))
+                                s(:send, nil, :baz)))
       end
 
       it 'handles assignment inside unary operator expressions' do
         '+(foo = bar)'.
-          must_be_parsed_as s(:call,
-                              s(:lasgn, :foo, s(:call, nil, :bar)),
+          must_be_parsed_as s(:send,
+                              s(:lasgn, :foo, s(:send, nil, :bar)),
                               :+@)
       end
     end
@@ -626,7 +626,7 @@ describe RipperParser::Parser do
       it 'handles comments for methods with explicit receiver' do
         result = parser.parse "# Foo\ndef foo.bar; end"
         result.must_equal s(:defs,
-                            s(:call, nil, :foo),
+                            s(:send, nil, :foo),
                             :bar,
                             s(:args),
                             s(:nil))
@@ -670,8 +670,8 @@ describe RipperParser::Parser do
         result.must_equal s(:class,
                             s(:const, nil, :Foo),
                             nil,
-                            s(:defn, :foo, s(:args), s(:call, nil, :bar)),
-                            s(:defn, :bar, s(:args), s(:call, nil, :baz)))
+                            s(:defn, :foo, s(:args), s(:send, nil, :bar)),
+                            s(:defn, :bar, s(:args), s(:send, nil, :baz)))
         result.comments.must_equal "# Foo\n"
         result[3].comments.must_equal "# foo\n"
         result[4].comments.must_equal "# bar\n"
@@ -692,7 +692,7 @@ describe RipperParser::Parser do
                             :bar,
                             s(:args),
                             s(:sclass, s(:self),
-                              s(:call, nil, :baz)))
+                              s(:send, nil, :baz)))
         result.comments.must_equal "# Foo\n"
       end
     end
@@ -824,9 +824,9 @@ describe RipperParser::Parser do
       it 'assigns line numbers to nested sexps without their own line numbers' do
         result = parser.parse "foo(bar) do\nnext baz\nend\n"
         result.must_equal s(:iter,
-                            s(:call, nil, :foo, s(:call, nil, :bar)),
+                            s(:send, nil, :foo, s(:send, nil, :bar)),
                             0,
-                            s(:next, s(:call, nil, :baz)))
+                            s(:next, s(:send, nil, :baz)))
         arglist = result[1][3]
         block = result[3]
         nums = [arglist.line, block.line]
@@ -837,8 +837,8 @@ describe RipperParser::Parser do
         it 'shifts all line numbers as appropriate' do
           result = parser.parse "foo\nbar\n", '(string)', 3
           result.must_equal s(:block,
-                              s(:call, nil, :foo),
-                              s(:call, nil, :bar))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
           result.line.must_equal 3
           result[1].line.must_equal 3
           result[2].line.must_equal 4

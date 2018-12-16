@@ -141,7 +141,7 @@ module RipperParser
         old_type = args.sexp_type
         args = convert_special_args(process(args))
         args = 0 if args == s(:args) && old_type == :params
-        make_iter(s(:call, nil, :lambda),
+        make_iter(s(:send, nil, :lambda),
                   args,
                   safe_unwrap_void_stmt(process(statements)))
       end

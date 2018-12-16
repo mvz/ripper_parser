@@ -169,7 +169,7 @@ describe RipperParser::Parser do
       it 'works with empty body' do
         'def foo.bar; end'.
           must_be_parsed_as s(:defs,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               :bar,
                               s(:args),
                               s(:nil))
@@ -178,11 +178,11 @@ describe RipperParser::Parser do
       it 'works with a body with multiple statements' do
         'def foo.bar; baz; qux; end'.
           must_be_parsed_as s(:defs,
-                              s(:call, nil, :foo),
+                              s(:send, nil, :foo),
                               :bar,
                               s(:args),
-                              s(:call, nil, :baz),
-                              s(:call, nil, :qux))
+                              s(:send, nil, :baz),
+                              s(:send, nil, :qux))
       end
     end
 
