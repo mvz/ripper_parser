@@ -505,8 +505,8 @@ describe RipperParser::Parser do
         'foo.bar, foo.baz = qux'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:attrasgn, s(:send, nil, :foo), :bar=),
-                                s(:attrasgn, s(:send, nil, :foo), :baz=)),
+                                s(:send, s(:send, nil, :foo), :bar=),
+                                s(:send, s(:send, nil, :foo), :baz=)),
                               s(:to_ary, s(:send, nil, :qux)))
       end
 
@@ -514,10 +514,10 @@ describe RipperParser::Parser do
         'foo[1], bar[2] = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:attrasgn,
-                                  s(:send, nil, :foo), :[]=, s(:int, 1)),
-                                s(:attrasgn,
-                                  s(:send, nil, :bar), :[]=, s(:int, 2))),
+                                s(:indexasgn,
+                                  s(:send, nil, :foo), s(:int, 1)),
+                                s(:indexasgn,
+                                  s(:send, nil, :bar), s(:int, 2))),
                               s(:to_ary, s(:send, nil, :baz)))
       end
 

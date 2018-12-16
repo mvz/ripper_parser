@@ -148,10 +148,10 @@ module RipperParser
           _, arr, arglist = lvalue
           arglist << value
           arglist.shift
-          s(:attrasgn, arr, :[]=, *arglist)
+          s(:indexasgn, arr, *arglist)
         when :field
           _, obj, _, (_, field) = lvalue
-          s(:attrasgn, obj, :"#{field}=", value)
+          s(:send, obj, :"#{field}=", value)
         else
           create_assignment_sub_type lvalue, value
         end

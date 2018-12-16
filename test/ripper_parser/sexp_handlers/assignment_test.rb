@@ -89,16 +89,15 @@ describe RipperParser::Parser do
 
       it 'works when assigning to a collection element' do
         'foo[bar] = baz'.
-          must_be_parsed_as s(:attrasgn,
+          must_be_parsed_as s(:indexasgn,
                               s(:send, nil, :foo),
-                              :[]=,
                               s(:send, nil, :bar),
                               s(:send, nil, :baz))
       end
 
       it 'works when assigning to an attribute' do
         'foo.bar = baz'.
-          must_be_parsed_as s(:attrasgn,
+          must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :bar=,
                               s(:send, nil, :baz))
@@ -187,9 +186,8 @@ describe RipperParser::Parser do
     describe 'for assignment to a collection element' do
       it 'handles multiple indices' do
         'foo[bar, baz] = qux'.
-          must_be_parsed_as s(:attrasgn,
+          must_be_parsed_as s(:indexasgn,
                               s(:send, nil, :foo),
-                              :[]=,
                               s(:send, nil, :bar),
                               s(:send, nil, :baz),
                               s(:send, nil, :qux))
