@@ -46,22 +46,14 @@ module RipperParser
         _, left, right = exp.shift 3
         left = process(left)
         right = process(right)
-        if integer_literal?(left) && integer_literal?(right)
-          s(:lit, Range.new(left[1], right[1]))
-        else
-          s(:dot2, left, right)
-        end
+        s(:irange, left, right)
       end
 
       def process_dot3(exp)
         _, left, right = exp.shift 3
         left = process(left)
         right = process(right)
-        if integer_literal?(left) && integer_literal?(right)
-          s(:lit, Range.new(left[1], right[1], true))
-        else
-          s(:dot3, left, right)
-        end
+        s(:erange, left, right)
       end
 
       def process_ifop(exp)

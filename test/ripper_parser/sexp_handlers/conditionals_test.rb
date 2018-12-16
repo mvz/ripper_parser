@@ -93,20 +93,22 @@ describe RipperParser::Parser do
                               nil)
       end
 
-      it 'converts :dot2 to :flip2' do
+      it 'converts :dot2 to :iflipflop' do
         'if foo..bar; baz; end'.
           must_be_parsed_as s(:if,
-                              s(:flip2, s(:send, nil, :foo), s(:send, nil, :bar)),
-                              s(:send, nil, :baz),
-                              nil)
+                              s(:iflipflop,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz), nil)
       end
 
-      it 'converts :dot3 to :flip3' do
+      it 'converts :dot3 to :eflipflop' do
         'if foo...bar; baz; end'.
           must_be_parsed_as s(:if,
-                              s(:flip3, s(:send, nil, :foo), s(:send, nil, :bar)),
-                              s(:send, nil, :baz),
-                              nil)
+                              s(:eflipflop,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz), nil)
       end
 
       it 'handles negative match operator' do
@@ -127,7 +129,7 @@ describe RipperParser::Parser do
       it 'handles special conditions inside begin..end block' do
         'if begin foo..bar end; baz; end'.
           must_be_parsed_as s(:if,
-                              s(:flip2, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              s(:iflipflop, s(:send, nil, :foo), s(:send, nil, :bar)),
                               s(:send, nil, :baz),
                               nil)
       end
@@ -336,13 +338,13 @@ describe RipperParser::Parser do
                                 s(:send, nil, :qux), nil))
       end
 
-      it 'does not replace :dot2 with :flip2' do
+      it 'replaces :dot2 with :iflipflop' do
         'if foo; bar; elsif baz..qux; quuz; end'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar),
                               s(:if,
-                                s(:dot2, s(:send, nil, :baz), s(:send, nil, :qux)),
+                                s(:iflipflop, s(:send, nil, :baz), s(:send, nil, :qux)),
                                 s(:send, nil, :quuz), nil))
       end
 

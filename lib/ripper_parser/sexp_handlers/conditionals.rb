@@ -14,7 +14,7 @@ module RipperParser
         _, cond, truepart, falsepart = exp.shift 4
 
         s(:if,
-          unwrap_begin(process(cond)),
+          handle_condition(cond),
           handle_consequent(truepart),
           handle_consequent(falsepart))
       end
@@ -84,10 +84,10 @@ module RipperParser
         case cond.sexp_type
         when :lit
           return s(:match, cond) if cond[1].is_a?(Regexp)
-        when :dot2
-          return s(:flip2, *cond[1..-1])
-        when :dot3
-          return s(:flip3, *cond[1..-1])
+        when :irange
+          return s(:iflipflop, *cond[1..-1])
+        when :erange
+          return s(:eflipflop, *cond[1..-1])
         end
         cond
       end

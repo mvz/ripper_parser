@@ -863,17 +863,17 @@ describe RipperParser::Parser do
 
       it 'works for octal integer literals' do
         '0700'.
-          must_be_parsed_as s(:lit, 448)
+          must_be_parsed_as s(:int, 448)
       end
 
       it 'handles negative sign for integers' do
         '-1'.
-          must_be_parsed_as s(:lit, -1)
+          must_be_parsed_as s(:int, -1)
       end
 
       it 'handles space after negative sign for integers' do
         '-1 '.
-          must_be_parsed_as s(:lit, -1)
+          must_be_parsed_as s(:int, -1)
       end
 
       it 'handles negative sign for floats' do
@@ -888,7 +888,7 @@ describe RipperParser::Parser do
 
       it 'handles positive sign' do
         '+1'.
-          must_be_parsed_as s(:lit, 1)
+          must_be_parsed_as s(:int, 1)
       end
 
       it 'works for rationals' do

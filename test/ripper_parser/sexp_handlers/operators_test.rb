@@ -139,31 +139,35 @@ describe RipperParser::Parser do
     describe 'for the range operator' do
       it 'handles positive number literals' do
         '1..2'.
-          must_be_parsed_as s(:lit, 1..2)
+          must_be_parsed_as s(:irange,
+                              s(:int, 1),
+                              s(:int, 2))
       end
 
       it 'handles negative number literals' do
         '-1..-2'.
-          must_be_parsed_as s(:lit, -1..-2)
+          must_be_parsed_as s(:irange,
+                              s(:int, -1),
+                              s(:int, -2))
       end
 
       it 'handles float literals' do
         '1.0..2.0'.
-          must_be_parsed_as s(:dot2,
+          must_be_parsed_as s(:irange,
                               s(:lit, 1.0),
                               s(:lit, 2.0))
       end
 
       it 'handles string literals' do
         "'a'..'z'".
-          must_be_parsed_as s(:dot2,
+          must_be_parsed_as s(:irange,
                               s(:str, 'a'),
                               s(:str, 'z'))
       end
 
       it 'handles non-literals' do
         'foo..bar'.
-          must_be_parsed_as s(:dot2,
+          must_be_parsed_as s(:irange,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar))
       end
@@ -172,31 +176,35 @@ describe RipperParser::Parser do
     describe 'for the exclusive range operator' do
       it 'handles positive number literals' do
         '1...2'.
-          must_be_parsed_as s(:lit, 1...2)
+          must_be_parsed_as s(:erange,
+                              s(:int, 1),
+                              s(:int, 2))
       end
 
       it 'handles negative number literals' do
         '-1...-2'.
-          must_be_parsed_as s(:lit, -1...-2)
+          must_be_parsed_as s(:erange,
+                              s(:int, -1),
+                              s(:int, -2))
       end
 
       it 'handles float literals' do
         '1.0...2.0'.
-          must_be_parsed_as s(:dot3,
+          must_be_parsed_as s(:erange,
                               s(:lit, 1.0),
                               s(:lit, 2.0))
       end
 
       it 'handles string literals' do
         "'a'...'z'".
-          must_be_parsed_as s(:dot3,
+          must_be_parsed_as s(:erange,
                               s(:str, 'a'),
                               s(:str, 'z'))
       end
 
       it 'handles non-literals' do
         'foo...bar'.
-          must_be_parsed_as s(:dot3,
+          must_be_parsed_as s(:erange,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar))
       end
@@ -204,7 +212,7 @@ describe RipperParser::Parser do
 
     describe 'for unary numerical operators' do
       it 'handles unary minus with an integer literal' do
-        '- 1'.must_be_parsed_as s(:send, s(:lit, 1), :-@)
+        '- 1'.must_be_parsed_as s(:send, s(:int, 1), :-@)
       end
 
       it 'handles unary minus with a float literal' do
@@ -219,11 +227,11 @@ describe RipperParser::Parser do
       end
 
       it 'handles unary minus with a negative number literal' do
-        '- -1'.must_be_parsed_as s(:send, s(:lit, -1), :-@)
+        '- -1'.must_be_parsed_as s(:send, s(:int, -1), :-@)
       end
 
       it 'handles unary plus with a number literal' do
-        '+ 1'.must_be_parsed_as s(:send, s(:lit, 1), :+@)
+        '+ 1'.must_be_parsed_as s(:send, s(:int, 1), :+@)
       end
 
       it 'handles unary plus with a non-literal' do

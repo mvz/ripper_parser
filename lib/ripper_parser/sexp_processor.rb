@@ -157,7 +157,8 @@ module RipperParser
 
     # number literals
     def process_at_int(exp)
-      make_literal(exp) { |val| Integer(val) }
+      _, val, pos = exp.shift 3
+      with_position(pos, s(:int, Integer(val)))
     end
 
     def process_at_float(exp)
@@ -214,7 +215,7 @@ module RipperParser
                when :__FILE__
                  s(:str, @filename)
                when :__LINE__
-                 s(:lit, pos[0])
+                 s(:int, pos[0])
                else
                  s(sym)
                end

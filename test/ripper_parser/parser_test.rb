@@ -279,9 +279,9 @@ describe RipperParser::Parser do
     describe 'for the __LINE__ keyword' do
       it 'creates a literal sexp with value of the line number' do
         '__LINE__'.
-          must_be_parsed_as s(:lit, 1)
+          must_be_parsed_as s(:int, 1)
         "\n__LINE__".
-          must_be_parsed_as s(:lit, 2)
+          must_be_parsed_as s(:int, 2)
       end
     end
 
@@ -514,9 +514,9 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:array,
                                 s(:attrasgn,
-                                  s(:send, nil, :foo), :[]=, s(:lit, 1)),
+                                  s(:send, nil, :foo), :[]=, s(:int, 1)),
                                 s(:attrasgn,
-                                  s(:send, nil, :bar), :[]=, s(:lit, 2))),
+                                  s(:send, nil, :bar), :[]=, s(:int, 2))),
                               s(:to_ary, s(:send, nil, :baz)))
       end
 
@@ -581,7 +581,7 @@ describe RipperParser::Parser do
 
       it 'handles unary ! with a number literal' do
         '!1'.
-          must_be_parsed_as s(:send, s(:lit, 1), :!)
+          must_be_parsed_as s(:send, s(:int, 1), :!)
       end
 
       it 'handles the ternary operator' do
