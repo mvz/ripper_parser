@@ -28,7 +28,7 @@ describe RipperParser::Parser do
         'begin; foo; end while bar'.
           must_be_parsed_as s(:while,
                               s(:send, nil, :bar),
-                              s(:send, nil, :foo), false)
+                              s(:kwbegin, s(:send, nil, :foo)), false)
       end
 
       it 'handles a negative condition' do
@@ -59,17 +59,19 @@ describe RipperParser::Parser do
                               s(:send, nil, :baz), true)
       end
 
-      it 'cleans up begin..end block in condition' do
+      it 'works with begin..end block in condition' do
         'while begin foo end; bar; end'.
           must_be_parsed_as s(:while,
-                              s(:send, nil, :foo),
+                              s(:kwbegin,
+                                s(:send, nil, :foo)),
                               s(:send, nil, :bar), true)
       end
 
-      it 'cleans up begin..end block in condition in the postfix case' do
+      it 'works with begin..end block in condition in the postfix case' do
         'foo while begin bar end'.
           must_be_parsed_as s(:while,
-                              s(:send, nil, :bar),
+                              s(:kwbegin,
+                                s(:send, nil, :bar)),
                               s(:send, nil, :foo), true)
       end
     end
@@ -100,7 +102,7 @@ describe RipperParser::Parser do
         'begin; foo; end until bar'.
           must_be_parsed_as s(:until,
                               s(:send, nil, :bar),
-                              s(:send, nil, :foo), false)
+                              s(:kwbegin, s(:send, nil, :foo)), false)
       end
 
       it 'handles a negative condition' do
@@ -134,14 +136,14 @@ describe RipperParser::Parser do
       it 'cleans up begin..end block in condition' do
         'until begin foo end; bar; end'.
           must_be_parsed_as s(:until,
-                              s(:send, nil, :foo),
+                              s(:kwbegin, s(:send, nil, :foo)),
                               s(:send, nil, :bar), true)
       end
 
       it 'cleans up begin..end block in condition in the postfix case' do
         'foo until begin bar end'.
           must_be_parsed_as s(:until,
-                              s(:send, nil, :bar),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               s(:send, nil, :foo), true)
       end
     end

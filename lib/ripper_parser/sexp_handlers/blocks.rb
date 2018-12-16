@@ -51,7 +51,7 @@ module RipperParser
         _, body = exp.shift 2
 
         body = convert_empty_to_nil_symbol process(body)
-        s(:begin, body)
+        s(:kwbegin, body)
       end
 
       def process_rescue(exp)

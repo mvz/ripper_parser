@@ -33,7 +33,7 @@ describe RipperParser::Parser do
         'if foo; begin; bar; end; end'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
-                              s(:send, nil, :bar),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               nil)
       end
 
@@ -119,17 +119,19 @@ describe RipperParser::Parser do
                               s(:send, nil, :baz))
       end
 
-      it 'cleans up begin..end block in condition' do
+      it 'works with begin..end block in condition' do
         'if begin foo end; bar; end'.
           must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
+                              s(:kwbegin,
+                                s(:send, nil, :foo)),
                               s(:send, nil, :bar), nil)
       end
 
-      it 'handles special conditions inside begin..end block' do
+      it 'works with special conditions inside begin..end block' do
         'if begin foo..bar end; baz; end'.
           must_be_parsed_as s(:if,
-                              s(:iflipflop, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              s(:kwbegin,
+                                s(:irange, s(:send, nil, :foo), s(:send, nil, :bar))),
                               s(:send, nil, :baz),
                               nil)
       end
@@ -176,10 +178,11 @@ describe RipperParser::Parser do
                               s(:send, nil, :baz))
       end
 
-      it 'cleans up begin..end block in condition' do
+      it 'works with begin..end block in condition' do
         'foo if begin bar end'.
           must_be_parsed_as s(:if,
-                              s(:send, nil, :bar),
+                              s(:kwbegin,
+                                s(:send, nil, :bar)),
                               s(:send, nil, :foo), nil)
       end
     end
@@ -363,13 +366,14 @@ describe RipperParser::Parser do
                                 nil))
       end
 
-      it 'cleans up begin..end block in condition' do
+      it 'works with begin..end block in condition' do
         'if foo; bar; elsif begin baz end; qux; end'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar),
                               s(:if,
-                                s(:send, nil, :baz),
+                                s(:kwbegin,
+                                  s(:send, nil, :baz)),
                                 s(:send, nil, :qux),
                                 nil))
       end

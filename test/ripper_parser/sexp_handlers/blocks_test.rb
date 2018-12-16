@@ -23,7 +23,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
                               0,
-                              s(:send, nil, :bar))
+                              s(:kwbegin, s(:send, nil, :bar)))
       end
 
       it 'works with nested begin..end plus other statements' do
@@ -33,7 +33,7 @@ describe RipperParser::Parser do
                               0,
                               s(:block,
                                 s(:send, nil, :bar),
-                                s(:send, nil, :baz)))
+                                s(:kwbegin, s(:send, nil, :baz))))
       end
     end
 
@@ -129,262 +129,282 @@ describe RipperParser::Parser do
 
     describe 'for begin' do
       it 'works for an empty begin..end block' do
-        'begin end'.must_be_parsed_as s(:nil)
+        'begin end'.must_be_parsed_as s(:kwbegin, s(:nil))
       end
 
       it 'works for a simple begin..end block' do
-        'begin; foo; end'.must_be_parsed_as s(:send, nil, :foo)
+        'begin; foo; end'.must_be_parsed_as s(:kwbegin,
+                                              s(:send, nil, :foo))
       end
 
       it 'works for begin..end block with more than one statement' do
         'begin; foo; bar; end'.
-          must_be_parsed_as s(:block,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+          must_be_parsed_as s(:kwbegin,
+                              s(:block,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)))
       end
 
-      it 'keeps :begin for the argument of a unary operator' do
+      it 'keeps :kwbegin for the argument of a unary operator' do
         '- begin; foo; end'.
           must_be_parsed_as s(:send,
-                              s(:begin, s(:send, nil, :foo)),
+                              s(:kwbegin, s(:send, nil, :foo)),
                               :-@)
       end
 
-      it 'keeps :begin for the first argument of a binary operator' do
+      it 'keeps :kwbegin for the first argument of a binary operator' do
         'begin; bar; end + foo'.
           must_be_parsed_as s(:send,
-                              s(:begin, s(:send, nil, :bar)),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               :+,
                               s(:send, nil, :foo))
       end
 
-      it 'keeps :begin for the second argument of a binary operator' do
+      it 'keeps :kwbegin for the second argument of a binary operator' do
         'foo + begin; bar; end'.
           must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :+,
-                              s(:begin, s(:send, nil, :bar)))
+                              s(:kwbegin, s(:send, nil, :bar)))
       end
 
-      it 'does not keep :begin for the first argument of a boolean operator' do
+      it 'keeps :kwbegin for the first argument of a boolean operator' do
         'begin; bar; end and foo'.
           must_be_parsed_as s(:and,
-                              s(:send, nil, :bar),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               s(:send, nil, :foo))
       end
 
-      it 'keeps :begin for the second argument of a boolean operator' do
+      it 'keeps :kwbegin for the second argument of a boolean operator' do
         'foo and begin; bar; end'.
           must_be_parsed_as s(:and,
                               s(:send, nil, :foo),
-                              s(:begin, s(:send, nil, :bar)))
+                              s(:kwbegin, s(:send, nil, :bar)))
       end
 
-      it 'does not keep :begin for the first argument of a shift operator' do
+      it 'keeps :kwbegin for the first argument of a shift operator' do
         'begin; bar; end << foo'.
           must_be_parsed_as s(:send,
-                              s(:send, nil, :bar),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               :<<,
                               s(:send, nil, :foo))
       end
 
-      it 'does not keep :begin for the second argument of a shift operator' do
+      it 'keeps :kwbegin for the second argument of a shift operator' do
         'foo >> begin; bar; end'.
           must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :>>,
-                              s(:send, nil, :bar))
+                              s(:kwbegin, s(:send, nil, :bar)))
       end
 
-      it 'keeps :begin for the first argument of a ternary operator' do
+      it 'keeps :kwbegin for the first argument of a ternary operator' do
         'begin; foo; end ? bar : baz'.
           must_be_parsed_as s(:if,
-                              s(:begin, s(:send, nil, :foo)),
+                              s(:kwbegin, s(:send, nil, :foo)),
                               s(:send, nil, :bar),
                               s(:send, nil, :baz))
       end
 
-      it 'keeps :begin for the second argument of a ternary operator' do
+      it 'keeps :kwbegin for the second argument of a ternary operator' do
         'foo ? begin; bar; end : baz'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
-                              s(:begin, s(:send, nil, :bar)),
+                              s(:kwbegin, s(:send, nil, :bar)),
                               s(:send, nil, :baz))
       end
 
-      it 'keeps :begin for the third argument of a ternary operator' do
+      it 'keeps :kwbegin for the third argument of a ternary operator' do
         'foo ? bar : begin; baz; end'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar),
-                              s(:begin, s(:send, nil, :baz)))
+                              s(:kwbegin, s(:send, nil, :baz)))
       end
 
-      it 'keeps :begin for the truepart of a postfix if' do
+      it 'keeps :kwbegin for the truepart of a postfix if' do
         'begin; foo; end if bar'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :bar),
-                              s(:begin, s(:send, nil, :foo)),
+                              s(:kwbegin, s(:send, nil, :foo)),
                               nil)
       end
 
-      it 'keeps :begin for the falsepart of a postfix unless' do
+      it 'keeps :kwbegin for the falsepart of a postfix unless' do
         'begin; foo; end unless bar'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :bar),
                               nil,
-                              s(:begin, s(:send, nil, :foo)))
+                              s(:kwbegin, s(:send, nil, :foo)))
       end
 
-      it 'does not keep :begin for a method receiver' do
+      it 'keeps :kwbegin for a method receiver' do
         'begin; foo; end.bar'.
-          must_be_parsed_as s(:send, s(:send, nil, :foo), :bar)
+          must_be_parsed_as s(:send,
+                              s(:kwbegin, s(:send, nil, :foo)),
+                              :bar)
       end
     end
 
     describe 'for rescue/else' do
       it 'works for a block with multiple rescue statements' do
         'begin foo; rescue; bar; rescue; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array),
                                 s(:send, nil, :bar)),
                               s(:resbody,
                                 s(:array),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works for a block with rescue and else' do
         'begin; foo; rescue; bar; else; baz; end'.
-          must_be_parsed_as s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array),
+                                  s(:send, nil, :bar)),
+                                s(:send, nil, :baz)))
       end
 
       it 'works for a block with only else' do
         'begin; foo; else; bar; end'.
-          must_be_parsed_as s(:block,
+          must_be_parsed_as s(:kwbegin,
+                              s(:block,
                               s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+                              s(:send, nil, :bar)))
       end
     end
 
     describe 'for the rescue statement' do
       it 'works with assignment to an error variable' do
         'begin; foo; rescue => bar; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array,
                                   s(:lasgn, :bar, s(:gvar, :$!))),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works with assignment of the exception to an instance variable' do
         'begin; foo; rescue => @bar; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array,
                                   s(:iasgn, :@bar, s(:gvar, :$!))),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works with empty main and rescue bodies' do
         'begin; rescue; end'.
-          must_be_parsed_as s(:rescue,
-                              s(:resbody, s(:array), nil))
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
+                              s(:resbody, s(:array), nil)))
       end
 
       it 'works with single statement main and rescue bodies' do
         'begin; foo; rescue; bar; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array),
-                                s(:send, nil, :bar)))
+                                s(:send, nil, :bar))))
       end
 
       it 'works with multi-statement main and rescue bodies' do
         'begin; foo; bar; rescue; baz; qux; end'.
-          must_be_parsed_as s(:rescue,
-                              s(:block,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:resbody,
-                                s(:array),
-                                s(:send, nil, :baz),
-                                s(:send, nil, :qux)))
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
+                                s(:block,
+                                  s(:send, nil, :foo),
+                                  s(:send, nil, :bar)),
+                                s(:resbody,
+                                  s(:array),
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))))
       end
 
       it 'works with assignment to an error variable' do
         'begin; foo; rescue => e; bar; end'.
-          must_be_parsed_as s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array, s(:lasgn, :e, s(:gvar, :$!))),
-                                s(:send, nil, :bar)))
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array, s(:lasgn, :e, s(:gvar, :$!))),
+                                  s(:send, nil, :bar))))
       end
 
       it 'works with filtering of the exception type' do
         'begin; foo; rescue Bar; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array, s(:const, nil, :Bar)),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works with filtering of the exception type and assignment to an error variable' do
         'begin; foo; rescue Bar => e; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array,
                                   s(:const, nil, :Bar),
                                   s(:lasgn, :e, s(:gvar, :$!))),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works rescuing multiple exception types' do
         'begin; foo; rescue Bar, Baz; qux; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array, s(:const, nil, :Bar), s(:const, nil, :Baz)),
-                                s(:send, nil, :qux)))
+                                s(:send, nil, :qux))))
       end
 
       it 'works rescuing a splatted list of exception types' do
         'begin; foo; rescue *bar; baz; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:splat, s(:send, nil, :bar)),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :baz))))
       end
 
       it 'works rescuing a complex list of exception types' do
         'begin; foo; rescue *bar, Baz; qux; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array,
                                   s(:splat, s(:send, nil, :bar)),
                                   s(:const, nil, :Baz)),
-                                s(:send, nil, :qux)))
+                                s(:send, nil, :qux))))
       end
 
       it 'works with a nested begin..end block' do
         'begin; foo; rescue; begin; bar; end; end'.
-          must_be_parsed_as s(:rescue,
+          must_be_parsed_as s(:kwbegin,
+                              s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody, s(:array),
-                                s(:send, nil, :bar)))
+                                s(:kwbegin,
+                                  s(:send, nil, :bar)))))
       end
 
       it 'works in a plain method body' do
@@ -405,9 +425,10 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args),
                               s(:send, nil, :bar),
-                              s(:rescue,
-                                s(:send, nil, :baz),
-                                s(:resbody, s(:array), s(:send, nil, :qux))),
+                              s(:kwbegin,
+                                s(:rescue,
+                                  s(:send, nil, :baz),
+                                  s(:resbody, s(:array), s(:send, nil, :qux)))),
                               s(:send, nil, :quuz))
       end
 
@@ -417,9 +438,10 @@ describe RipperParser::Parser do
                               :foo,
                               s(:args),
                               s(:send, nil, :bar),
-                              s(:block,
-                                s(:send, nil, :baz),
-                                s(:send, nil, :qux)),
+                              s(:kwbegin,
+                                s(:block,
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))),
                               s(:send, nil, :quuz))
       end
 
@@ -428,8 +450,10 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:defn,
                               :foo,
                               s(:args),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
+                              s(:kwbegin,
+                                s(:block,
+                                  s(:send, nil, :bar),
+                                  s(:send, nil, :baz))))
       end
     end
 
@@ -553,36 +577,40 @@ describe RipperParser::Parser do
     describe 'for the ensure statement' do
       it 'works with single statement main and ensure bodies' do
         'begin; foo; ensure; bar; end'.
-          must_be_parsed_as s(:ensure,
+          must_be_parsed_as s(:kwbegin,
+                              s(:ensure,
                               s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+                              s(:send, nil, :bar)))
       end
 
       it 'works with multi-statement main and ensure bodies' do
         'begin; foo; bar; ensure; baz; qux; end'.
-          must_be_parsed_as s(:ensure,
+          must_be_parsed_as s(:kwbegin,
+                              s(:ensure,
                               s(:block,
                                 s(:send, nil, :foo),
                                 s(:send, nil, :bar)),
                               s(:block,
                                 s(:send, nil, :baz),
-                                s(:send, nil, :qux)))
+                                s(:send, nil, :qux))))
       end
 
       it 'works together with rescue' do
         'begin; foo; rescue; bar; ensure; baz; end'.
-          must_be_parsed_as s(:ensure,
+          must_be_parsed_as s(:kwbegin,
+                              s(:ensure,
                               s(:rescue,
                                 s(:send, nil, :foo),
                                 s(:resbody,
                                   s(:array),
                                   s(:send, nil, :bar))),
-                              s(:send, nil, :baz))
+                              s(:send, nil, :baz)))
       end
 
       it 'works with empty main and ensure bodies' do
         'begin; ensure; end'.
-          must_be_parsed_as s(:ensure, s(:nil))
+          must_be_parsed_as s(:kwbegin,
+                              s(:ensure, s(:nil)))
       end
     end
 

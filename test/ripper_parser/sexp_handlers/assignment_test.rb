@@ -19,7 +19,7 @@ describe RipperParser::Parser do
 
       it 'works with blocks' do
         'foo = begin; bar; end'.
-          must_be_parsed_as s(:lasgn, :foo, s(:send, nil, :bar))
+          must_be_parsed_as s(:lasgn, :foo, s(:kwbegin, s(:send, nil, :bar)))
       end
 
       describe 'with a right-hand splat' do
@@ -34,7 +34,10 @@ describe RipperParser::Parser do
         it 'works with blocks' do
           'foo = *begin; bar; end'.
             must_be_parsed_as s(:lasgn, :foo,
-                                s(:svalue, s(:splat, s(:send, nil, :bar))))
+                                s(:svalue,
+                                  s(:splat,
+                                    s(:kwbegin,
+                                      s(:send, nil, :bar)))))
         end
       end
 
@@ -215,13 +218,19 @@ describe RipperParser::Parser do
         it 'works with boolean operators and blocks' do
           'foo &&= begin; bar; end'.
             must_be_parsed_as s(:op_asgn_and,
-                                s(:lvar, :foo), s(:lasgn, :foo, s(:send, nil, :bar)))
+                                s(:lvar, :foo),
+                                s(:lasgn, :foo,
+                                  s(:kwbegin,
+                                    s(:send, nil, :bar))))
         end
 
         it 'works with arithmetic operators and blocks' do
           'foo += begin; bar; end'.
             must_be_parsed_as s(:lasgn, :foo,
-                                s(:send, s(:lvar, :foo), :+, s(:send, nil, :bar)))
+                                s(:send,
+                                  s(:lvar, :foo), :+,
+                                  s(:kwbegin,
+                                    s(:send, nil, :bar))))
         end
       end
     end
