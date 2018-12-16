@@ -386,7 +386,7 @@ describe RipperParser::Parser do
 
       it 'works when assigning to an instance variable' do
         '@foo += bar'.
-          must_be_parsed_as s(:iasgn,
+          must_be_parsed_as s(:ivasgn,
                               :@foo,
                               s(:send,
                                 s(:ivar, :@foo),
@@ -490,7 +490,7 @@ describe RipperParser::Parser do
       it 'works with instance variables' do
         '@foo, @bar = baz'.
           must_be_parsed_as s(:masgn,
-                              s(:array, s(:iasgn, :@foo), s(:iasgn, :@bar)),
+                              s(:array, s(:ivasgn, :@foo), s(:ivasgn, :@bar)),
                               s(:to_ary, s(:send, nil, :baz)))
       end
 
@@ -532,8 +532,8 @@ describe RipperParser::Parser do
         '@foo, *@bar = baz'.
           must_be_parsed_as s(:masgn,
                               s(:array,
-                                s(:iasgn, :@foo),
-                                s(:splat, s(:iasgn, :@bar))),
+                                s(:ivasgn, :@foo),
+                                s(:splat, s(:ivasgn, :@bar))),
                               s(:to_ary,
                                 s(:send, nil, :baz)))
       end

@@ -158,7 +158,7 @@ module RipperParser
       end
 
       ASSIGNMENT_SUB_TYPE_MAP = {
-        ivar: :iasgn,
+        ivar: :ivasgn,
         const: :casgn,
         lvar: :lvasgn,
         cvar: :cvdecl,

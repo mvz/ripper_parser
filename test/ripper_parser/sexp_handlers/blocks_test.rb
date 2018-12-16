@@ -299,7 +299,7 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:resbody,
                                 s(:array,
-                                  s(:iasgn, :@bar, s(:gvar, :$!))),
+                                  s(:ivasgn, :@bar, s(:gvar, :$!))),
                                 s(:send, nil, :baz))))
       end
 
