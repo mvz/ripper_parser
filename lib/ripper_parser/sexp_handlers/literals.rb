@@ -73,18 +73,16 @@ module RipperParser
         _, content, (_, flags,) = exp.shift 3
 
         string, rest = process(content).sexp_body
-        numflags = character_flags_to_numerical flags
+        optflags = character_flags_to_regopt flags
 
         if rest.empty?
-          s(:lit, Regexp.new(string, numflags))
+          s(:regexp, s(:str, string), optflags)
         else
-          rest << numflags if numflags > 0
-          sexp_type = if flags =~ /o/
-                        :dregx_once
-                      else
-                        :dregx
-                      end
-          s(sexp_type, string, *rest)
+          if string.empty?
+            s(:regexp, *rest, optflags)
+          else
+            s(:regexp, s(:str, string), *rest, optflags)
+          end
         end
       end
 
@@ -197,6 +195,10 @@ module RipperParser
                  end
         string.force_encoding('ascii-8bit') if string == "\0"
         s(:str, string)
+      end
+
+      def character_flags_to_regopt(flags)
+        s(:regopt, *flags.chars.grep(/[a-z]/).sort.map(&:to_sym))
       end
 
       def character_flags_to_numerical(flags)

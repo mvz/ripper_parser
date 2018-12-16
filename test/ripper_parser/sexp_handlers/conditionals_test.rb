@@ -72,17 +72,22 @@ describe RipperParser::Parser do
       it 'handles bare regex literal in condition' do
         'if /foo/; bar; end'.
           must_be_parsed_as s(:if,
-                              s(:match, s(:lit, /foo/)),
-                              s(:send, nil, :bar),
-                              nil)
+  s(:match_current_line,
+    s(:regexp,
+      s(:str, "foo"),
+      s(:regopt))),
+  s(:send, nil, :bar), nil)
       end
 
       it 'handles interpolated regex in condition' do
         'if /#{foo}/; bar; end'.
           must_be_parsed_as s(:if,
-                              s(:dregx, '', s(:evstr, s(:send, nil, :foo))),
-                              s(:send, nil, :bar),
-                              nil)
+  s(:match_current_line,
+    s(:regexp,
+      s(:evstr,
+        s(:send, nil, :foo)),
+      s(:regopt))),
+  s(:send, nil, :bar), nil)
       end
 
       it 'handles block conditions' do
@@ -157,7 +162,8 @@ describe RipperParser::Parser do
       it 'handles bare regex literal in condition' do
         'foo if /bar/'.
           must_be_parsed_as s(:if,
-                              s(:match, s(:lit, /bar/)),
+                              s(:match_current_line,
+                                s(:regexp, s(:str, 'bar'), s(:regopt))),
                               s(:send, nil, :foo),
                               nil)
       end
@@ -165,9 +171,12 @@ describe RipperParser::Parser do
       it 'handles interpolated regex in condition' do
         'foo if /#{bar}/'.
           must_be_parsed_as s(:if,
-                              s(:dregx, '', s(:evstr, s(:send, nil, :bar))),
-                              s(:send, nil, :foo),
-                              nil)
+  s(:match_current_line,
+    s(:regexp,
+      s(:evstr,
+        s(:send, nil, :bar)),
+      s(:regopt))),
+  s(:send, nil, :foo), nil)
       end
 
       it 'handles negative match operator' do
@@ -241,7 +250,10 @@ describe RipperParser::Parser do
       it 'handles bare regex literal in condition' do
         'unless /foo/; bar; end'.
           must_be_parsed_as s(:if,
-                              s(:match, s(:lit, /foo/)),
+                              s(:match_current_line,
+                                s(:regexp,
+                                  s(:str, "foo"),
+                                  s(:regopt))),
                               nil,
                               s(:send, nil, :bar))
       end
@@ -249,7 +261,8 @@ describe RipperParser::Parser do
       it 'handles interpolated regex in condition' do
         'unless /#{foo}/; bar; end'.
           must_be_parsed_as s(:if,
-                              s(:dregx, '', s(:evstr, s(:send, nil, :foo))),
+                              s(:match_current_line,
+                                s(:regexp, s(:evstr, s(:send, nil, :foo)), s(:regopt))),
                               nil,
                               s(:send, nil, :bar))
       end
@@ -275,17 +288,24 @@ describe RipperParser::Parser do
       it 'handles bare regex literal in condition' do
         'foo unless /bar/'.
           must_be_parsed_as s(:if,
-                              s(:match, s(:lit, /bar/)),
-                              nil,
-                              s(:send, nil, :foo))
+                              s(:match_current_line,
+                                s(:regexp,
+                                  s(:str, "bar"),
+                                  s(:regopt))),
+        nil,
+        s(:send, nil, :foo))
       end
 
       it 'handles interpolated regex in condition' do
         'foo unless /#{bar}/'.
           must_be_parsed_as s(:if,
-                              s(:dregx, '', s(:evstr, s(:send, nil, :bar))),
-                              nil,
-                              s(:send, nil, :foo))
+  s(:match_current_line,
+    s(:regexp,
+      s(:evstr,
+        s(:send, nil, :bar)),
+      s(:regopt))),
+        nil,
+  s(:send, nil, :foo))
       end
 
       it 'handles negative match operator' do

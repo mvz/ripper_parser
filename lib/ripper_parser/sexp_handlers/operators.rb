@@ -72,13 +72,7 @@ module RipperParser
       end
 
       def make_regexp_match_operator(operator, left, right)
-        if left.sexp_type == :regexp_literal
-          s(:match2, process(left), process(right))
-        elsif right.sexp_type == :regexp_literal
-          s(:match3, process(right), process(left))
-        else
-          s(:send, process(left), operator, process(right))
-        end
+        s(:send, process(left), operator, process(right))
       end
 
       def rebalance_binary(exp)

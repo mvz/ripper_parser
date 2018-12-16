@@ -5,136 +5,143 @@ describe RipperParser::Parser do
     describe 'for regexp literals' do
       it 'works for a simple regex literal' do
         '/foo/'.
-          must_be_parsed_as s(:lit, /foo/)
+          must_be_parsed_as s(:regexp,
+                              s(:str, "foo"),
+                              s(:regopt))
       end
 
       it 'works for regex literals with escaped right parenthesis' do
         '/\\)/'.
-          must_be_parsed_as s(:lit, /\)/)
+          must_be_parsed_as s(:regexp, s(:str, "\\)"), s(:regopt))
       end
 
       it 'works for regex literals with escape sequences' do
         '/\\)\\n\\\\/'.
-          must_be_parsed_as s(:lit, /\)\n\\/)
+          must_be_parsed_as s(:regexp,
+                              s(:str, "\\)\\n\\\\"),
+                              s(:regopt))
       end
 
       it 'works for a regex literal with the multiline flag' do
         '/foo/m'.
-          must_be_parsed_as s(:lit, /foo/m)
+          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :m))
       end
 
       it 'works for a regex literal with the extended flag' do
         '/foo/x'.
-          must_be_parsed_as s(:lit, /foo/x)
+          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :x))
       end
 
       it 'works for a regex literal with the ignorecase flag' do
         '/foo/i'.
-          must_be_parsed_as s(:lit, /foo/i)
+          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :i))
       end
 
       it 'works for a regex literal with a combination of flags' do
         '/foo/ixm'.
-          must_be_parsed_as s(:lit, /foo/ixm)
+          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :i, :m, :x))
       end
 
       it 'works with the no-encoding flag' do
         '/foo/n'.
-          must_be_parsed_as s(:lit, /foo/n)
+          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :n))
       end
 
       it 'works with line continuation' do
         "/foo\\\nbar/".
-          must_be_parsed_as s(:lit, /foobar/)
+          must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
       end
 
       describe 'for a %r-delimited regex literal' do
         it 'works for the simple case with escape sequences' do
           '%r[foo\nbar]'.
-            must_be_parsed_as s(:lit, /foo\nbar/)
+            must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
         end
 
         it 'works with odd delimiters and escape sequences' do
           '%r_foo\nbar_'.
-            must_be_parsed_as s(:lit, /foo\nbar/)
+            must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
         end
       end
 
       describe 'with interpolations' do
         it 'works for a simple interpolation' do
           '/foo#{bar}baz/'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
                                 s(:evstr, s(:send, nil, :bar)),
-                                s(:str, 'baz'))
+                                s(:str, 'baz'), s(:regopt))
         end
 
         it 'works for a regex literal with flags and interpolation' do
           '/foo#{bar}/ixm'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
-                                s(:evstr, s(:send, nil, :bar)),
-                                7)
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
+                                s(:evstr,
+                                  s(:send, nil, :bar)),
+                                s(:regopt, :i, :m, :x))
         end
 
         it 'works with the no-encoding flag' do
           '/foo#{bar}/n'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
                                 s(:evstr,
-                                  s(:send, nil, :bar)), 32)
+                                  s(:send, nil, :bar)), s(:regopt, :n))
         end
 
         it 'works with the unicode-encoding flag' do
           '/foo#{bar}/u'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
                                 s(:evstr,
-                                  s(:send, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), s(:regopt, :u))
         end
 
         it 'works with the euc-encoding flag' do
           '/foo#{bar}/e'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
                                 s(:evstr,
-                                  s(:send, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), s(:regopt, :e))
         end
 
         it 'works with the sjis-encoding flag' do
           '/foo#{bar}/s'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
                                 s(:evstr,
-                                  s(:send, nil, :bar)), 16)
+                                  s(:send, nil, :bar)), s(:regopt, :s))
         end
 
         it 'works for a regex literal with interpolate-once flag' do
           '/foo#{bar}/o'.
-            must_be_parsed_as s(:dregx_once,
-                                'foo',
-                                s(:evstr, s(:send, nil, :bar)))
+            must_be_parsed_as s(:regexp,
+                                s(:str, 'foo'),
+                                s(:evstr, s(:send, nil, :bar)),
+                                s(:regopt, :o))
         end
 
         it 'works with an empty interpolation' do
           '/foo#{}bar/'.
-            must_be_parsed_as s(:dregx,
-                                'foo',
+            must_be_parsed_as s(:regexp,
+                                s(:str, "foo"),
                                 s(:evstr),
-                                s(:str, 'bar'))
+                                s(:str, "bar"),
+                                s(:regopt))
         end
 
         describe 'containing just a literal string' do
           it 'performs the interpolation when it is at the end' do
-            '/foo#{"bar"}/'.must_be_parsed_as s(:lit, /foobar/)
+            '/foo#{"bar"}/'.must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
           end
 
           it 'performs the interpolation when it is in the middle' do
-            '/foo#{"bar"}baz/'.must_be_parsed_as s(:lit, /foobarbaz/)
+            '/foo#{"bar"}baz/'.must_be_parsed_as s(:regexp, s(:str, "foobarbaz"), s(:regopt))
           end
 
           it 'performs the interpolation when it is at the start' do
-            '/#{"foo"}bar/'.must_be_parsed_as s(:lit, /foobar/)
+            '/#{"foo"}bar/'.must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
           end
         end
       end

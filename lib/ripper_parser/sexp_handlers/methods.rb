@@ -13,7 +13,7 @@ module RipperParser
           body = with_kwrest(kwrest) { method_body(body) }
         end
 
-        with_position(pos, s(:defn, ident, params, *body))
+        with_position(pos, s(:def, ident, params, *body))
       end
 
       def process_defs(exp)

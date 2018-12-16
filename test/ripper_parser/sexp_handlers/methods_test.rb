@@ -5,7 +5,7 @@ describe RipperParser::Parser do
     describe 'for instance method definitions' do
       it 'treats kwargs as a local variable' do
         'def foo(**bar); bar; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :"**bar"),
                               s(:lvar, :bar))
@@ -13,7 +13,7 @@ describe RipperParser::Parser do
 
       it 'treats kwargs as a local variable when other arguments are present' do
         'def foo(bar, **baz); baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :bar, :"**baz"),
                               s(:lvar, :baz))
@@ -21,7 +21,7 @@ describe RipperParser::Parser do
 
       it 'treats kwargs as a local variable when an explicit block is present' do
         'def foo(**bar, &baz); bar; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :"**bar", :"&baz"),
                               s(:lvar, :bar))
@@ -29,7 +29,7 @@ describe RipperParser::Parser do
 
       it 'works with a method argument with a default value' do
         'def foo bar=nil; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, s(:lvasgn, :bar, s(:nil))),
                               s(:nil))
@@ -37,7 +37,7 @@ describe RipperParser::Parser do
 
       it 'works with several method arguments with default values' do
         'def foo bar=1, baz=2; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
@@ -47,22 +47,22 @@ describe RipperParser::Parser do
 
       it 'works with parentheses around the parameter list' do
         'def foo(bar); end'.
-          must_be_parsed_as s(:defn, :foo, s(:args, :bar), s(:nil))
+          must_be_parsed_as s(:def, :foo, s(:args, :bar), s(:nil))
       end
 
       it 'works with a simple splat' do
         'def foo *bar; end'.
-          must_be_parsed_as s(:defn, :foo, s(:args, :"*bar"), s(:nil))
+          must_be_parsed_as s(:def, :foo, s(:args, :"*bar"), s(:nil))
       end
 
       it 'works with a regular argument plus splat' do
         'def foo bar, *baz; end'.
-          must_be_parsed_as s(:defn, :foo, s(:args, :bar, :"*baz"), s(:nil))
+          must_be_parsed_as s(:def, :foo, s(:args, :bar, :"*baz"), s(:nil))
       end
 
       it 'works with a nameless splat' do
         'def foo *; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :"*"),
                               s(:nil))
@@ -70,7 +70,7 @@ describe RipperParser::Parser do
 
       it 'works for a simple case with explicit block parameter' do
         'def foo &bar; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :"&bar"),
                               s(:nil))
@@ -78,7 +78,7 @@ describe RipperParser::Parser do
 
       it 'works with a regular argument plus explicit block parameter' do
         'def foo bar, &baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :bar, :"&baz"),
                               s(:nil))
@@ -86,7 +86,7 @@ describe RipperParser::Parser do
 
       it 'works with a default value plus explicit block parameter' do
         'def foo bar=1, &baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
@@ -96,7 +96,7 @@ describe RipperParser::Parser do
 
       it 'works with a default value plus mandatory argument' do
         'def foo bar=1, baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
@@ -106,7 +106,7 @@ describe RipperParser::Parser do
 
       it 'works with a splat plus explicit block parameter' do
         'def foo *bar, &baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :"*bar", :"&baz"),
                               s(:nil))
@@ -114,7 +114,7 @@ describe RipperParser::Parser do
 
       it 'works with a default value plus splat' do
         'def foo bar=1, *baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
@@ -124,7 +124,7 @@ describe RipperParser::Parser do
 
       it 'works with a default value, splat, plus final mandatory arguments' do
         'def foo bar=1, *baz, qux, quuz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:lvasgn, :bar, s(:int, 1)),
@@ -134,7 +134,7 @@ describe RipperParser::Parser do
 
       it 'works with a named argument with a default value' do
         'def foo bar: 1; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:kwarg, :bar, s(:int, 1))),
@@ -143,7 +143,7 @@ describe RipperParser::Parser do
 
       it 'works with a named argument with no default value' do
         'def foo bar:; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
                                 s(:kwarg, :bar)),
@@ -152,7 +152,7 @@ describe RipperParser::Parser do
 
       it 'works with a double splat' do
         'def foo **bar; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args, :'**bar'),
                               s(:nil))
@@ -160,7 +160,7 @@ describe RipperParser::Parser do
 
       it 'works when the method name is an operator' do
         'def +; end'.
-          must_be_parsed_as s(:defn, :+, s(:args),
+          must_be_parsed_as s(:def, :+, s(:args),
                               s(:nil))
       end
     end

@@ -409,7 +409,7 @@ describe RipperParser::Parser do
 
       it 'works in a plain method body' do
         'def foo; bar; rescue; baz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
                               s(:rescue,
@@ -421,7 +421,7 @@ describe RipperParser::Parser do
 
       it 'works in a method body inside begin..end with rescue' do
         'def foo; bar; begin; baz; rescue; qux; end; quuz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
                               s(:send, nil, :bar),
@@ -434,7 +434,7 @@ describe RipperParser::Parser do
 
       it 'works in a method body inside begin..end without rescue' do
         'def foo; bar; begin; baz; qux; end; quuz; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
                               s(:send, nil, :bar),
@@ -447,7 +447,7 @@ describe RipperParser::Parser do
 
       it 'works in a method body fully inside begin..end' do
         'def foo; begin; bar; baz; end; end'.
-          must_be_parsed_as s(:defn,
+          must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
                               s(:kwbegin,

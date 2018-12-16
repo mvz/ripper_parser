@@ -114,7 +114,7 @@ describe RipperParser::Parser do
 
         it 'works inside a method' do
           'def foo; @@bar = baz; end'.
-            must_be_parsed_as s(:defn,
+            must_be_parsed_as s(:def,
                                 :foo, s(:args),
                                 s(:cvasgn, :@@bar, s(:send, nil, :baz)))
         end
@@ -129,7 +129,7 @@ describe RipperParser::Parser do
 
         it 'works inside method arguments' do
           'def foo(bar = (@@baz = qux)); end'.
-            must_be_parsed_as s(:defn,
+            must_be_parsed_as s(:def,
                                 :foo,
                                 s(:args,
                                   s(:lvasgn, :bar,

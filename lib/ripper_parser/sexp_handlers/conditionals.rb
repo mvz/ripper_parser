@@ -82,8 +82,8 @@ module RipperParser
       def handle_condition(cond)
         cond = unwrap_begin process(cond)
         case cond.sexp_type
-        when :lit
-          return s(:match, cond) if cond[1].is_a?(Regexp)
+        when :regexp
+          return s(:match_current_line, cond)
         when :irange
           return s(:iflipflop, *cond[1..-1])
         when :erange

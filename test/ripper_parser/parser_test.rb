@@ -558,16 +558,18 @@ describe RipperParser::Parser do
 
       it 'handles :=~ with literal regexp on the left hand side' do
         '/foo/ =~ bar'.
-          must_be_parsed_as s(:match2,
-                              s(:lit, /foo/),
+          must_be_parsed_as s(:send,
+                              s(:regexp, s(:str, "foo"), s(:regopt)),
+                              :=~,
                               s(:send, nil, :bar))
       end
 
       it 'handles :=~ with literal regexp on the right hand side' do
         'foo =~ /bar/'.
-          must_be_parsed_as s(:match3,
-                              s(:lit, /bar/),
-                              s(:send, nil, :foo))
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
+                              :=~,
+                              s(:regexp, s(:str, "bar"), s(:regopt)))
       end
 
       it 'handles unary !' do
@@ -618,7 +620,7 @@ describe RipperParser::Parser do
     describe 'for comments' do
       it 'handles method comments' do
         result = parser.parse "# Foo\ndef foo; end"
-        result.must_equal s(:defn,
+        result.must_equal s(:def,
                             :foo,
                             s(:args), s(:nil))
         result.comments.must_equal "# Foo\n"
@@ -637,17 +639,17 @@ describe RipperParser::Parser do
       it 'matches comments to the correct entity' do
         result = parser.parse "# Foo\nclass Foo\n# Bar\ndef bar\nend\nend"
         result.must_equal s(:class, s(:const, nil, :Foo), nil,
-                            s(:defn, :bar,
+                            s(:def, :bar,
                               s(:args), s(:nil)))
         result.comments.must_equal "# Foo\n"
         defn = result[3]
-        defn.sexp_type.must_equal :defn
+        defn.sexp_type.must_equal :def
         defn.comments.must_equal "# Bar\n"
       end
 
       it 'combines multi-line comments' do
         result = parser.parse "# Foo\n# Bar\ndef foo; end"
-        result.must_equal s(:defn,
+        result.must_equal s(:def,
                             :foo,
                             s(:args), s(:nil))
         result.comments.must_equal "# Foo\n# Bar\n"
@@ -671,8 +673,8 @@ describe RipperParser::Parser do
         result.must_equal s(:class,
                             s(:const, nil, :Foo),
                             nil,
-                            s(:defn, :foo, s(:args), s(:send, nil, :bar)),
-                            s(:defn, :bar, s(:args), s(:send, nil, :baz)))
+                            s(:def, :foo, s(:args), s(:send, nil, :bar)),
+                            s(:def, :bar, s(:args), s(:send, nil, :baz)))
         result.comments.must_equal "# Foo\n"
         result[3].comments.must_equal "# foo\n"
         result[4].comments.must_equal "# bar\n"
@@ -680,7 +682,7 @@ describe RipperParser::Parser do
 
       it 'handles the use of symbols that are keywords' do
         result = parser.parse "# Foo\ndef bar\n:class\nend"
-        result.must_equal s(:defn,
+        result.must_equal s(:def,
                             :bar,
                             s(:args),
                             s(:sym, :class))
@@ -689,7 +691,7 @@ describe RipperParser::Parser do
 
       it 'handles use of singleton class inside methods' do
         result = parser.parse "# Foo\ndef bar\nclass << self\nbaz\nend\nend"
-        result.must_equal s(:defn,
+        result.must_equal s(:def,
                             :bar,
                             s(:args),
                             s(:sclass, s(:self),
