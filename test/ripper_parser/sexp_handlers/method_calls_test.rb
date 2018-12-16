@@ -162,7 +162,7 @@ describe RipperParser::Parser do
                                 s(:send,
                                   s(:send, nil, :foo),
                                   :bar),
-                                0,
+                                s(:args),
                                 s(:send, nil, :baz))
         end
 
@@ -172,7 +172,7 @@ describe RipperParser::Parser do
                                 s(:send,
                                   s(:send, nil, :foo),
                                   :bar),
-                                0,
+                                s(:args),
                                 s(:block,
                                   s(:send, nil, :baz),
                                   s(:send, nil, :qux)))

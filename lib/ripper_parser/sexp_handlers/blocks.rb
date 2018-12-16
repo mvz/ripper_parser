@@ -138,9 +138,7 @@ module RipperParser
 
       def process_lambda(exp)
         _, args, statements = exp.shift 3
-        old_type = args.sexp_type
         args = convert_special_args(process(args))
-        args = 0 if args == s(:args) && old_type == :params
         make_iter(s(:send, nil, :lambda),
                   args,
                   safe_unwrap_void_stmt(process(statements)))
@@ -209,9 +207,9 @@ module RipperParser
       end
 
       def make_iter(call, args, stmt)
-        args ||= 0
+        args ||= s(:args)
         if stmt.empty?
-          s(:block, call, args)
+          s(:block, call, args, nil)
         else
           s(:block, call, args, stmt)
         end

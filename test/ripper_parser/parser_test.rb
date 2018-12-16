@@ -826,7 +826,7 @@ describe RipperParser::Parser do
         result = parser.parse "foo(bar) do\nnext baz\nend\n"
         result.must_equal s(:block,
                             s(:send, nil, :foo, s(:send, nil, :bar)),
-                            0,
+                            s(:args),
                             s(:next, s(:send, nil, :baz)))
         arglist = result[1][3]
         block = result[3]
