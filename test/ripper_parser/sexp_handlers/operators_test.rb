@@ -154,8 +154,8 @@ describe RipperParser::Parser do
       it 'handles float literals' do
         '1.0..2.0'.
           must_be_parsed_as s(:irange,
-                              s(:lit, 1.0),
-                              s(:lit, 2.0))
+                              s(:float, 1.0),
+                              s(:float, 2.0))
       end
 
       it 'handles string literals' do
@@ -191,8 +191,8 @@ describe RipperParser::Parser do
       it 'handles float literals' do
         '1.0...2.0'.
           must_be_parsed_as s(:erange,
-                              s(:lit, 1.0),
-                              s(:lit, 2.0))
+                              s(:float, 1.0),
+                              s(:float, 2.0))
       end
 
       it 'handles string literals' do
@@ -216,7 +216,7 @@ describe RipperParser::Parser do
       end
 
       it 'handles unary minus with a float literal' do
-        '- 3.14'.must_be_parsed_as s(:send, s(:lit, 3.14), :-@)
+        '- 3.14'.must_be_parsed_as s(:send, s(:float, 3.14), :-@)
       end
 
       it 'handles unary minus with a non-literal' do

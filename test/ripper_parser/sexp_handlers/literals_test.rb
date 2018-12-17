@@ -871,7 +871,7 @@ describe RipperParser::Parser do
     describe 'for number literals' do
       it 'works for floats' do
         '3.14'.
-          must_be_parsed_as s(:lit, 3.14)
+          must_be_parsed_as s(:float, 3.14)
       end
 
       it 'works for octal integer literals' do
@@ -891,12 +891,12 @@ describe RipperParser::Parser do
 
       it 'handles negative sign for floats' do
         '-3.14'.
-          must_be_parsed_as s(:lit, -3.14)
+          must_be_parsed_as s(:float, -3.14)
       end
 
       it 'handles space after negative sign for floats' do
         '-3.14 '.
-          must_be_parsed_as s(:lit, -3.14)
+          must_be_parsed_as s(:float, -3.14)
       end
 
       it 'handles positive sign' do

@@ -162,7 +162,8 @@ module RipperParser
     end
 
     def process_at_float(exp)
-      make_literal(exp, &:to_f)
+      _, val, pos = exp.shift 3
+      with_position(pos, s(:float, val.to_f))
     end
 
     def process_at_rational(exp)
