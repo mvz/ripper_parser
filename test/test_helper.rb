@@ -37,9 +37,8 @@ module MiniTest
       end
     end
 
-    def assert_parsed_as(sexp, code, extra_compatible: false)
+    def assert_parsed_as(sexp, code)
       parser = RipperParser::Parser.new
-      parser.extra_compatible = extra_compatible
       result = parser.parse code
       if sexp.nil?
         assert_nil result
@@ -52,7 +51,6 @@ module MiniTest
     def assert_parsed_as_before(code)
       oldparser = Parser::CurrentRuby
       newparser = RipperParser::Parser.new
-      newparser.extra_compatible = true
       expected = oldparser.parse code.dup
       result = newparser.parse code
       # expected = to_comments expected

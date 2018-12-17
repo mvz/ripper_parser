@@ -243,11 +243,6 @@ describe RipperParser::Parser do
           '"foo\\u273bbar"'.must_be_parsed_as s(:str, 'foo✻bar')
         end
 
-        it 'works with unicode escapes in extra-compatible mode' do
-          '"foo\\u273bbar"'.
-            must_be_parsed_as s(:str, 'foo✻r'), extra_compatible: true
-        end
-
         it 'works with unicode escapes with braces' do
           '"foo\\u{273b}bar"'.must_be_parsed_as s(:str, 'foo✻bar')
         end
@@ -367,30 +362,12 @@ describe RipperParser::Parser do
                                 s(:str, '2½'))
         end
 
-        it 'does not convert to unicode after interpolation in extra-compatible mode' do
-          '"#{foo}2\302\275"'.
-            must_be_parsed_as s(:dstr,
-                                '',
-                                s(:begin, s(:send, nil, :foo)),
-                                s(:str, "2\xC2\xBD".force_encoding('ascii-8bit'))),
-                              extra_compatible: true
-        end
-
         it 'convert null byte to unicode after interpolation' do
           '"#{foo}\0"'.
             must_be_parsed_as s(:dstr,
                                 '',
                                 s(:begin, s(:send, nil, :foo)),
                                 s(:str, "\u0000"))
-        end
-
-        it 'keeps null byte as ascii after interpolation in extra-compatible mode' do
-          '"#{foo}\0"'.
-            must_be_parsed_as s(:dstr,
-                                '',
-                                s(:begin, s(:send, nil, :foo)),
-                                s(:str, "\x00".force_encoding('ascii-8bit'))),
-                              extra_compatible: true
         end
       end
 

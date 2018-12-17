@@ -149,18 +149,7 @@ module RipperParser
       private
 
       def extract_string_parts(list)
-        parts = []
-
-        unless list.empty?
-          parts << process(list.shift)
-          list.each do |item|
-            parts << if extra_compatible && item.sexp_type == :@tstring_content
-                       alternative_process_at_tstring_content(item)
-                     else
-                       process(item)
-                     end
-          end
-        end
+        parts = map_process_list list
 
         string = ''
         while !parts.empty? && parts.first.sexp_type == :str

@@ -5,17 +5,11 @@ module RipperParser
   # Main parser class. Brings together Ripper and our
   # RipperParser::SexpProcessor.
   class Parser
-    attr_accessor :extra_compatible
-
-    def initialize
-      @extra_compatible = false
-    end
-
     def parse(source, filename = '(string)', lineno = 1)
       parser = CommentingRipperParser.new(source, filename, lineno)
       exp = parser.parse
 
-      processor = SexpProcessor.new(filename: filename, extra_compatible: extra_compatible)
+      processor = SexpProcessor.new(filename: filename)
       result = processor.process exp
 
       result = result[1] if result.sexp_type == :begin

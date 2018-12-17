@@ -529,49 +529,6 @@ describe RipperParser::Parser do
                                 s(:send, nil, :baz)),
                               s(:resbody, s(:array), s(:send, nil, :qux)))
       end
-
-      describe 'when extra compatibility is turned on' do
-        let(:parser) { RipperParser::Parser.new }
-        before do
-          parser.extra_compatible = true
-        end
-
-        it 'works with assignment' do
-          'foo = bar rescue baz'.
-            must_be_parsed_as s(:lvasgn, :foo,
-                                s(:rescue,
-                                  s(:send, nil, :bar),
-                                  s(:resbody, s(:array), s(:send, nil, :baz)))),
-                              extra_compatible: true
-        end
-
-        it 'works with assignment with argument with brackets' do
-          'foo = bar(baz) rescue qux'.
-            must_be_parsed_as s(:lvasgn, :foo,
-                                s(:rescue,
-                                  s(:send, nil, :bar, s(:send, nil, :baz)),
-                                  s(:resbody, s(:array), s(:send, nil, :qux)))),
-                              extra_compatible: true
-        end
-
-        it 'works with assignment with argument without brackets' do
-          'foo = bar baz rescue qux'.
-            must_be_parsed_as s(:rescue,
-                                s(:lvasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
-                                s(:resbody, s(:array), s(:send, nil, :qux))),
-                              extra_compatible: true
-        end
-
-        it 'works with assignment with class method call with argument without brackets' do
-          'foo = Bar.baz qux rescue quuz'.
-            must_be_parsed_as s(:rescue,
-                                s(:lvasgn,
-                                  :foo,
-                                  s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
-                                s(:resbody, s(:array), s(:send, nil, :quuz))),
-                              extra_compatible: true
-        end
-      end
     end
 
     describe 'for the ensure statement' do
