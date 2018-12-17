@@ -162,45 +162,8 @@ module RipperParser
         return string, rest
       end
 
-      def alternative_process_at_tstring_content(exp)
-        _, content, _, delim = exp.shift 4
-        string = case delim
-                 when /^<<[-~]?'/
-                   content
-                 when /^<</
-                   unescape(content)
-                 when '"', '`', ':"', /^%Q.$/, /^%.$/
-                   unescape(content)
-                 when /^%[WI].$/
-                   unescape_wordlist_word(content)
-                 when "'", ":'", /^%q.$/
-                   simple_unescape(content)
-                 when '/', /^%r.$/
-                   unescape_regexp(content)
-                 when /^%[wi].$/
-                   simple_unescape_wordlist_word(content)
-                 else
-                   content
-                 end
-        string.force_encoding('ascii-8bit') if string == "\0"
-        s(:str, string)
-      end
-
       def character_flags_to_regopt(flags)
         s(:regopt, *flags.chars.grep(/[a-z]/).sort.map(&:to_sym))
-      end
-
-      def character_flags_to_numerical(flags)
-        numflags = 0
-
-        flags =~ /m/ and numflags |= Regexp::MULTILINE
-        flags =~ /x/ and numflags |= Regexp::EXTENDED
-        flags =~ /i/ and numflags |= Regexp::IGNORECASE
-
-        flags =~ /n/ and numflags |= Regexp::NOENCODING
-        flags =~ /[ues]/ and numflags |= Regexp::FIXEDENCODING
-
-        numflags
       end
 
       def handle_dyna_symbol_content(node)
@@ -210,8 +173,6 @@ module RipperParser
           s(:sym, body.first.to_sym)
         when :dstr, :dxstr
           s(:dsym, *body)
-        else
-          raise type.to_s
         end
       end
 
