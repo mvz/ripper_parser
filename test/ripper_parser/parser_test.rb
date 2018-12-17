@@ -19,24 +19,24 @@ describe RipperParser::Parser do
         'class Foo::Bar; end'.
           must_be_parsed_as s(:class,
                               s(:const, s(:const, nil, :Foo), :Bar),
-                              nil)
+                              nil, nil)
       end
 
       it 'works for singleton classes' do
-        'class << self; end'.must_be_parsed_as s(:sclass, s(:self))
+        'class << self; end'.must_be_parsed_as s(:sclass, s(:self), nil)
       end
     end
 
     describe 'for a module declaration' do
       it 'works with a simple module name' do
         'module Foo; end'.
-          must_be_parsed_as s(:module, s(:const, nil, :Foo))
+          must_be_parsed_as s(:module, s(:const, nil, :Foo), nil)
       end
 
       it 'works with a namespaced module name' do
         'module Foo::Bar; end'.
           must_be_parsed_as s(:module,
-                              s(:const, s(:const, nil, :Foo), :Bar))
+                              s(:const, s(:const, nil, :Foo), :Bar), nil)
       end
     end
 

@@ -246,7 +246,7 @@ module RipperParser
     def class_or_module_body(exp)
       body = process(exp)
 
-      return body if body.empty?
+      return [nil] if body.empty?
 
       if body.sexp_type == :block
         body.sexp_body
