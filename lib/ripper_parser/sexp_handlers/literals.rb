@@ -29,16 +29,16 @@ module RipperParser
         when :str
           val
         when :void_stmt
-          s(:dstr, '', s(:evstr))
+          s(:dstr, '', s(:begin))
         else
-          s(:dstr, '', s(:evstr, val))
+          s(:dstr, '', s(:begin, val))
         end
       end
 
       def process_string_dvar(exp)
         _, list = exp.shift 2
         val = process(list)
-        s(:dstr, '', s(:evstr, val))
+        s(:dstr, '', s(:begin, val))
       end
 
       def process_string_concat(exp)

@@ -84,7 +84,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:if,
                               s(:match_current_line,
                                 s(:regexp,
-                                  s(:evstr,
+                                  s(:begin,
                                     s(:send, nil, :foo)),
                                   s(:regopt))),
                               s(:send, nil, :bar), nil)
@@ -173,7 +173,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:if,
                               s(:match_current_line,
                                 s(:regexp,
-                                  s(:evstr,
+                                  s(:begin,
                                     s(:send, nil, :bar)),
                                   s(:regopt))),
                               s(:send, nil, :foo), nil)
@@ -262,7 +262,7 @@ describe RipperParser::Parser do
         'unless /#{foo}/; bar; end'.
           must_be_parsed_as s(:if,
                               s(:match_current_line,
-                                s(:regexp, s(:evstr, s(:send, nil, :foo)), s(:regopt))),
+                                s(:regexp, s(:begin, s(:send, nil, :foo)), s(:regopt))),
                               nil,
                               s(:send, nil, :bar))
       end
@@ -301,7 +301,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:if,
                               s(:match_current_line,
                                 s(:regexp,
-                                  s(:evstr,
+                                  s(:begin,
                                     s(:send, nil, :bar)),
                                   s(:regopt))),
                               nil,
