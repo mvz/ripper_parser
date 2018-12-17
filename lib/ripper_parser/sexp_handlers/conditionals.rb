@@ -67,7 +67,7 @@ module RipperParser
         truepart = [nil] if truepart.empty?
 
         s(s(:when,
-            s(:array, *values),
+            *values,
             *truepart),
           *falsepart)
       end

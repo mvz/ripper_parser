@@ -405,7 +405,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array, s(:send, nil, :bar)),
+                                s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               nil)
       end
@@ -415,10 +415,10 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array, s(:send, nil, :bar)),
+                                s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               s(:when,
-                                s(:array, s(:send, nil, :qux)),
+                                s(:send, nil, :qux),
                                 s(:send, nil, :quux)),
                               nil)
       end
@@ -428,7 +428,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array, s(:send, nil, :bar)),
+                                s(:send, nil, :bar),
                                 s(:send, nil, :baz),
                                 s(:send, nil, :qux)),
                               nil)
@@ -439,7 +439,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array, s(:send, nil, :bar)),
+                                s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               s(:send, nil, :qux))
       end
@@ -448,7 +448,7 @@ describe RipperParser::Parser do
         'case foo; when bar; end'.
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
-                              s(:when, s(:array, s(:send, nil, :bar)), nil),
+                              s(:when, s(:send, nil, :bar), nil),
                               nil)
       end
 
@@ -457,7 +457,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array, s(:send, nil, :bar)),
+                                s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               nil)
       end
@@ -467,8 +467,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                s(:array,
-                                  s(:splat, s(:send, nil, :bar))),
+                                
+                                  s(:splat, s(:send, nil, :bar)),
                                 s(:send, nil, :baz)),
                               nil)
       end
