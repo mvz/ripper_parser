@@ -48,9 +48,7 @@ module RipperParser
         case args.sexp_body.length
         when 1
           child = args.sexp_body.first
-          if child.sexp_type == :arg
-            child.sexp_type = :procarg0
-          end
+          child.sexp_type = :procarg0 if child.sexp_type == :arg
         when 2
           args.pop if args.sexp_body.last.sexp_type == :zerosplat
         end

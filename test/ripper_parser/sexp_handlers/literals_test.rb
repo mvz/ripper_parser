@@ -6,61 +6,61 @@ describe RipperParser::Parser do
       it 'works for a simple regex literal' do
         '/foo/'.
           must_be_parsed_as s(:regexp,
-                              s(:str, "foo"),
+                              s(:str, 'foo'),
                               s(:regopt))
       end
 
       it 'works for regex literals with escaped right parenthesis' do
         '/\\)/'.
-          must_be_parsed_as s(:regexp, s(:str, "\\)"), s(:regopt))
+          must_be_parsed_as s(:regexp, s(:str, '\\)'), s(:regopt))
       end
 
       it 'works for regex literals with escape sequences' do
         '/\\)\\n\\\\/'.
           must_be_parsed_as s(:regexp,
-                              s(:str, "\\)\\n\\\\"),
+                              s(:str, '\\)\\n\\\\'),
                               s(:regopt))
       end
 
       it 'works for a regex literal with the multiline flag' do
         '/foo/m'.
-          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :m))
+          must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :m))
       end
 
       it 'works for a regex literal with the extended flag' do
         '/foo/x'.
-          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :x))
+          must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :x))
       end
 
       it 'works for a regex literal with the ignorecase flag' do
         '/foo/i'.
-          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :i))
+          must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :i))
       end
 
       it 'works for a regex literal with a combination of flags' do
         '/foo/ixm'.
-          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :i, :m, :x))
+          must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :i, :m, :x))
       end
 
       it 'works with the no-encoding flag' do
         '/foo/n'.
-          must_be_parsed_as s(:regexp, s(:str, "foo"), s(:regopt, :n))
+          must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :n))
       end
 
       it 'works with line continuation' do
         "/foo\\\nbar/".
-          must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
+          must_be_parsed_as s(:regexp, s(:str, 'foobar'), s(:regopt))
       end
 
       describe 'for a %r-delimited regex literal' do
         it 'works for the simple case with escape sequences' do
           '%r[foo\nbar]'.
-            must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
+            must_be_parsed_as s(:regexp, s(:str, 'foo\\nbar'), s(:regopt))
         end
 
         it 'works with odd delimiters and escape sequences' do
           '%r_foo\nbar_'.
-            must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
+            must_be_parsed_as s(:regexp, s(:str, 'foo\\nbar'), s(:regopt))
         end
       end
 
@@ -125,23 +125,23 @@ describe RipperParser::Parser do
         it 'works with an empty interpolation' do
           '/foo#{}bar/'.
             must_be_parsed_as s(:regexp,
-                                s(:str, "foo"),
+                                s(:str, 'foo'),
                                 s(:evstr),
-                                s(:str, "bar"),
+                                s(:str, 'bar'),
                                 s(:regopt))
         end
 
         describe 'containing just a literal string' do
           it 'performs the interpolation when it is at the end' do
-            '/foo#{"bar"}/'.must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
+            '/foo#{"bar"}/'.must_be_parsed_as s(:regexp, s(:str, 'foobar'), s(:regopt))
           end
 
           it 'performs the interpolation when it is in the middle' do
-            '/foo#{"bar"}baz/'.must_be_parsed_as s(:regexp, s(:str, "foobarbaz"), s(:regopt))
+            '/foo#{"bar"}baz/'.must_be_parsed_as s(:regexp, s(:str, 'foobarbaz'), s(:regopt))
           end
 
           it 'performs the interpolation when it is at the start' do
-            '/#{"foo"}bar/'.must_be_parsed_as s(:regexp, s(:str, "foobar"), s(:regopt))
+            '/#{"foo"}bar/'.must_be_parsed_as s(:regexp, s(:str, 'foobar'), s(:regopt))
           end
         end
       end

@@ -251,13 +251,13 @@ describe RipperParser::Parser do
         'begin foo; rescue; bar; rescue; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array),
-                                s(:send, nil, :bar)),
-                              s(:resbody,
-                                s(:array),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array),
+                                  s(:send, nil, :bar)),
+                                s(:resbody,
+                                  s(:array),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works for a block with rescue and else' do
@@ -275,8 +275,8 @@ describe RipperParser::Parser do
         'begin; foo; else; bar; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:block,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar)))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)))
       end
     end
 
@@ -285,39 +285,39 @@ describe RipperParser::Parser do
         'begin; foo; rescue => bar; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array,
-                                  s(:lvasgn, :bar, s(:gvar, :$!))),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array,
+                                    s(:lvasgn, :bar, s(:gvar, :$!))),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works with assignment of the exception to an instance variable' do
         'begin; foo; rescue => @bar; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array,
-                                  s(:ivasgn, :@bar, s(:gvar, :$!))),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array,
+                                    s(:ivasgn, :@bar, s(:gvar, :$!))),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works with empty main and rescue bodies' do
         'begin; rescue; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:resbody, s(:array), nil)))
+                                s(:resbody, s(:array), nil)))
       end
 
       it 'works with single statement main and rescue bodies' do
         'begin; foo; rescue; bar; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array),
-                                s(:send, nil, :bar))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array),
+                                  s(:send, nil, :bar))))
       end
 
       it 'works with multi-statement main and rescue bodies' do
@@ -347,64 +347,64 @@ describe RipperParser::Parser do
         'begin; foo; rescue Bar; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array, s(:const, nil, :Bar)),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array, s(:const, nil, :Bar)),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works with filtering of the exception type and assignment to an error variable' do
         'begin; foo; rescue Bar => e; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array,
-                                  s(:const, nil, :Bar),
-                                  s(:lvasgn, :e, s(:gvar, :$!))),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array,
+                                    s(:const, nil, :Bar),
+                                    s(:lvasgn, :e, s(:gvar, :$!))),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works rescuing multiple exception types' do
         'begin; foo; rescue Bar, Baz; qux; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array, s(:const, nil, :Bar), s(:const, nil, :Baz)),
-                                s(:send, nil, :qux))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array, s(:const, nil, :Bar), s(:const, nil, :Baz)),
+                                  s(:send, nil, :qux))))
       end
 
       it 'works rescuing a splatted list of exception types' do
         'begin; foo; rescue *bar; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:splat, s(:send, nil, :bar)),
-                                s(:send, nil, :baz))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:splat, s(:send, nil, :bar)),
+                                  s(:send, nil, :baz))))
       end
 
       it 'works rescuing a complex list of exception types' do
         'begin; foo; rescue *bar, Baz; qux; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array,
-                                  s(:splat, s(:send, nil, :bar)),
-                                  s(:const, nil, :Baz)),
-                                s(:send, nil, :qux))))
+                                s(:send, nil, :foo),
+                                s(:resbody,
+                                  s(:array,
+                                    s(:splat, s(:send, nil, :bar)),
+                                    s(:const, nil, :Baz)),
+                                  s(:send, nil, :qux))))
       end
 
       it 'works with a nested begin..end block' do
         'begin; foo; rescue; begin; bar; end; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                              s(:send, nil, :foo),
-                              s(:resbody, s(:array),
-                                s(:kwbegin,
-                                  s(:send, nil, :bar)))))
+                                s(:send, nil, :foo),
+                                s(:resbody, s(:array),
+                                  s(:kwbegin,
+                                    s(:send, nil, :bar)))))
       end
 
       it 'works in a plain method body' do
@@ -579,32 +579,32 @@ describe RipperParser::Parser do
         'begin; foo; ensure; bar; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:ensure,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar)))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)))
       end
 
       it 'works with multi-statement main and ensure bodies' do
         'begin; foo; bar; ensure; baz; qux; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:ensure,
-                              s(:block,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:block,
-                                s(:send, nil, :baz),
-                                s(:send, nil, :qux))))
+                                s(:block,
+                                  s(:send, nil, :foo),
+                                  s(:send, nil, :bar)),
+                                s(:block,
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))))
       end
 
       it 'works together with rescue' do
         'begin; foo; rescue; bar; ensure; baz; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:ensure,
-                              s(:rescue,
-                                s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array),
-                                  s(:send, nil, :bar))),
-                              s(:send, nil, :baz)))
+                                s(:rescue,
+                                  s(:send, nil, :foo),
+                                  s(:resbody,
+                                    s(:array),
+                                    s(:send, nil, :bar))),
+                                s(:send, nil, :baz)))
       end
 
       it 'works with empty main and ensure bodies' do

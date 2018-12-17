@@ -17,7 +17,7 @@ Parser::Builders::Default.emit_index    = true
 module MiniTest
   class Spec
     def formatted(exp)
-      exp.inspect.gsub(/^  */, "").gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
+      exp.inspect.gsub(/^  */, '').gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
     end
 
     def to_comments(exp)
@@ -55,10 +55,10 @@ module MiniTest
       newparser.extra_compatible = true
       expected = oldparser.parse code.dup
       result = newparser.parse code
-      #expected = to_comments expected
-      #result = to_comments result
-      #require 'pry'
-      #binding.pry
+      # expected = to_comments expected
+      # result = to_comments result
+      # require 'pry'
+      # binding.pry
       assert_equal formatted(expected), formatted(result)
     end
   end
