@@ -525,8 +525,8 @@ describe RipperParser::Parser do
         'foo, bar = baz rescue qux'.
           must_be_parsed_as s(:rescue,
                               s(:masgn,
-                                s(:array, s(:lvasgn, :foo), s(:lvasgn, :bar)),
-                                s(:to_ary, s(:send, nil, :baz))),
+                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                                s(:send, nil, :baz)),
                               s(:resbody, s(:array), s(:send, nil, :qux)))
       end
 

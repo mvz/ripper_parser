@@ -40,10 +40,10 @@ module RipperParser
         when :mrhs
           right = right[1]
         else
-          right = s(:to_ary, right)
+          right = right
         end
 
-        s(:masgn, s(:array, *left), right)
+        s(:masgn, s(:mlhs, *left), right)
       end
 
       def process_mrhs_new_from_args(exp)
