@@ -619,7 +619,7 @@ describe RipperParser::Parser do
         result = parser.parse "# Foo\ndef foo; end"
         result.must_equal s(:def,
                             :foo,
-                            s(:args), s(:nil))
+                            s(:args), nil)
         result.comments.must_equal "# Foo\n"
       end
 
@@ -629,7 +629,7 @@ describe RipperParser::Parser do
                             s(:send, nil, :foo),
                             :bar,
                             s(:args),
-                            s(:nil))
+                            nil)
         result.comments.must_equal "# Foo\n"
       end
 
@@ -637,7 +637,7 @@ describe RipperParser::Parser do
         result = parser.parse "# Foo\nclass Foo\n# Bar\ndef bar\nend\nend"
         result.must_equal s(:class, s(:const, nil, :Foo), nil,
                             s(:def, :bar,
-                              s(:args), s(:nil)))
+                              s(:args), nil))
         result.comments.must_equal "# Foo\n"
         defn = result[3]
         defn.sexp_type.must_equal :def
@@ -648,7 +648,7 @@ describe RipperParser::Parser do
         result = parser.parse "# Foo\n# Bar\ndef foo; end"
         result.must_equal s(:def,
                             :foo,
-                            s(:args), s(:nil))
+                            s(:args), nil)
         result.comments.must_equal "# Foo\n# Bar\n"
       end
 

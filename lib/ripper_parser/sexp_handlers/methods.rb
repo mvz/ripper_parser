@@ -76,7 +76,7 @@ module RipperParser
         block = process exp
         case block.length
         when 0
-          [s(:nil)]
+          [nil]
         else
           if block.sexp_type == :block
             block.sexp_body

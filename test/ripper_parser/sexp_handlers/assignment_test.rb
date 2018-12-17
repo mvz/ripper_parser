@@ -133,7 +133,7 @@ describe RipperParser::Parser do
                                 s(:args,
                                   s(:lvasgn, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
-                                s(:nil))
+                                nil)
         end
 
         it 'works inside method arguments of a singleton method' do
@@ -144,7 +144,7 @@ describe RipperParser::Parser do
                                 s(:args,
                                   s(:lvasgn, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
-                                s(:nil))
+                                nil)
         end
       end
 
