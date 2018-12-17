@@ -824,40 +824,46 @@ describe RipperParser::Parser do
       it 'works for a hash with one pair' do
         '{foo => bar}'.
           must_be_parsed_as s(:hash,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+                              s(:pair,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)))
       end
 
       it 'works for a hash with multiple pairs' do
         '{foo => bar, baz => qux}'.
           must_be_parsed_as s(:hash,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz),
-                              s(:send, nil, :qux))
+                              s(:pair,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:pair,
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
       end
 
       it 'works for a hash with label keys' do
         '{foo: bar, baz: qux}'.
           must_be_parsed_as s(:hash,
-                              s(:sym, :foo),
-                              s(:send, nil, :bar),
-                              s(:sym, :baz),
-                              s(:send, nil, :qux))
+                              s(:pair,
+                                s(:sym, :foo),
+                                s(:send, nil, :bar)),
+                              s(:pair,
+                                s(:sym, :baz),
+                                s(:send, nil, :qux)))
       end
 
       it 'works for a hash with dynamic label keys' do
         "{'foo': bar}".
           must_be_parsed_as s(:hash,
-                              s(:sym, :foo),
-                              s(:send, nil, :bar))
+                              s(:pair,
+                                s(:sym, :foo),
+                                s(:send, nil, :bar)))
       end
 
       it 'works for a hash with splat' do
         '{foo: bar, baz: qux, **quux}'.
           must_be_parsed_as s(:hash,
-                              s(:sym, :foo), s(:send, nil, :bar),
-                              s(:sym, :baz), s(:send, nil, :qux),
+                              s(:pair, s(:sym, :foo), s(:send, nil, :bar)),
+                              s(:pair, s(:sym, :baz), s(:send, nil, :qux)),
                               s(:kwsplat, s(:send, nil, :quux)))
       end
     end

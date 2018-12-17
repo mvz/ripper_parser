@@ -14,7 +14,7 @@ module RipperParser
         return s(:hash) unless body
 
         _, elems = body
-        s(:hash, *make_hash_items(elems))
+        s(:hash, *map_process_list(elems))
       end
 
       # @example
@@ -24,25 +24,17 @@ module RipperParser
         s(:kwsplat, process(param))
       end
 
+      # @example
+      #   s(:assoc_new, s(:@label, "baz:", s(1, 9)), s(:vcall, s(:@ident, "qux", s(1, 14))))
+      def process_assoc_new(exp)
+        _, left, right = exp.shift 3
+        s(:pair, process(left), process(right))
+      end
+
       # Handle implied hashes, such as at the end of argument lists.
       def process_bare_assoc_hash(exp)
         _, elems = exp.shift 2
-        s(:hash, *make_hash_items(elems))
-      end
-
-      private
-
-      # Process list of items that can be either :assoc_new or :assoc_splat
-      def make_hash_items(elems)
-        result = s()
-        elems.each do |sub_exp|
-          if sub_exp.sexp_type == :assoc_new
-            sub_exp.sexp_body.each { |elem| result << process(elem) }
-          else # :assoc_splat
-            result << process(sub_exp)
-          end
-        end
-        result
+        s(:hash, *map_process_list(elems))
       end
     end
   end

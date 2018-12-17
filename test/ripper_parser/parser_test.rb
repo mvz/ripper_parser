@@ -172,8 +172,9 @@ describe RipperParser::Parser do
         'foo bar => baz'.
           must_be_parsed_as s(:send, nil, :foo,
                               s(:hash,
-                                s(:send, nil, :bar),
-                                s(:send, nil, :baz)))
+                                s(:pair,
+                                  s(:send, nil, :bar),
+                                  s(:send, nil, :baz))))
       end
     end
 
