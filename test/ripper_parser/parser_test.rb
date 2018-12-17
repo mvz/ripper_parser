@@ -126,7 +126,7 @@ describe RipperParser::Parser do
     describe 'for a begin..end block' do
       it 'works with no statements' do
         'begin; end'.
-          must_be_parsed_as s(:kwbegin, s(:nil))
+          must_be_parsed_as s(:kwbegin)
       end
 
       it 'works with one statement' do
@@ -137,9 +137,8 @@ describe RipperParser::Parser do
       it 'works with multiple statements' do
         'begin; foo; bar; end'.
           must_be_parsed_as s(:kwbegin,
-                              s(:block,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
     end
 

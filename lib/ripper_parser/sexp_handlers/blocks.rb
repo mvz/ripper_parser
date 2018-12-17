@@ -58,8 +58,8 @@ module RipperParser
       def process_begin(exp)
         _, body = exp.shift 2
 
-        body = convert_empty_to_nil_symbol process(body)
-        s(:kwbegin, body)
+        body = method_body(body).compact
+        s(:kwbegin, *body)
       end
 
       def process_rescue(exp)
@@ -103,7 +103,7 @@ module RipperParser
           body << process(else_block) if else_block
           body = s(s(:rescue, *body))
         elsif else_block
-          body << process(else_block)
+          body << s(:begin, process(else_block))
         end
 
         if ensure_block

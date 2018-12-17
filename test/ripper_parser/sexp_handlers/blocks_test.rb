@@ -129,7 +129,7 @@ describe RipperParser::Parser do
 
     describe 'for begin' do
       it 'works for an empty begin..end block' do
-        'begin end'.must_be_parsed_as s(:kwbegin, s(:nil))
+        'begin end'.must_be_parsed_as s(:kwbegin)
       end
 
       it 'works for a simple begin..end block' do
@@ -140,9 +140,8 @@ describe RipperParser::Parser do
       it 'works for begin..end block with more than one statement' do
         'begin; foo; bar; end'.
           must_be_parsed_as s(:kwbegin,
-                              s(:block,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'keeps :kwbegin for the argument of a unary operator' do
@@ -274,8 +273,8 @@ describe RipperParser::Parser do
       it 'works for a block with only else' do
         'begin; foo; else; bar; end'.
           must_be_parsed_as s(:kwbegin,
-                              s(:block,
-                                s(:send, nil, :foo),
+                              s(:send, nil, :foo),
+                              s(:begin,
                                 s(:send, nil, :bar)))
       end
     end
@@ -439,21 +438,18 @@ describe RipperParser::Parser do
                               s(:args),
                               s(:send, nil, :bar),
                               s(:kwbegin,
-                                s(:block,
-                                  s(:send, nil, :baz),
-                                  s(:send, nil, :qux))),
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)),
                               s(:send, nil, :quuz))
       end
 
       it 'works in a method body fully inside begin..end' do
         'def foo; begin; bar; baz; end; end'.
-          must_be_parsed_as s(:def,
-                              :foo,
+          must_be_parsed_as s(:def, :foo,
                               s(:args),
                               s(:kwbegin,
-                                s(:block,
-                                  s(:send, nil, :bar),
-                                  s(:send, nil, :baz))))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
     end
 
