@@ -102,7 +102,7 @@ describe RipperParser::Parser do
         'foo do |bar|; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, s(:arg, :bar)), nil)
+                              s(:args, s(:procarg0, :bar)), nil)
       end
 
       it 'works with multiple arguments' do

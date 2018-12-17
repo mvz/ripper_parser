@@ -42,9 +42,19 @@ module RipperParser
       def process_block_var(exp)
         _, args, = exp.shift 3
 
-        names = process(args)
+        args = process(args)
 
-        convert_special_args names
+        args = convert_special_args args
+        case args.sexp_body.length
+        when 1
+          child = args.sexp_body.first
+          if child.sexp_type == :arg
+            child.sexp_type = :procarg0
+          end
+        when 2
+          args.pop if args.sexp_body.last.sexp_type == :zerosplat
+        end
+        args
       end
 
       def process_begin(exp)
@@ -165,7 +175,9 @@ module RipperParser
       end
 
       def handle_splat(splat)
-        if splat && splat != 0
+        if splat == 0
+          [s(:zerosplat)]
+        elsif splat
           [process(splat)]
         else
           []
