@@ -180,19 +180,19 @@ describe RipperParser::Parser do
     describe 'for collection indexing' do
       it 'works in the simple case' do
         'foo[bar]'.
-          must_be_parsed_as s(:send,
+          must_be_parsed_as s(:index,
                               s(:send, nil, :foo),
-                              :[],
                               s(:send, nil, :bar))
       end
 
       it 'works without any indexes' do
-        'foo[]'.must_be_parsed_as s(:send, s(:send, nil, :foo),
-                                    :[])
+        'foo[]'.must_be_parsed_as s(:index,
+                                    s(:send, nil, :foo))
       end
 
       it 'works with self[]' do
-        'self[foo]'.must_be_parsed_as s(:send, s(:self), :[],
+        'self[foo]'.must_be_parsed_as s(:index,
+                                        s(:self),
                                         s(:send, nil, :foo))
       end
     end
