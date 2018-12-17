@@ -17,8 +17,6 @@ module RipperParser
         '!~': :=~
       }.freeze
 
-      SHIFT_OPERATORS = [:<<, :>>].freeze
-
       def process_binary(exp)
         _, left, op, right = exp.shift 4
 
@@ -28,8 +26,6 @@ module RipperParser
           s(:not, make_regexp_match_operator(mapped, left, right))
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
-        elsif SHIFT_OPERATORS.include? op
-          s(:send, process(left), op, process(right))
         else
           s(:send, process(left), op, process(right))
         end
