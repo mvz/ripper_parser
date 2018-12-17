@@ -97,11 +97,7 @@ module RipperParser
     end
 
     def on_mlhs_add(list, elem)
-      if list.first == :mlhs
-        list << elem
-      else
-        [:mlhs_add_post, list, elem]
-      end
+      list << elem
     end
 
     def on_mrhs_new
