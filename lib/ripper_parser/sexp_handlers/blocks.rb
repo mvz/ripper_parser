@@ -147,7 +147,7 @@ module RipperParser
       def process_lambda(exp)
         _, args, statements = exp.shift 3
         args = convert_special_args(process(args))
-        make_iter(s(:send, nil, :lambda),
+        make_iter(s(:lambda),
                   args,
                   safe_unwrap_void_stmt(process(statements)))
       end

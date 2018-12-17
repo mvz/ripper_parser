@@ -714,7 +714,7 @@ describe RipperParser::Parser do
       it 'works in the simple case' do
         '->(foo) { bar }'.
           must_be_parsed_as s(:block,
-                              s(:send, nil, :lambda),
+                              s(:lambda),
                               s(:args, s(:arg, :foo)),
                               s(:send, nil, :bar))
       end
@@ -722,7 +722,7 @@ describe RipperParser::Parser do
       it 'works when there are zero arguments' do
         '->() { bar }'.
           must_be_parsed_as s(:block,
-                              s(:send, nil, :lambda),
+                              s(:lambda),
                               s(:args),
                               s(:send, nil, :bar))
       end
@@ -730,7 +730,7 @@ describe RipperParser::Parser do
       it 'works when there are no arguments' do
         '-> { bar }'.
           must_be_parsed_as s(:block,
-                              s(:send, nil, :lambda),
+                              s(:lambda),
                               s(:args),
                               s(:send, nil, :bar))
       end
@@ -738,14 +738,14 @@ describe RipperParser::Parser do
       it 'works when there are no statements in the body' do
         '->(foo) { }'.
           must_be_parsed_as s(:block,
-                              s(:send, nil, :lambda),
+                              s(:lambda),
                               s(:args, s(:arg, :foo)), nil)
       end
 
       it 'works when there are several statements in the body' do
         '->(foo) { bar; baz }'.
           must_be_parsed_as s(:block,
-                              s(:send, nil, :lambda),
+                              s(:lambda),
                               s(:args, s(:arg, :foo)),
                               s(:block,
                                 s(:send, nil, :bar),
