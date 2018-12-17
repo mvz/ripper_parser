@@ -378,10 +378,9 @@ describe RipperParser::Parser do
 
       it 'works with ||=' do
         'foo ||= bar'.
-          must_be_parsed_as s(:op_asgn_or,
-                              s(:lvar, :foo),
-                              s(:lvasgn, :foo,
-                                s(:send, nil, :bar)))
+          must_be_parsed_as s(:or_asgn,
+                              s(:lvasgn, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'works when assigning to an instance variable' do
@@ -396,37 +395,31 @@ describe RipperParser::Parser do
 
       it 'works when assigning to a collection element' do
         'foo[bar] += baz'.
-          must_be_parsed_as s(:op_asgn1,
-                              s(:send, nil, :foo),
-                              s(:arglist, s(:send, nil, :bar)),
+          must_be_parsed_as s(:op_asgn,
+                              s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
                               :+,
                               s(:send, nil, :baz))
       end
 
       it 'works with ||= when assigning to a collection element' do
         'foo[bar] ||= baz'.
-          must_be_parsed_as s(:op_asgn1,
-                              s(:send, nil, :foo),
-                              s(:arglist, s(:send, nil, :bar)),
-                              :"||",
+          must_be_parsed_as s(:or_asgn,
+                              s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
                               s(:send, nil, :baz))
       end
 
       it 'works when assigning to an attribute' do
         'foo.bar += baz'.
-          must_be_parsed_as s(:op_asgn2,
-                              s(:send, nil, :foo),
-                              :bar=,
+          must_be_parsed_as s(:op_asgn,
+                              s(:send, s(:send, nil, :foo), :bar),
                               :+,
                               s(:send, nil, :baz))
       end
 
       it 'works with ||= when assigning to an attribute' do
         'foo.bar ||= baz'.
-          must_be_parsed_as s(:op_asgn2,
-                              s(:send, nil, :foo),
-                              :bar=,
-                              :"||",
+          must_be_parsed_as s(:or_asgn,
+                              s(:send, s(:send, nil, :foo), :bar),
                               s(:send, nil, :baz))
       end
     end

@@ -198,28 +198,27 @@ describe RipperParser::Parser do
       describe 'assigning to a collection element' do
         it 'handles multiple indices' do
           'foo[bar, baz] += qux'.
-            must_be_parsed_as s(:op_asgn1,
-                                s(:send, nil, :foo),
-                                s(:arglist,
+            must_be_parsed_as s(:op_asgn,
+                                s(:indexasgn,
+                                  s(:send, nil, :foo),
                                   s(:send, nil, :bar),
-                                  s(:send, nil, :baz)),
-                                :+,
+                                  s(:send, nil, :baz)), :+,
                                 s(:send, nil, :qux))
         end
 
         it 'works with boolean operators' do
           'foo &&= bar'.
-            must_be_parsed_as s(:op_asgn_and,
-                                s(:lvar, :foo), s(:lvasgn, :foo, s(:send, nil, :bar)))
+            must_be_parsed_as s(:and_asgn,
+                                s(:lvasgn, :foo),
+                                s(:send, nil, :bar))
         end
 
         it 'works with boolean operators and blocks' do
           'foo &&= begin; bar; end'.
-            must_be_parsed_as s(:op_asgn_and,
-                                s(:lvar, :foo),
-                                s(:lvasgn, :foo,
-                                  s(:kwbegin,
-                                    s(:send, nil, :bar))))
+            must_be_parsed_as s(:and_asgn,
+                                s(:lvasgn, :foo),
+                                s(:kwbegin,
+                                  s(:send, nil, :bar)))
         end
 
         it 'works with arithmetic operators and blocks' do
