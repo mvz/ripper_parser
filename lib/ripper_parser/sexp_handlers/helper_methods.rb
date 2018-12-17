@@ -45,6 +45,16 @@ module RipperParser
         reject_void_stmt map_process_list list
       end
 
+      def map_process_list_nils(list)
+        map_process_list(list).map do |sub_exp|
+          if sub_exp.sexp_type == :void_stmt
+            nil
+          else
+            sub_exp
+          end
+        end
+      end
+
       def map_process_list(list)
         list.map { |exp| process(exp) }
       end
