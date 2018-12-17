@@ -46,7 +46,7 @@ module RipperParser
         _, cond, body = exp.shift 3
 
         construct_conditional_loop(type, negated_type,
-                                   unwrap_begin(process(cond)),
+                                   process(cond),
                                    unwrap_nil(process(body)),
                                    true)
       end
@@ -56,8 +56,8 @@ module RipperParser
 
         check_at_start = check_at_start?(body)
         construct_conditional_loop(type, negated_type,
-                                   unwrap_begin(process(cond)),
-                                   unwrap_begin(process(body)),
+                                   process(cond),
+                                   process(body),
                                    check_at_start)
       end
 

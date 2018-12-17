@@ -80,7 +80,7 @@ module RipperParser
       private
 
       def handle_condition(cond)
-        cond = unwrap_begin process(cond)
+        cond = process(cond)
         case cond.sexp_type
         when :regexp
           return s(:match_current_line, cond)

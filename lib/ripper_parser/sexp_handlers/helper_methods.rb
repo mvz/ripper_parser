@@ -33,7 +33,7 @@ module RipperParser
       def generic_add_star(exp)
         _, args, splatarg, *rest = shift_all exp
         items = process args
-        items.push s(:splat, unwrap_begin(process(splatarg)))
+        items.push s(:splat, process(splatarg))
         items.push(*map_process_list(rest))
       end
 
@@ -42,15 +42,11 @@ module RipperParser
       end
 
       def map_process_list_compact(list)
-        reject_void_stmt map_unwrap_begin_list map_process_list list
+        reject_void_stmt map_process_list list
       end
 
       def map_process_list(list)
         list.map { |exp| process(exp) }
-      end
-
-      def map_unwrap_begin_list(list)
-        list.map { |exp| unwrap_begin(exp) }
       end
 
       def unwrap_nil(exp)
@@ -63,14 +59,6 @@ module RipperParser
 
       def safe_unwrap_void_stmt(exp)
         unwrap_nil(exp) || s()
-      end
-
-      def unwrap_begin(exp)
-        if exp.sexp_type == :begin
-          exp[1]
-        else
-          exp
-        end
       end
 
       def handle_argument_list(exp)

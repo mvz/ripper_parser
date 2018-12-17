@@ -29,7 +29,7 @@ module RipperParser
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
         elsif SHIFT_OPERATORS.include? op
-          s(:send, unwrap_begin(process(left)), op, unwrap_begin(process(right)))
+          s(:send, process(left), op, process(right))
         else
           s(:send, process(left), op, process(right))
         end
@@ -68,7 +68,7 @@ module RipperParser
 
       def make_boolean_operator(operator, left, right)
         _, left, _, right = rebalance_binary(s(:binary, left, operator, right))
-        s(operator, unwrap_begin(process(left)), process(right))
+        s(operator, process(left), process(right))
       end
 
       def make_regexp_match_operator(operator, left, right)

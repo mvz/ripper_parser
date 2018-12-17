@@ -12,8 +12,6 @@ module RipperParser
           value.sexp_type = :svalue
         when :args
           value = s(:svalue, s(:array, *value.sexp_body))
-        else
-          value = unwrap_begin(value)
         end
 
         with_line_number(lvalue.line,
@@ -134,7 +132,6 @@ module RipperParser
             s(:op_asgn, s(:send, obj, field), operator, value)
           end
         else
-          value = unwrap_begin(value)
           if (mapped = OPERATOR_ASSIGNMENT_MAP[operator])
             s(mapped, create_partial_assignment_sub_type(lvalue), value)
           else
