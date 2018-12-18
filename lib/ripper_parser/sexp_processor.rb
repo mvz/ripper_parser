@@ -158,7 +158,8 @@ module RipperParser
     end
 
     def process_at_rational(exp)
-      make_literal(exp, &:to_r)
+      _, val, pos = exp.shift 3
+      with_position(pos, s(:rational, val.to_r))
     end
 
     # character literals
@@ -242,11 +243,6 @@ module RipperParser
       with_position_from_node_symbol(exp) do |ident|
         s(type, ident)
       end
-    end
-
-    def make_literal(exp)
-      _, val, pos = exp.shift 3
-      with_position(pos, s(:lit, yield(val)))
     end
   end
 end

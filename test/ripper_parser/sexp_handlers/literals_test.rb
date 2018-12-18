@@ -885,7 +885,7 @@ describe RipperParser::Parser do
 
       it 'works for rationals' do
         '1000r'.
-          must_be_parsed_as s(:lit, 1000r)
+          must_be_parsed_as s(:rational, 1000r)
       end
     end
   end
