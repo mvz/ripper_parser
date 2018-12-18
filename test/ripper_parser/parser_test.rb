@@ -68,18 +68,16 @@ describe RipperParser::Parser do
       it 'works with multiple arguments' do
         'return foo, bar'.
           must_be_parsed_as s(:return,
-                              s(:array,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)))
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar))
       end
 
       it 'works with a regular argument and a splat argument' do
         'return foo, *bar'.
           must_be_parsed_as s(:return,
-                              s(:array,
-                                s(:send, nil, :foo),
-                                s(:splat,
-                                  s(:send, nil, :bar))))
+                              s(:send, nil, :foo),
+                              s(:splat,
+                                s(:send, nil, :bar)))
       end
 
       it 'works with a function call with parentheses' do

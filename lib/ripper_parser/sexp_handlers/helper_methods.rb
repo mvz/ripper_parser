@@ -84,19 +84,6 @@ module RipperParser
         process(exp).tap(&:shift)
       end
 
-      def handle_return_argument_list(arglist)
-        args = handle_argument_list(arglist)
-
-        case args.length
-        when 0
-          args
-        when 1
-          args.first
-        else
-          s(:array, *args)
-        end
-      end
-
       def handle_array_elements(elems)
         process(elems).sexp_body
       end

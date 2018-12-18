@@ -131,22 +131,14 @@ module RipperParser
 
       def process_next(exp)
         _, args = exp.shift 2
-        args = handle_return_argument_list(args)
-        if args.empty?
-          s(:next)
-        else
-          s(:next, args)
-        end
+        args = handle_argument_list(args)
+        s(:next, *args)
       end
 
       def process_break(exp)
         _, args = exp.shift 2
-        args = handle_return_argument_list(args)
-        if args.empty?
-          s(:break)
-        else
-          s(:break, args)
-        end
+        args = handle_argument_list(args)
+        s(:break, *args)
       end
 
       def process_lambda(exp)

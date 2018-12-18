@@ -33,7 +33,7 @@ module RipperParser
 
       def process_return(exp)
         _, arglist = exp.shift 2
-        s(:return, handle_return_argument_list(arglist))
+        s(:return, *handle_argument_list(arglist))
       end
 
       def process_return0(exp)

@@ -596,9 +596,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:args),
                               s(:next,
-                                s(:array,
-                                  s(:send, nil, :bar),
-                                  s(:send, nil, :baz))))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
 
       it 'works with a function call with parentheses' do
@@ -655,9 +654,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:args),
                               s(:break,
-                                s(:array,
-                                  s(:send, nil, :bar),
-                                  s(:send, nil, :baz))))
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)))
       end
 
       it 'works with break with a function call with parentheses' do
