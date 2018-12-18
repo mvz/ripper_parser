@@ -586,9 +586,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:args),
                               s(:next,
-                                s(:svalue,
-                                  s(:splat,
-                                    s(:send, nil, :bar)))))
+                                s(:splat,
+                                  s(:send, nil, :bar))))
       end
 
       it 'works with several arguments' do
@@ -646,9 +645,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:args),
                               s(:break,
-                                s(:svalue,
-                                  s(:splat,
-                                    s(:send, nil, :bar)))))
+                                s(:splat,
+                                  s(:send, nil, :bar))))
       end
 
       it 'works with break with several arguments' do

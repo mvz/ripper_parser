@@ -9,9 +9,9 @@ module RipperParser
 
         case value.sexp_type
         when :mrhs
-          value.sexp_type = :svalue
+          value = value.sexp_body.first
         when :args
-          value = s(:svalue, s(:array, *value.sexp_body))
+          value = s(:array, *value.sexp_body)
         end
 
         with_line_number(lvalue.line,

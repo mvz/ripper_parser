@@ -26,18 +26,16 @@ describe RipperParser::Parser do
         it 'works in the simple case' do
           'foo = *bar'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:svalue,
-                                  s(:splat,
-                                    s(:send, nil, :bar))))
+                                s(:splat,
+                                  s(:send, nil, :bar)))
         end
 
         it 'works with blocks' do
           'foo = *begin; bar; end'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:svalue,
-                                  s(:splat,
-                                    s(:kwbegin,
-                                      s(:send, nil, :bar)))))
+                                s(:splat,
+                                  s(:kwbegin,
+                                    s(:send, nil, :bar))))
         end
       end
 
@@ -45,20 +43,18 @@ describe RipperParser::Parser do
         it 'works in the simple case' do
           'foo = bar, baz'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:svalue,
-                                  s(:array,
-                                    s(:send, nil, :bar),
-                                    s(:send, nil, :baz))))
+                                s(:array,
+                                  s(:send, nil, :bar),
+                                  s(:send, nil, :baz)))
         end
 
         it 'works with a splat' do
           'foo = bar, *baz'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:svalue,
-                                  s(:array,
-                                    s(:send, nil, :bar),
-                                    s(:splat,
-                                      s(:send, nil, :baz)))))
+                                s(:array,
+                                  s(:send, nil, :bar),
+                                  s(:splat,
+                                    s(:send, nil, :baz))))
         end
       end
 

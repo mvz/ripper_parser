@@ -61,9 +61,8 @@ describe RipperParser::Parser do
       it 'works with a splat argument' do
         'return *foo'.
           must_be_parsed_as s(:return,
-                              s(:svalue,
-                                s(:splat,
-                                  s(:send, nil, :foo))))
+                              s(:splat,
+                                s(:send, nil, :foo)))
       end
 
       it 'works with multiple arguments' do

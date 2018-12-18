@@ -91,12 +91,7 @@ module RipperParser
         when 0
           args
         when 1
-          arg = args.first
-          if arg.sexp_type == :splat
-            s(:svalue, arg)
-          else
-            arg
-          end
+          args.first
         else
           s(:array, *args)
         end
