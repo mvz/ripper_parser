@@ -63,12 +63,11 @@ module RipperParser
 
         values = handle_argument_list values
 
-        truepart = map_process_list_compact truepart.sexp_body
-        truepart = [nil] if truepart.empty?
+        truepart = unwrap_nil process truepart
 
         s(s(:when,
             *values,
-            *truepart),
+            truepart),
           *falsepart)
       end
 

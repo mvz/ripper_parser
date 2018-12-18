@@ -429,8 +429,9 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:when,
                                 s(:send, nil, :bar),
-                                s(:send, nil, :baz),
-                                s(:send, nil, :qux)),
+                                s(:begin,
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux))),
                               nil)
       end
 
@@ -442,6 +443,18 @@ describe RipperParser::Parser do
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               s(:send, nil, :qux))
+      end
+
+      it 'works with multiple statements in the else block' do
+        'case foo; when bar; baz; else; qux; quuz end'.
+          must_be_parsed_as s(:case,
+                              s(:send, nil, :foo),
+                              s(:when,
+                                s(:send, nil, :bar),
+                                s(:send, nil, :baz)),
+                              s(:begin,
+                                s(:send, nil, :qux),
+                                s(:send, nil, :quuz)))
       end
 
       it 'works with an empty when block' do
