@@ -22,10 +22,10 @@ describe RipperParser::Parser do
       it 'handles double :and' do
         'foo and bar and baz'.
           must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
                               s(:and,
-                                s(:send, nil, :bar),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'handles :or' do
@@ -38,10 +38,10 @@ describe RipperParser::Parser do
       it 'handles double :or' do
         'foo or bar or baz'.
           must_be_parsed_as s(:or,
-                              s(:send, nil, :foo),
                               s(:or,
-                                s(:send, nil, :bar),
-                                s(:send, nil, :baz)))
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
       end
 
       it 'handles :or after :and' do
@@ -99,10 +99,10 @@ describe RipperParser::Parser do
       it 'handles nested :|| with parentheses' do
         'foo || (bar || baz) || qux'.
           must_be_parsed_as  s(:or,
-                               s(:send, nil, :foo),
                                s(:or,
-                                 s(:or, s(:send, nil, :bar), s(:send, nil, :baz)),
-                                 s(:send, nil, :qux)))
+                                 s(:send, nil, :foo),
+                                 s(:or, s(:send, nil, :bar), s(:send, nil, :baz))),
+                               s(:send, nil, :qux))
       end
 
       it 'converts :|| to :or' do
@@ -115,23 +115,23 @@ describe RipperParser::Parser do
       it 'handles triple :and' do
         'foo and bar and baz and qux'.
           must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
                               s(:and,
-                                s(:send, nil, :bar),
                                 s(:and,
-                                  s(:send, nil, :baz),
-                                  s(:send, nil, :qux))))
+                                  s(:send, nil, :foo),
+                                  s(:send, nil, :bar)),
+                                s(:send, nil, :baz)),
+                              s(:send, nil, :qux))
       end
 
       it 'handles triple :&&' do
         'foo && bar && baz && qux'.
           must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
                               s(:and,
-                                s(:send, nil, :bar),
                                 s(:and,
-                                  s(:send, nil, :baz),
-                                  s(:send, nil, :qux))))
+                                  s(:send, nil, :foo),
+                                  s(:send, nil, :bar)),
+                                s(:send, nil, :baz)),
+                              s(:send, nil, :qux))
       end
     end
 
