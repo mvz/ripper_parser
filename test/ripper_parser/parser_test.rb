@@ -592,17 +592,17 @@ describe RipperParser::Parser do
       it 'handles assignment inside binary operator expressions' do
         'foo + (bar = baz)'.
           must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :+,
-                              s(:lvasgn,
-                                :bar,
-                                s(:send, nil, :baz)))
+                              s(:send, nil, :foo), :+,
+                              s(:begin,
+                                s(:lvasgn, :bar,
+                                  s(:send, nil, :baz))))
       end
 
       it 'handles assignment inside unary operator expressions' do
         '+(foo = bar)'.
           must_be_parsed_as s(:send,
-                              s(:lvasgn, :foo, s(:send, nil, :bar)),
+                              s(:begin,
+                                s(:lvasgn, :foo, s(:send, nil, :bar))),
                               :+@)
       end
     end

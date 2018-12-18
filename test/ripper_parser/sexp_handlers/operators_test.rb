@@ -90,9 +90,10 @@ describe RipperParser::Parser do
       it 'handles :|| with parentheses' do
         '(foo || bar) || baz'.
           must_be_parsed_as s(:or,
-                              s(:or,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
+                              s(:begin,
+                                s(:or,
+                                  s(:send, nil, :foo),
+                                  s(:send, nil, :bar))),
                               s(:send, nil, :baz))
       end
 
@@ -101,7 +102,10 @@ describe RipperParser::Parser do
           must_be_parsed_as  s(:or,
                                s(:or,
                                  s(:send, nil, :foo),
-                                 s(:or, s(:send, nil, :bar), s(:send, nil, :baz))),
+                                 s(:begin,
+                                   s(:or,
+                                     s(:send, nil, :bar),
+                                     s(:send, nil, :baz)))),
                                s(:send, nil, :qux))
       end
 

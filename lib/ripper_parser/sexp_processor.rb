@@ -74,8 +74,7 @@ module RipperParser
       when 1
         statements.first
       else
-        first = statements.shift
-        s(:begin, first, *statements)
+        s(:begin, *statements)
       end
     end
 
@@ -119,11 +118,23 @@ module RipperParser
 
     def process_paren(exp)
       _, body = exp.shift 2
-      result = process body
-      if result.sexp_type == :void_stmt
-        s(:nil)
+      if body.sexp_type == :stmts
+        result = process body
+        case result.sexp_type
+        when :void_stmt
+          s(:nil)
+        when :begin
+          result
+        else
+          s(:begin, result)
+        end
       else
-        result
+        result = process body
+        if result.sexp_type == :void_stmt
+          s(:nil)
+        else
+          result
+        end
       end
     end
 

@@ -93,7 +93,9 @@ describe RipperParser::Parser do
       it 'handles block conditions' do
         'if (foo; bar); baz; end'.
           must_be_parsed_as s(:if,
-                              s(:begin, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              s(:begin,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
                               s(:send, nil, :baz),
                               nil)
       end
@@ -139,6 +141,23 @@ describe RipperParser::Parser do
                                 s(:irange, s(:send, nil, :foo), s(:send, nil, :bar))),
                               s(:send, nil, :baz),
                               nil)
+      end
+
+      it 'works with assignment in the condition' do
+        'if foo = bar; baz; end'.
+          must_be_parsed_as s(:if,
+                              s(:lvasgn, :foo,
+                                s(:send, nil, :bar)),
+                              s(:send, nil, :baz), nil)
+      end
+
+      it 'works with bracketed assignment in the condition' do
+        'if (foo = bar); baz; end'.
+          must_be_parsed_as s(:if,
+                              s(:begin,
+                                s(:lvasgn, :foo,
+                                  s(:send, nil, :bar))),
+                              s(:send, nil, :baz), nil)
       end
     end
 

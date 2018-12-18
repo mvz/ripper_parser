@@ -128,18 +128,19 @@ describe RipperParser::Parser do
                                 :foo,
                                 s(:args,
                                   s(:optarg, :bar,
-                                    s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
+                                    s(:begin,
+                                      s(:cvasgn, :@@baz, s(:send, nil, :qux))))),
                                 nil)
         end
 
         it 'works inside method arguments of a singleton method' do
           'def self.foo(bar = (@@baz = qux)); end'.
             must_be_parsed_as s(:defs,
-                                s(:self),
-                                :foo,
+                                s(:self), :foo,
                                 s(:args,
                                   s(:optarg, :bar,
-                                    s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
+                                    s(:begin,
+                                      s(:cvasgn, :@@baz, s(:send, nil, :qux))))),
                                 nil)
         end
       end
