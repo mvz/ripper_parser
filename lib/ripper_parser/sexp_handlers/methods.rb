@@ -78,7 +78,7 @@ module RipperParser
         when 0
           [nil]
         else
-          if block.sexp_type == :block
+          if block.sexp_type == :begin
             block.sexp_body
           else
             [block]

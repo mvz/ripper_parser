@@ -12,8 +12,6 @@ module RipperParser
       processor = SexpProcessor.new(filename: filename)
       result = processor.process exp
 
-      result = result[1] if result.sexp_type == :begin
-
       if result.sexp_type == :void_stmt
         nil
       else

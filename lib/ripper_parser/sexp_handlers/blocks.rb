@@ -92,7 +92,7 @@ module RipperParser
 
         body = s()
 
-        main = wrap_in_block map_process_list_compact main.sexp_body
+        main = wrap_in_begin map_process_list_compact main.sexp_body
         body << main
 
         if rescue_block
@@ -109,7 +109,7 @@ module RipperParser
           body = s(s(:ensure, *body))
         end
 
-        wrap_in_block(body) || s()
+        wrap_in_begin(body) || s()
       end
 
       def process_rescue_mod(exp)
@@ -214,14 +214,14 @@ module RipperParser
         end
       end
 
-      def wrap_in_block(statements)
+      def wrap_in_begin(statements)
         case statements.length
         when 0
           nil
         when 1
           statements.first
         else
-          s(:block, *statements)
+          s(:begin, *statements)
         end
       end
     end

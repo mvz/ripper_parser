@@ -15,7 +15,7 @@ describe RipperParser::Parser do
         'if foo; bar; baz; end'.
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
-                              s(:block,
+                              s(:begin,
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)),
                               nil)
@@ -93,7 +93,7 @@ describe RipperParser::Parser do
       it 'handles block conditions' do
         'if (foo; bar); baz; end'.
           must_be_parsed_as s(:if,
-                              s(:block, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              s(:begin, s(:send, nil, :foo), s(:send, nil, :bar)),
                               s(:send, nil, :baz),
                               nil)
       end
@@ -210,7 +210,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:if,
                               s(:send, nil, :foo),
                               nil,
-                              s(:block,
+                              s(:begin,
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)))
       end

@@ -75,12 +75,7 @@ module RipperParser
         statements.first
       else
         first = statements.shift
-        if first.sexp_type == :block
-          first.shift
-          s(:block, *first, *statements)
-        else
-          s(:block, first, *statements)
-        end
+        s(:begin, first, *statements)
       end
     end
 
@@ -244,7 +239,7 @@ module RipperParser
 
       return [nil] if body.empty?
 
-      if body.sexp_type == :block
+      if body.sexp_type == :begin
         body.sexp_body
       else
         [body]

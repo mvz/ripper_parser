@@ -725,7 +725,7 @@ describe RipperParser::Parser do
 
       it 'works for a block with two lines' do
         result = parser.parse "foo\nbar\n"
-        result.sexp_type.must_equal :block
+        result.sexp_type.must_equal :begin
         result[1].line.must_equal 1
         result[2].line.must_equal 2
         result.line.must_equal 1
@@ -753,7 +753,7 @@ describe RipperParser::Parser do
 
       it 'works for a local variable' do
         result = parser.parse "foo = bar\nfoo\n"
-        result.sexp_type.must_equal :block
+        result.sexp_type.must_equal :begin
         result[1].line.must_equal 1
         result[2].line.must_equal 2
         result.line.must_equal 1
@@ -834,7 +834,7 @@ describe RipperParser::Parser do
       describe 'when a line number is passed' do
         it 'shifts all line numbers as appropriate' do
           result = parser.parse "foo\nbar\n", '(string)', 3
-          result.must_equal s(:block,
+          result.must_equal s(:begin,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar))
           result.line.must_equal 3

@@ -31,7 +31,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
                               s(:args),
-                              s(:block,
+                              s(:begin,
                                 s(:send, nil, :bar),
                                 s(:kwbegin, s(:send, nil, :baz))))
       end
@@ -317,11 +317,11 @@ describe RipperParser::Parser do
         'begin; foo; bar; rescue; baz; qux; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
-                                s(:block,
+                                s(:begin,
                                   s(:send, nil, :foo),
                                   s(:send, nil, :bar)),
                                 s(:resbody, nil, nil,
-                                  s(:block,
+                                  s(:begin,
                                     s(:send, nil, :baz),
                                     s(:send, nil, :qux))), nil))
       end
@@ -534,10 +534,10 @@ describe RipperParser::Parser do
         'begin; foo; bar; ensure; baz; qux; end'.
           must_be_parsed_as s(:kwbegin,
                               s(:ensure,
-                                s(:block,
+                                s(:begin,
                                   s(:send, nil, :foo),
                                   s(:send, nil, :bar)),
-                                s(:block,
+                                s(:begin,
                                   s(:send, nil, :baz),
                                   s(:send, nil, :qux))))
       end
@@ -682,19 +682,20 @@ describe RipperParser::Parser do
     end
 
     describe 'for lists of consecutive statments' do
-      it 'removes extra blocks for grouped statements at the start of the list' do
+      it 'keeps extra blocks for grouped statements at the start of the list' do
         '(foo; bar); baz'.
-          must_be_parsed_as s(:block,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
+          must_be_parsed_as s(:begin,
+                              s(:begin,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar)),
                               s(:send, nil, :baz))
       end
 
       it 'keeps extra blocks for grouped statements at the end of the list' do
         'foo; (bar; baz)'.
-          must_be_parsed_as s(:block,
+          must_be_parsed_as s(:begin,
                               s(:send, nil, :foo),
-                              s(:block,
+                              s(:begin,
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)))
       end
@@ -737,7 +738,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:block,
                               s(:lambda),
                               s(:args, s(:arg, :foo)),
-                              s(:block,
+                              s(:begin,
                                 s(:send, nil, :bar),
                                 s(:send, nil, :baz)))
       end
