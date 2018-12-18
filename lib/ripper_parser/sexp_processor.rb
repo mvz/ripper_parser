@@ -49,7 +49,7 @@ module RipperParser
       _, const_ref, body = exp.shift 3
       const, line = const_ref_to_const_with_line_number const_ref
       with_line_number(line,
-                       s(:module, const, *class_or_module_body(body)))
+                       s(:module, const, class_or_module_body(body)))
     end
 
     def process_class(exp)
@@ -57,12 +57,12 @@ module RipperParser
       const, line = const_ref_to_const_with_line_number const_ref
       parent = process(parent)
       with_line_number(line,
-                       s(:class, const, parent, *class_or_module_body(body)))
+                       s(:class, const, parent, class_or_module_body(body)))
     end
 
     def process_sclass(exp)
       _, klass, block = exp.shift 3
-      s(:sclass, process(klass), *class_or_module_body(block))
+      s(:sclass, process(klass), class_or_module_body(block))
     end
 
     def process_stmts(exp)
@@ -235,15 +235,7 @@ module RipperParser
     end
 
     def class_or_module_body(exp)
-      body = process(exp)
-
-      return [nil] if body.empty?
-
-      if body.sexp_type == :begin
-        body.sexp_body
-      else
-        [body]
-      end
+      nil_if_empty process(exp)
     end
 
     def make_identifier(type, exp)

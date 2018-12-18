@@ -67,6 +67,15 @@ module RipperParser
         end
       end
 
+      def nil_if_empty(block)
+        case block.length
+        when 0
+          nil
+        else
+          block
+        end
+      end
+
       def safe_unwrap_void_stmt(exp)
         unwrap_nil(exp) || s()
       end

@@ -58,8 +58,15 @@ module RipperParser
       def process_begin(exp)
         _, body = exp.shift 2
 
-        body = class_or_module_body(body).compact
-        s(:kwbegin, *body)
+        body = process(body)
+
+        return s(:kwbegin) if body.empty?
+
+        if body.sexp_type == :begin
+          s(:kwbegin, *body.sexp_body)
+        else
+          s(:kwbegin, body)
+        end
       end
 
       def process_rescue(exp)

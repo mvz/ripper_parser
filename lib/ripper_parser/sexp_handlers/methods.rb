@@ -73,13 +73,7 @@ module RipperParser
       end
 
       def method_body(exp)
-        block = process exp
-        case block.length
-        when 0
-          nil
-        else
-          block
-        end
+        nil_if_empty process(exp)
       end
 
       SPECIAL_ARG_MARKER = {

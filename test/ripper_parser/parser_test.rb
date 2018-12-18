@@ -668,11 +668,12 @@ describe RipperParser::Parser do
         result.must_equal s(:class,
                             s(:const, nil, :Foo),
                             nil,
-                            s(:def, :foo, s(:args), s(:send, nil, :bar)),
-                            s(:def, :bar, s(:args), s(:send, nil, :baz)))
+                            s(:begin,
+                              s(:def, :foo, s(:args), s(:send, nil, :bar)),
+                              s(:def, :bar, s(:args), s(:send, nil, :baz))))
         result.comments.must_equal "# Foo\n"
-        result[3].comments.must_equal "# foo\n"
-        result[4].comments.must_equal "# bar\n"
+        result[3][1].comments.must_equal "# foo\n"
+        result[3][2].comments.must_equal "# bar\n"
       end
 
       it 'handles the use of symbols that are keywords' do
