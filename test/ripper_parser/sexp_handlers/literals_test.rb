@@ -251,10 +251,12 @@ describe RipperParser::Parser do
           '"2\302\275"'.must_be_parsed_as s(:str, '2½')
         end
 
+        # TODO: Raise error instead
         it 'does not convert to unicode if result is not valid' do
+          bytes = ['2'.ord, 0x82, 0302, 0275]
+          string = bytes.pack('c4')
           '"2\x82\302\275"'.
-            must_be_parsed_as s(:str,
-                                "2\x82\xC2\xBD".force_encoding('ascii-8bit'))
+            must_be_parsed_as s(:str, string)
         end
       end
 
@@ -685,27 +687,27 @@ describe RipperParser::Parser do
 
       it 'works for escaped character literals with meta' do
         '?\\M-a'.
-          must_be_parsed_as s(:str, "\xE1".force_encoding('ascii-8bit'))
+          must_be_parsed_as s(:str, [0xE1].pack('c'))
       end
 
       it 'works for escaped character literals with meta plus shorthand ctrl' do
         '?\\M-\\ca'.
-          must_be_parsed_as s(:str, "\x81".force_encoding('ascii-8bit'))
+          must_be_parsed_as s(:str, [0x81].pack('c'))
       end
 
       it 'works for escaped character literals with shorthand ctrl plus meta' do
         '?\\c\\M-a'.
-          must_be_parsed_as s(:str, "\x81".force_encoding('ascii-8bit'))
+          must_be_parsed_as s(:str, [0x81].pack('c'))
       end
 
       it 'works for escaped character literals with meta plus ctrl' do
         '?\\M-\\C-a'.
-          must_be_parsed_as s(:str, "\x81".force_encoding('ascii-8bit'))
+          must_be_parsed_as s(:str, [0x81].pack('c'))
       end
 
       it 'works for escaped character literals with ctrl plus meta' do
         '?\\C-\\M-a'.
-          must_be_parsed_as s(:str, "\x81".force_encoding('ascii-8bit'))
+          must_be_parsed_as s(:str, [0x81].pack('c'))
       end
     end
 
