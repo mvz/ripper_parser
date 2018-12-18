@@ -45,17 +45,17 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo), true)
       end
 
-      it 'converts a negated match condition to :until' do
+      it 'handles a negated match condition' do
         'while foo !~ bar; baz; end'.
-          must_be_parsed_as s(:until,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
+          must_be_parsed_as s(:while,
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                               s(:send, nil, :baz), true)
       end
 
-      it 'converts a negated match condition to :until in the postfix case' do
+      it 'handles a negated match condition in the postfix case' do
         'baz while foo !~ bar'.
-          must_be_parsed_as s(:until,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
+          must_be_parsed_as s(:while,
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                               s(:send, nil, :baz), true)
       end
 
@@ -119,17 +119,17 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo), true)
       end
 
-      it 'converts a negated match condition to :while' do
+      it 'handles a negated match condition' do
         'until foo !~ bar; baz; end'.
-          must_be_parsed_as s(:while,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
+          must_be_parsed_as s(:until,
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                               s(:send, nil, :baz), true)
       end
 
-      it 'converts a negated match condition to :while in the postfix case' do
+      it 'handles a negated match condition in the postfix case' do
         'baz until foo !~ bar'.
-          must_be_parsed_as s(:while,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
+          must_be_parsed_as s(:until,
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                               s(:send, nil, :baz), true)
       end
 

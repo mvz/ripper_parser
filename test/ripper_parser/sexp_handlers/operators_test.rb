@@ -4,11 +4,10 @@ describe RipperParser::Parser do
   describe '#parse' do
     describe 'for negated operators' do
       specify do
-        'foo !~ bar'.must_be_parsed_as s(:not,
-                                         s(:send,
-                                           s(:send, nil, :foo),
-                                           :=~,
-                                           s(:send, nil, :bar)))
+        'foo !~ bar'.must_be_parsed_as s(:send,
+                                         s(:send, nil, :foo),
+                                         :!~,
+                                         s(:send, nil, :bar))
       end
     end
 

@@ -13,17 +13,11 @@ module RipperParser
         not: :!
       }.freeze
 
-      NEGATED_BINARY_OPERATOR_MAP = {
-        '!~': :=~
-      }.freeze
-
       def process_binary(exp)
         _, left, op, right = exp.shift 4
 
         if op == :=~
           make_regexp_match_operator(op, left, right)
-        elsif (mapped = NEGATED_BINARY_OPERATOR_MAP[op])
-          s(:not, make_regexp_match_operator(mapped, left, right))
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
         else

@@ -119,9 +119,9 @@ describe RipperParser::Parser do
       it 'handles negative match operator' do
         'if foo !~ bar; baz; else; qux; end'.
           must_be_parsed_as s(:if,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
-                              s(:send, nil, :qux),
-                              s(:send, nil, :baz))
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
+                              s(:send, nil, :baz),
+                              s(:send, nil, :qux))
       end
 
       it 'works with begin..end block in condition' do
@@ -182,9 +182,9 @@ describe RipperParser::Parser do
       it 'handles negative match operator' do
         'baz if foo !~ bar'.
           must_be_parsed_as s(:if,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
-                              nil,
-                              s(:send, nil, :baz))
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
+                              s(:send, nil, :baz),
+                              nil)
       end
 
       it 'works with begin..end block in condition' do
@@ -270,9 +270,9 @@ describe RipperParser::Parser do
       it 'handles negative match operator' do
         'unless foo !~ bar; baz; else; qux; end'.
           must_be_parsed_as s(:if,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
-                              s(:send, nil, :baz),
-                              s(:send, nil, :qux))
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
+                              s(:send, nil, :qux),
+                              s(:send, nil, :baz))
       end
     end
 
@@ -311,9 +311,9 @@ describe RipperParser::Parser do
       it 'handles negative match operator' do
         'baz unless foo !~ bar'.
           must_be_parsed_as s(:if,
-                              s(:send, s(:send, nil, :foo), :=~, s(:send, nil, :bar)),
-                              s(:send, nil, :baz),
-                              nil)
+                              s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
+                              nil,
+                              s(:send, nil, :baz))
       end
     end
 
@@ -377,11 +377,10 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:send, nil, :bar),
                               s(:if,
-                                s(:not,
-                                  s(:send,
-                                    s(:send, nil, :baz),
-                                    :=~,
-                                    s(:send, nil, :qux))),
+                                s(:send,
+                                  s(:send, nil, :baz),
+                                  :!~,
+                                  s(:send, nil, :qux)),
                                 s(:send, nil, :quuz),
                                 nil))
       end
