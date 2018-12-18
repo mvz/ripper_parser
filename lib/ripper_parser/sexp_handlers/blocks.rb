@@ -64,8 +64,7 @@ module RipperParser
 
       def process_rescue(exp)
         _, eclass, evar, block, after = exp.shift 5
-        rescue_block = map_process_list_compact block.sexp_body
-        rescue_block << nil if rescue_block.empty?
+        rescue_block = unwrap_nil process block
 
         capture = if eclass
                     if eclass.first.is_a? Symbol
@@ -79,15 +78,13 @@ module RipperParser
                     else
                       s(:array, process(eclass[0]))
                     end
-                  else
-                    s(:array)
                   end
 
-        capture << create_assignment_sub_type(process(evar), s(:gvar, :$!)) if evar
-
+        assignment = create_partial_assignment_sub_type(process(evar)) if evar
+        after = after ? process(after) : []
         s(
-          s(:resbody, capture, *rescue_block),
-          *process(after))
+          s(:resbody, capture, assignment, rescue_block),
+          *after)
       end
 
       def process_bodystmt(exp)
@@ -96,18 +93,19 @@ module RipperParser
         body = s()
 
         main = wrap_in_block map_process_list_compact main.sexp_body
-        body << main if main
+        body << main
 
         if rescue_block
           body.push(*process(rescue_block))
-          body << process(else_block) if else_block
+          body << process(else_block)
           body = s(s(:rescue, *body))
         elsif else_block
           body << s(:begin, process(else_block))
         end
 
         if ensure_block
-          body << process(ensure_block)
+          ensure_block = process ensure_block
+          body << (ensure_block.empty? ? nil : ensure_block)
           body = s(s(:ensure, *body))
         end
 
@@ -116,12 +114,12 @@ module RipperParser
 
       def process_rescue_mod(exp)
         _, scary, safe = exp.shift 3
-        s(:rescue, process(scary), s(:resbody, s(:array), process(safe)))
+        s(:rescue, process(scary), s(:resbody, nil, nil, process(safe)))
       end
 
       def process_ensure(exp)
         _, block = exp.shift 2
-        convert_empty_to_nil_symbol safe_unwrap_void_stmt process(block)
+        safe_unwrap_void_stmt process(block)
       end
 
       def process_next(exp)
@@ -205,15 +203,6 @@ module RipperParser
         return [] unless block
 
         [process(block)]
-      end
-
-      def convert_empty_to_nil_symbol(block)
-        case block.length
-        when 0
-          s(:nil)
-        else
-          block
-        end
       end
 
       def make_iter(call, args, stmt)

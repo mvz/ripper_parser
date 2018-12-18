@@ -467,8 +467,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:case,
                               s(:send, nil, :foo),
                               s(:when,
-                                
-                                  s(:splat, s(:send, nil, :bar)),
+                                s(:splat, s(:send, nil, :bar)),
                                 s(:send, nil, :baz)),
                               nil)
       end

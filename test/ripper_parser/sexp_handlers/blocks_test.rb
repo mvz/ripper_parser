@@ -251,12 +251,10 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array),
+                                s(:resbody, nil, nil,
                                   s(:send, nil, :bar)),
-                                s(:resbody,
-                                  s(:array),
-                                  s(:send, nil, :baz))))
+                                s(:resbody, nil, nil,
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works for a block with rescue and else' do
@@ -264,8 +262,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array),
+                                s(:resbody, nil, nil,
                                   s(:send, nil, :bar)),
                                 s(:send, nil, :baz)))
       end
@@ -285,10 +282,9 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array,
-                                    s(:lvasgn, :bar, s(:gvar, :$!))),
-                                  s(:send, nil, :baz))))
+                                s(:resbody, nil,
+                                  s(:lvasgn, :bar),
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works with assignment of the exception to an instance variable' do
@@ -296,17 +292,16 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array,
-                                    s(:ivasgn, :@bar, s(:gvar, :$!))),
-                                  s(:send, nil, :baz))))
+                                s(:resbody, nil,
+                                  s(:ivasgn, :@bar),
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works with empty main and rescue bodies' do
         'begin; rescue; end'.
           must_be_parsed_as s(:kwbegin,
-                              s(:rescue,
-                                s(:resbody, s(:array), nil)))
+                              s(:rescue, nil,
+                                s(:resbody, nil, nil, nil), nil))
       end
 
       it 'works with single statement main and rescue bodies' do
@@ -314,9 +309,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array),
-                                  s(:send, nil, :bar))))
+                                s(:resbody, nil, nil,
+                                  s(:send, nil, :bar)), nil))
       end
 
       it 'works with multi-statement main and rescue bodies' do
@@ -326,10 +320,10 @@ describe RipperParser::Parser do
                                 s(:block,
                                   s(:send, nil, :foo),
                                   s(:send, nil, :bar)),
-                                s(:resbody,
-                                  s(:array),
-                                  s(:send, nil, :baz),
-                                  s(:send, nil, :qux))))
+                                s(:resbody, nil, nil,
+                                  s(:block,
+                                    s(:send, nil, :baz),
+                                    s(:send, nil, :qux))), nil))
       end
 
       it 'works with assignment to an error variable' do
@@ -337,9 +331,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody,
-                                  s(:array, s(:lvasgn, :e, s(:gvar, :$!))),
-                                  s(:send, nil, :bar))))
+                                s(:resbody, nil, s(:lvasgn, :e),
+                                  s(:send, nil, :bar)), nil))
       end
 
       it 'works with filtering of the exception type' do
@@ -348,8 +341,8 @@ describe RipperParser::Parser do
                               s(:rescue,
                                 s(:send, nil, :foo),
                                 s(:resbody,
-                                  s(:array, s(:const, nil, :Bar)),
-                                  s(:send, nil, :baz))))
+                                  s(:array, s(:const, nil, :Bar)), nil,
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works with filtering of the exception type and assignment to an error variable' do
@@ -359,9 +352,10 @@ describe RipperParser::Parser do
                                 s(:send, nil, :foo),
                                 s(:resbody,
                                   s(:array,
-                                    s(:const, nil, :Bar),
-                                    s(:lvasgn, :e, s(:gvar, :$!))),
-                                  s(:send, nil, :baz))))
+                                    s(:const, nil, :Bar)),
+                                  s(:lvasgn, :e),
+                                  s(:send, nil, :baz)),
+                                nil))
       end
 
       it 'works rescuing multiple exception types' do
@@ -371,7 +365,9 @@ describe RipperParser::Parser do
                                 s(:send, nil, :foo),
                                 s(:resbody,
                                   s(:array, s(:const, nil, :Bar), s(:const, nil, :Baz)),
-                                  s(:send, nil, :qux))))
+                                  nil,
+                                  s(:send, nil, :qux)),
+                                nil))
       end
 
       it 'works rescuing a splatted list of exception types' do
@@ -380,8 +376,8 @@ describe RipperParser::Parser do
                               s(:rescue,
                                 s(:send, nil, :foo),
                                 s(:resbody,
-                                  s(:splat, s(:send, nil, :bar)),
-                                  s(:send, nil, :baz))))
+                                  s(:splat, s(:send, nil, :bar)), nil,
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works rescuing a complex list of exception types' do
@@ -392,8 +388,8 @@ describe RipperParser::Parser do
                                 s(:resbody,
                                   s(:array,
                                     s(:splat, s(:send, nil, :bar)),
-                                    s(:const, nil, :Baz)),
-                                  s(:send, nil, :qux))))
+                                    s(:const, nil, :Baz)), nil,
+                                  s(:send, nil, :qux)), nil))
       end
 
       it 'works with a nested begin..end block' do
@@ -401,9 +397,9 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:rescue,
                                 s(:send, nil, :foo),
-                                s(:resbody, s(:array),
+                                s(:resbody, nil, nil,
                                   s(:kwbegin,
-                                    s(:send, nil, :bar)))))
+                                    s(:send, nil, :bar))), nil))
       end
 
       it 'works in a plain method body' do
@@ -414,8 +410,8 @@ describe RipperParser::Parser do
                               s(:rescue,
                                 s(:send, nil, :bar),
                                 s(:resbody,
-                                  s(:array),
-                                  s(:send, nil, :baz))))
+                                  nil, nil,
+                                  s(:send, nil, :baz)), nil))
       end
 
       it 'works in a method body inside begin..end with rescue' do
@@ -427,7 +423,7 @@ describe RipperParser::Parser do
                               s(:kwbegin,
                                 s(:rescue,
                                   s(:send, nil, :baz),
-                                  s(:resbody, s(:array), s(:send, nil, :qux)))),
+                                  s(:resbody, nil, nil, s(:send, nil, :qux)), nil)),
                               s(:send, nil, :quuz))
       end
 
@@ -458,8 +454,7 @@ describe RipperParser::Parser do
         'foo rescue bar'.
           must_be_parsed_as s(:rescue,
                               s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array),
+                              s(:resbody, nil, nil,
                                 s(:send, nil, :bar)))
       end
 
@@ -467,8 +462,7 @@ describe RipperParser::Parser do
         'foo rescue next'.
           must_be_parsed_as s(:rescue,
                               s(:send, nil, :foo),
-                              s(:resbody,
-                                s(:array),
+                              s(:resbody, nil, nil,
                                 s(:next)))
       end
 
@@ -477,7 +471,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:lvasgn, :foo,
                               s(:rescue,
                                 s(:send, nil, :bar),
-                                s(:resbody, s(:array), s(:send, nil, :baz))))
+                                s(:resbody, nil, nil, s(:send, nil, :baz))))
       end
 
       it 'works with assignment with argument' do
@@ -485,19 +479,19 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:lvasgn, :foo,
                               s(:rescue,
                                 s(:send, nil, :bar, s(:send, nil, :baz)),
-                                s(:resbody, s(:array), s(:send, nil, :qux))))
+                                s(:resbody, nil, nil, s(:send, nil, :qux))))
       end
 
       it 'works with assignment with argument without brackets' do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
                        s(:lvasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
-                       s(:resbody, s(:array), s(:send, nil, :qux)))
+                       s(:resbody, nil, nil, s(:send, nil, :qux)))
                    else
                      s(:lvasgn, :foo,
                        s(:rescue,
                          s(:send, nil, :bar, s(:send, nil, :baz)),
-                         s(:resbody, s(:array), s(:send, nil, :qux))))
+                         s(:resbody, nil, nil, s(:send, nil, :qux))))
                    end
         'foo = bar baz rescue qux'.must_be_parsed_as expected
       end
@@ -506,12 +500,12 @@ describe RipperParser::Parser do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
                        s(:lvasgn, :foo, s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
-                       s(:resbody, s(:array), s(:send, nil, :quuz)))
+                       s(:resbody, nil, nil, s(:send, nil, :quuz)))
                    else
                      s(:lvasgn, :foo,
                        s(:rescue,
                          s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
-                         s(:resbody, s(:array), s(:send, nil, :quuz))))
+                         s(:resbody, nil, nil, s(:send, nil, :quuz))))
                    end
         'foo = Bar.baz qux rescue quuz'.
           must_be_parsed_as expected
@@ -523,7 +517,7 @@ describe RipperParser::Parser do
                               s(:masgn,
                                 s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                 s(:send, nil, :baz)),
-                              s(:resbody, s(:array), s(:send, nil, :qux)))
+                              s(:resbody, nil, nil, s(:send, nil, :qux)))
       end
     end
 
@@ -554,16 +548,16 @@ describe RipperParser::Parser do
                               s(:ensure,
                                 s(:rescue,
                                   s(:send, nil, :foo),
-                                  s(:resbody,
-                                    s(:array),
-                                    s(:send, nil, :bar))),
+                                  s(:resbody, nil, nil,
+                                    s(:send, nil, :bar)),
+                                  nil),
                                 s(:send, nil, :baz)))
       end
 
       it 'works with empty main and ensure bodies' do
         'begin; ensure; end'.
           must_be_parsed_as s(:kwbegin,
-                              s(:ensure, s(:nil)))
+                              s(:ensure, nil, nil))
       end
     end
 
