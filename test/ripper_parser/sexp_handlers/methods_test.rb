@@ -31,7 +31,8 @@ describe RipperParser::Parser do
         'def foo bar=nil; end'.
           must_be_parsed_as s(:def,
                               :foo,
-                              s(:args, s(:lvasgn, :bar, s(:nil))),
+                              s(:args,
+                                s(:optarg, :bar, s(:nil))),
                               nil)
       end
 
@@ -40,8 +41,8 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:lvasgn, :bar, s(:int, 1)),
-                                s(:lvasgn, :baz, s(:int, 2))),
+                                s(:optarg, :bar, s(:int, 1)),
+                                s(:optarg, :baz, s(:int, 2))),
                               nil)
       end
 
@@ -90,7 +91,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:lvasgn, :bar, s(:int, 1)),
+                                s(:optarg, :bar, s(:int, 1)),
                                 s(:blockarg, :baz)),
                               nil)
       end
@@ -100,7 +101,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:lvasgn, :bar, s(:int, 1)),
+                                s(:optarg, :bar, s(:int, 1)),
                                 s(:arg, :baz)),
                               nil)
       end
@@ -118,7 +119,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:lvasgn, :bar, s(:int, 1)),
+                                s(:optarg, :bar, s(:int, 1)),
                                 s(:restarg, :baz)),
                               nil)
       end
@@ -128,7 +129,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:lvasgn, :bar, s(:int, 1)),
+                                s(:optarg, :bar, s(:int, 1)),
                                 s(:restarg, :baz),
                                 s(:arg, :qux),
                                 s(:arg, :quuz)),

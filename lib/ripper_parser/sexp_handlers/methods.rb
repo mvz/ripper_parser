@@ -98,7 +98,7 @@ module RipperParser
               if item.length == 2
                 item[1]
               else
-                item
+                s(:optarg, *item.sexp_body)
               end
             when *SPECIAL_ARG_MARKER.keys
               type = SPECIAL_ARG_MARKER[item.sexp_type]

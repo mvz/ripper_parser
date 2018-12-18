@@ -127,7 +127,7 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:def,
                                 :foo,
                                 s(:args,
-                                  s(:lvasgn, :bar,
+                                  s(:optarg, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
                                 nil)
         end
@@ -138,7 +138,7 @@ describe RipperParser::Parser do
                                 s(:self),
                                 :foo,
                                 s(:args,
-                                  s(:lvasgn, :bar,
+                                  s(:optarg, :bar,
                                     s(:cvasgn, :@@baz, s(:send, nil, :qux)))),
                                 nil)
         end
