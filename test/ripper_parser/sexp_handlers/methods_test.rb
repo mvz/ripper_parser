@@ -184,8 +184,9 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               :bar,
                               s(:args),
-                              s(:send, nil, :baz),
-                              s(:send, nil, :qux))
+                              s(:begin,
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
       end
     end
 

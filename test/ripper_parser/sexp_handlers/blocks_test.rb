@@ -419,12 +419,13 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
-                              s(:send, nil, :bar),
-                              s(:kwbegin,
-                                s(:rescue,
-                                  s(:send, nil, :baz),
-                                  s(:resbody, nil, nil, s(:send, nil, :qux)), nil)),
-                              s(:send, nil, :quuz))
+                              s(:begin,
+                                s(:send, nil, :bar),
+                                s(:kwbegin,
+                                  s(:rescue,
+                                    s(:send, nil, :baz),
+                                    s(:resbody, nil, nil, s(:send, nil, :qux)), nil)),
+                                s(:send, nil, :quuz)))
       end
 
       it 'works in a method body inside begin..end without rescue' do
@@ -432,11 +433,12 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args),
-                              s(:send, nil, :bar),
-                              s(:kwbegin,
-                                s(:send, nil, :baz),
-                                s(:send, nil, :qux)),
-                              s(:send, nil, :quuz))
+                              s(:begin,
+                                s(:send, nil, :bar),
+                                s(:kwbegin,
+                                  s(:send, nil, :baz),
+                                  s(:send, nil, :qux)),
+                                s(:send, nil, :quuz)))
       end
 
       it 'works in a method body fully inside begin..end' do

@@ -13,7 +13,7 @@ module RipperParser
           body = with_kwrest(kwrest) { method_body(body) }
         end
 
-        with_position(pos, s(:def, ident, params, *body))
+        with_position(pos, s(:def, ident, params, body))
       end
 
       def process_defs(exp)
@@ -28,7 +28,7 @@ module RipperParser
         s(:defs,
           process(receiver),
           extract_node_symbol(method),
-          params, *body)
+          params, body)
       end
 
       def process_return(exp)
@@ -76,13 +76,9 @@ module RipperParser
         block = process exp
         case block.length
         when 0
-          [nil]
+          nil
         else
-          if block.sexp_type == :begin
-            block.sexp_body
-          else
-            [block]
-          end
+          block
         end
       end
 

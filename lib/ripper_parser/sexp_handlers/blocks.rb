@@ -58,7 +58,7 @@ module RipperParser
       def process_begin(exp)
         _, body = exp.shift 2
 
-        body = method_body(body).compact
+        body = class_or_module_body(body).compact
         s(:kwbegin, *body)
       end
 
