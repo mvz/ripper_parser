@@ -253,7 +253,7 @@ describe RipperParser::Parser do
 
         # TODO: Raise error instead
         it 'does not convert to unicode if result is not valid' do
-          bytes = ['2'.ord, 0x82, 0302, 0275]
+          bytes = ['2'.ord, 0x82, 0o302, 0o275]
           string = bytes.pack('c4')
           '"2\x82\302\275"'.
             must_be_parsed_as s(:str, string)
