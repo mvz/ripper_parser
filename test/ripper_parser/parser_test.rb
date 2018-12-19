@@ -254,7 +254,7 @@ describe RipperParser::Parser do
     describe 'for the __ENCODING__ keyword' do
       it 'evaluates to the equivalent of Encoding::UTF_8' do
         '__ENCODING__'.
-          must_be_parsed_as s(:const, s(:const, nil, :Encoding), :UTF_8)
+          must_be_parsed_as s(:__ENCODING__)
       end
     end
 

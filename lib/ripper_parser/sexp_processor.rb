@@ -214,8 +214,6 @@ module RipperParser
     def process_at_kw(exp)
       sym, pos = extract_node_symbol_with_position(exp)
       result = case sym
-               when :__ENCODING__
-                 s(:const, s(:const, nil, :Encoding), :UTF_8)
                when :__FILE__
                  s(:str, @filename)
                when :__LINE__
