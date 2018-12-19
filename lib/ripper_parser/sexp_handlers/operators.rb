@@ -17,7 +17,7 @@ module RipperParser
         _, left, op, right = exp.shift 4
 
         if op == :=~
-          make_regexp_match_operator(op, left, right)
+          make_regexp_match_operator(left, right)
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
         else
@@ -60,8 +60,14 @@ module RipperParser
         s(operator, process(left), process(right))
       end
 
-      def make_regexp_match_operator(operator, left, right)
-        s(:send, process(left), operator, process(right))
+      def make_regexp_match_operator(left, right)
+        left = process(left)
+        right = process(right)
+        if left.sexp_type == :regexp
+          s(:match_with_lvasgn, left, right)
+        else
+          s(:send, left, :=~, right)
+        end
       end
     end
   end

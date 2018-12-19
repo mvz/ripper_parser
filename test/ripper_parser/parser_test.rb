@@ -541,30 +541,6 @@ describe RipperParser::Parser do
                               s(:send, nil, :bar))
       end
 
-      it 'handles :=~ with two non-literals' do
-        'foo =~ bar'.
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :=~,
-                              s(:send, nil, :bar))
-      end
-
-      it 'handles :=~ with literal regexp on the left hand side' do
-        '/foo/ =~ bar'.
-          must_be_parsed_as s(:send,
-                              s(:regexp, s(:str, 'foo'), s(:regopt)),
-                              :=~,
-                              s(:send, nil, :bar))
-      end
-
-      it 'handles :=~ with literal regexp on the right hand side' do
-        'foo =~ /bar/'.
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :=~,
-                              s(:regexp, s(:str, 'bar'), s(:regopt)))
-      end
-
       it 'handles unary !' do
         '!foo'.
           must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
