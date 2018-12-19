@@ -464,7 +464,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:mlhs,
                                 s(:lvasgn, :foo),
-                                  s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
+                                s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
                               s(:send, nil, :qux))
       end
 

@@ -44,8 +44,8 @@ describe RipperParser::Parser do
                               s(:send, nil, :foo),
                               s(:args,
                                 s(:mlhs,
-                                 s(:arg, :bar),
-                                 s(:arg, :baz))), nil)
+                                  s(:arg, :bar),
+                                  s(:arg, :baz))), nil)
       end
 
       specify do
