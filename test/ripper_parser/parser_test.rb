@@ -99,24 +99,24 @@ describe RipperParser::Parser do
       it 'works with do' do
         'for foo in bar do; baz; end'.
           must_be_parsed_as s(:for,
-                              s(:send, nil, :bar),
                               s(:lvasgn, :foo),
+                              s(:send, nil, :bar),
                               s(:send, nil, :baz))
       end
 
       it 'works without do' do
         'for foo in bar; baz; end'.
           must_be_parsed_as s(:for,
-                              s(:send, nil, :bar),
                               s(:lvasgn, :foo),
+                              s(:send, nil, :bar),
                               s(:send, nil, :baz))
       end
 
       it 'works with an empty body' do
         'for foo in bar; end'.
           must_be_parsed_as s(:for,
-                              s(:send, nil, :bar),
-                              s(:lvasgn, :foo))
+                              s(:lvasgn, :foo),
+                              s(:send, nil, :bar), nil)
       end
     end
 
@@ -464,8 +464,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:mlhs,
                                 s(:lvasgn, :foo),
-                                s(:masgn,
-                                  s(:array, s(:lvasgn, :bar), s(:lvasgn, :baz)))),
+                                  s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
                               s(:send, nil, :qux))
       end
 
@@ -474,10 +473,12 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:masgn,
                               s(:mlhs,
                                 s(:lvasgn, :foo),
-                                s(:masgn, s(:array, s(:lvasgn, :bar), s(:lvasgn, :baz)))),
+                                s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
                               s(:array,
                                 s(:send, nil, :qux),
-                                s(:array, s(:send, nil, :quz), s(:send, nil, :quuz))))
+                                s(:array,
+                                  s(:send, nil, :quz),
+                                  s(:send, nil, :quuz))))
       end
 
       it 'works with instance variables' do

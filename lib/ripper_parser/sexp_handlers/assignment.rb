@@ -22,9 +22,8 @@ module RipperParser
         _, left, right = exp.shift 3
 
         left = process left
-        left = left[1].sexp_body
 
-        right = process(right)
+        right = process right
 
         case right.sexp_type
         when :args
@@ -35,7 +34,7 @@ module RipperParser
           right = right
         end
 
-        s(:masgn, s(:mlhs, *left), right)
+        s(:masgn, left, right)
       end
 
       def process_mrhs_new_from_args(exp)
@@ -60,16 +59,14 @@ module RipperParser
                        s(:splat, create_valueless_assignment_sub_type(splat))
                      end
 
-        items[1] << splat_item
-        items
+        items << splat_item
       end
 
       def process_mlhs_add_post(exp)
         _, base, rest = exp.shift 3
         items = process(base)
         rest = process(rest)
-        items[1].push(*rest[1].sexp_body)
-        items
+        items.push(*rest.sexp_body)
       end
 
       def process_mlhs_paren(exp)
@@ -82,7 +79,7 @@ module RipperParser
         _, *rest = shift_all exp
 
         items = map_process_list(rest)
-        s(:masgn, s(:array, *create_multiple_assignment_sub_types(items)))
+        s(:mlhs, *create_multiple_assignment_sub_types(items))
       end
 
       def process_opassign(exp)

@@ -23,17 +23,13 @@ module RipperParser
         coll = process(coll)
         var = process(var)
 
-        assgn = if var.sexp_type == :masgn
+        assgn = if var.sexp_type == :mlhs
                   var
                 else
                   s(:lvasgn, var[1])
                 end
         block = unwrap_nil process(block)
-        if block
-          s(:for, coll, assgn, block)
-        else
-          s(:for, coll, assgn)
-        end
+        s(:for, assgn, coll, block)
       end
 
       private

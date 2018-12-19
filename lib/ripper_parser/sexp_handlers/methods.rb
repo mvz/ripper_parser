@@ -90,13 +90,11 @@ module RipperParser
             case item.sexp_type
             when :lvar
               s(:arg, item[1])
-            when :masgn
-              args = item[1]
-              args.shift
-              s(:masgn, *convert_special_args(args))
+            when :mlhs
+              s(:mlhs, *convert_special_args(item.sexp_body))
             when :lvasgn
               if item.length == 2
-                item[1]
+                s(:arg, item[1])
               else
                 s(:optarg, *item.sexp_body)
               end
