@@ -192,6 +192,82 @@ describe RipperParser::Parser do
     end
 
     describe 'for operator assignment' do
+      it 'works with +=' do
+        'foo += bar'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:lvasgn, :foo),
+                              :+,
+                              s(:send, nil, :bar))
+      end
+
+      it 'works with -=' do
+        'foo -= bar'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:lvasgn, :foo),
+                              :-,
+                              s(:send, nil, :bar))
+      end
+
+      it 'works with *=' do
+        'foo *= bar'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:lvasgn, :foo),
+                              :*,
+                              s(:send, nil, :bar))
+      end
+
+      it 'works with /=' do
+        'foo /= bar'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:lvasgn, :foo),
+                              :/,
+                              s(:send, nil, :bar))
+      end
+
+      it 'works with ||=' do
+        'foo ||= bar'.
+          must_be_parsed_as s(:or_asgn,
+                              s(:lvasgn, :foo),
+                              s(:send, nil, :bar))
+      end
+
+      it 'works when assigning to an instance variable' do
+        '@foo += bar'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:ivasgn, :@foo),
+                              :+,
+                              s(:send, nil, :bar))
+      end
+
+      it 'works when assigning to a collection element' do
+        'foo[bar] += baz'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              :+,
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with ||= when assigning to a collection element' do
+        'foo[bar] ||= baz'.
+          must_be_parsed_as s(:or_asgn,
+                              s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works when assigning to an attribute' do
+        'foo.bar += baz'.
+          must_be_parsed_as s(:op_asgn,
+                              s(:send, s(:send, nil, :foo), :bar),
+                              :+,
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with ||= when assigning to an attribute' do
+        'foo.bar ||= baz'.
+          must_be_parsed_as s(:or_asgn,
+                              s(:send, s(:send, nil, :foo), :bar),
+                              s(:send, nil, :baz))
+      end
       describe 'assigning to a collection element' do
         it 'handles multiple indices' do
           'foo[bar, baz] += qux'.
@@ -220,11 +296,10 @@ describe RipperParser::Parser do
 
         it 'works with arithmetic operators and blocks' do
           'foo += begin; bar; end'.
-            must_be_parsed_as s(:lvasgn, :foo,
-                                s(:send,
-                                  s(:lvar, :foo), :+,
-                                  s(:kwbegin,
-                                    s(:send, nil, :bar))))
+            must_be_parsed_as s(:op_asgn,
+                                s(:lvasgn, :foo), :+,
+                                s(:kwbegin,
+                                  s(:send, nil, :bar)))
         end
       end
     end

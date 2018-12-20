@@ -113,28 +113,21 @@ module RipperParser
       }.freeze
 
       def create_operator_assignment_sub_type(lvalue, value, operator)
-        case lvalue.sexp_type
-        when :aref_field
-          _, arr, arglist = lvalue
-          if (mapped = OPERATOR_ASSIGNMENT_MAP[operator])
-            s(mapped, s(:indexasgn, arr, *arglist.sexp_body), value)
-          else
-            s(:op_asgn, s(:indexasgn, arr, *arglist.sexp_body), operator, value)
-          end
-        when :field
-          _, obj, _, (_, field) = lvalue
-          if (mapped = OPERATOR_ASSIGNMENT_MAP[operator])
-            s(mapped,  s(:send, obj, field), value)
-          else
-            s(:op_asgn, s(:send, obj, field), operator, value)
-          end
+        lvalue = case lvalue.sexp_type
+                 when :aref_field
+                   _, arr, arglist = lvalue
+                   s(:indexasgn, arr, *arglist.sexp_body)
+                 when :field
+                   _, obj, _, (_, field) = lvalue
+                   s(:send, obj, field)
+                 else
+                   create_partial_assignment_sub_type(lvalue)
+                 end
+
+        if (mapped = OPERATOR_ASSIGNMENT_MAP[operator])
+          s(mapped, lvalue, value)
         else
-          if (mapped = OPERATOR_ASSIGNMENT_MAP[operator])
-            s(mapped, create_partial_assignment_sub_type(lvalue), value)
-          else
-            operator_call = s(:send, lvalue, operator, value)
-            create_assignment_sub_type lvalue, operator_call
-          end
+          s(:op_asgn, lvalue, operator, value)
         end
       end
 
