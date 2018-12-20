@@ -278,19 +278,19 @@ describe RipperParser::Parser do
         describe 'without braces' do
           it 'works for ivars' do
             "\"foo\#@bar\"".must_be_parsed_as s(:dstr,
-                                                'foo',
+                                                s(:str, 'foo'),
                                                 s(:begin, s(:ivar, :@bar)))
           end
 
           it 'works for gvars' do
             "\"foo\#$bar\"".must_be_parsed_as s(:dstr,
-                                                'foo',
+                                                s(:str, 'foo'),
                                                 s(:begin, s(:gvar, :$bar)))
           end
 
           it 'works for cvars' do
             "\"foo\#@@bar\"".must_be_parsed_as s(:dstr,
-                                                 'foo',
+                                                 s(:str, 'foo'),
                                                  s(:begin, s(:cvar, :@@bar)))
           end
         end
@@ -299,7 +299,6 @@ describe RipperParser::Parser do
           it 'works for trivial interpolated strings' do
             '"#{foo}"'.
               must_be_parsed_as s(:dstr,
-                                  '',
                                   s(:begin,
                                     s(:send, nil, :foo)))
           end
@@ -307,7 +306,7 @@ describe RipperParser::Parser do
           it 'works for basic interpolated strings' do
             '"foo#{bar}"'.
               must_be_parsed_as s(:dstr,
-                                  'foo',
+                                  s(:str, 'foo'),
                                   s(:begin,
                                     s(:send, nil, :bar)))
           end
@@ -315,7 +314,7 @@ describe RipperParser::Parser do
           it 'works for strings with several interpolations' do
             '"foo#{bar}baz#{qux}"'.
               must_be_parsed_as s(:dstr,
-                                  'foo',
+                                  s(:str, 'foo'),
                                   s(:begin, s(:send, nil, :bar)),
                                   s(:str, 'baz'),
                                   s(:begin, s(:send, nil, :qux)))
@@ -324,7 +323,6 @@ describe RipperParser::Parser do
           it 'correctly handles two interpolations in a row' do
             "\"\#{bar}\#{qux}\"".
               must_be_parsed_as s(:dstr,
-                                  '',
                                   s(:begin, s(:send, nil, :bar)),
                                   s(:begin, s(:send, nil, :qux)))
           end
@@ -332,7 +330,7 @@ describe RipperParser::Parser do
           it 'works with an empty interpolation' do
             "\"foo\#{}bar\"".
               must_be_parsed_as s(:dstr,
-                                  'foo',
+                                  s(:str, 'foo'),
                                   s(:begin),
                                   s(:str, 'bar'))
           end
@@ -343,7 +341,6 @@ describe RipperParser::Parser do
         it 'works when interpolations are followed by escape sequences' do
           '"#{foo}\\n"'.
             must_be_parsed_as s(:dstr,
-                                '',
                                 s(:begin, s(:send, nil, :foo)),
                                 s(:str, "\n"))
         end
@@ -351,7 +348,6 @@ describe RipperParser::Parser do
         it 'works when interpolations contain a mix of other string-like literals' do
           '"#{[:foo, \'bar\']}\\n"'.
             must_be_parsed_as s(:dstr,
-                                '',
                                 s(:begin, s(:array, s(:sym, :foo), s(:str, 'bar'))),
                                 s(:str, "\n"))
         end
@@ -359,7 +355,6 @@ describe RipperParser::Parser do
         it 'converts to unicode after interpolation' do
           '"#{foo}2\302\275"'.
             must_be_parsed_as s(:dstr,
-                                '',
                                 s(:begin, s(:send, nil, :foo)),
                                 s(:str, '2½'))
         end
@@ -367,7 +362,6 @@ describe RipperParser::Parser do
         it 'convert null byte to unicode after interpolation' do
           '"#{foo}\0"'.
             must_be_parsed_as s(:dstr,
-                                '',
                                 s(:begin, s(:send, nil, :foo)),
                                 s(:str, "\u0000"))
         end
@@ -435,51 +429,61 @@ describe RipperParser::Parser do
       end
 
       describe 'with string concatenation' do
-        it 'performs the concatenation in the case of two simple literal strings' do
-          '"foo" "bar"'.must_be_parsed_as s(:str, 'foobar')
+        it 'makes a :dstr in the case of two simple literal strings' do
+          '"foo" "bar"'.must_be_parsed_as s(:dstr,
+                                            s(:str, 'foo'),
+                                            s(:str, 'bar'))
         end
 
-        it 'performs the concatenation when the right string has interpolations' do
+        it 'makes a :dstr when the right string has interpolations' do
           "\"foo\" \"bar\#{baz}\"".
             must_be_parsed_as s(:dstr,
-                                'foobar',
-                                s(:begin, s(:send, nil, :baz)))
+                                s(:str, 'foo'),
+                                s(:dstr,
+                                  s(:str, 'bar'),
+                                  s(:begin, s(:send, nil, :baz))))
         end
 
         describe 'when the left string has interpolations' do
-          it 'performs the concatenation' do
+          it 'makes a :dstr' do
             "\"foo\#{bar}\" \"baz\"".
               must_be_parsed_as s(:dstr,
-                                  'foo',
-                                  s(:begin, s(:send, nil, :bar)),
+                                  s(:dstr,
+                                    s(:str, 'foo'),
+                                    s(:begin, s(:send, nil, :bar))),
                                   s(:str, 'baz'))
           end
 
-          it 'performs the concatenation with an empty string' do
+          it 'makes a :dstr with an empty string' do
             "\"foo\#{bar}\" \"\"".
               must_be_parsed_as s(:dstr,
-                                  'foo',
-                                  s(:begin, s(:send, nil, :bar)),
+                                  s(:dstr,
+                                    s(:str, 'foo'),
+                                    s(:begin, s(:send, nil, :bar))),
                                   s(:str, ''))
           end
         end
 
         describe 'when both strings have interpolations' do
-          it 'performs the concatenation' do
+          it 'makes a :dstr' do
             "\"foo\#{bar}\" \"baz\#{qux}\"".
               must_be_parsed_as s(:dstr,
-                                  'foo',
-                                  s(:begin, s(:send, nil, :bar)),
-                                  s(:str, 'baz'),
-                                  s(:begin, s(:send, nil, :qux)))
+                                  s(:dstr,
+                                    s(:str, 'foo'),
+                                    s(:begin, s(:send, nil, :bar))),
+                                  s(:dstr,
+                                    s(:str, 'baz'),
+                                    s(:begin, s(:send, nil, :qux))))
           end
 
           it 'removes empty substrings from the concatenation' do
             "\"foo\#{bar}\" \"\#{qux}\"".
               must_be_parsed_as s(:dstr,
-                                  'foo',
-                                  s(:begin, s(:send, nil, :bar)),
-                                  s(:begin, s(:send, nil, :qux)))
+                                  s(:dstr,
+                                    s(:str, 'foo'),
+                                    s(:begin, s(:send, nil, :bar))),
+                                  s(:dstr,
+                                    s(:begin, s(:send, nil, :qux))))
           end
         end
       end
@@ -576,7 +580,7 @@ describe RipperParser::Parser do
         "%W(foo \#{bar} baz)".
           must_be_parsed_as  s(:array,
                                s(:str, 'foo'),
-                               s(:dstr, '', s(:begin, s(:send, nil, :bar))),
+                               s(:dstr, s(:begin, s(:send, nil, :bar))),
                                s(:str, 'baz'))
       end
 
@@ -584,7 +588,7 @@ describe RipperParser::Parser do
         "%W(foo \#@bar baz)".
           must_be_parsed_as  s(:array,
                                s(:str, 'foo'),
-                               s(:dstr, '', s(:begin, s(:ivar, :@bar))),
+                               s(:dstr, s(:begin, s(:ivar, :@bar))),
                                s(:str, 'baz'))
       end
 
@@ -593,7 +597,6 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:array,
                               s(:str, 'foo'),
                               s(:dstr,
-                                '',
                                 s(:begin, s(:send, nil, :bar)),
                                 s(:str, 'baz')))
       end
@@ -647,7 +650,7 @@ describe RipperParser::Parser do
         "%I(foo \#{bar} baz)".
           must_be_parsed_as s(:array,
                               s(:sym, :foo),
-                              s(:dsym, '', s(:begin, s(:send, nil, :bar))),
+                              s(:dsym, s(:begin, s(:send, nil, :bar))),
                               s(:sym, :baz))
       end
 
@@ -656,7 +659,6 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:array,
                               s(:sym, :foo),
                               s(:dsym,
-                                '',
                                 s(:begin, s(:send, nil, :bar)),
                                 s(:str, 'baz')))
       end
@@ -730,7 +732,13 @@ describe RipperParser::Parser do
       it 'works for dsyms with interpolations' do
         ':"foo#{bar}"'.
           must_be_parsed_as s(:dsym,
-                              'foo',
+                              s(:str, 'foo'),
+                              s(:begin, s(:send, nil, :bar)))
+      end
+
+      it 'works for dsyms with interpolations at the start' do
+        ':"#{bar}"'.
+          must_be_parsed_as s(:dsym,
                               s(:begin, s(:send, nil, :bar)))
       end
 
@@ -758,19 +766,25 @@ describe RipperParser::Parser do
     describe 'for backtick string literals' do
       it 'works for basic backtick strings' do
         '`foo`'.
-          must_be_parsed_as s(:xstr, 'foo')
+          must_be_parsed_as s(:xstr, s(:str, 'foo'))
       end
 
       it 'works for interpolated backtick strings' do
         '`foo#{bar}`'.
-          must_be_parsed_as s(:dxstr,
-                              'foo',
+          must_be_parsed_as s(:xstr,
+                              s(:str, 'foo'),
                               s(:begin, s(:send, nil, :bar)))
+      end
+
+      it 'works for backtick strings interpolated at the start' do
+        '`#{foo}`'.
+          must_be_parsed_as s(:xstr,
+                              s(:begin, s(:send, nil, :foo)))
       end
 
       it 'works for backtick strings with escape sequences' do
         '`foo\\n`'.
-          must_be_parsed_as s(:xstr, "foo\n")
+          must_be_parsed_as s(:xstr, s(:str, "foo\n"))
       end
     end
 

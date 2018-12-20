@@ -13,8 +13,10 @@ module RipperParser
 
         if rest.empty?
           s(:str, string)
+        elsif string.empty?
+          s(:dstr, *rest)
         else
-          s(:dstr, string, *rest)
+          s(:dstr, s(:str, string), *rest)
         end
       end
 
@@ -29,16 +31,16 @@ module RipperParser
         when :str
           val
         when :void_stmt
-          s(:dstr, '', s(:begin))
+          s(:dstr, s(:begin))
         else
-          s(:dstr, '', s(:begin, val))
+          s(:dstr, s(:begin, val))
         end
       end
 
       def process_string_dvar(exp)
         _, list = exp.shift 2
         val = process(list)
-        s(:dstr, '', s(:begin, val))
+        s(:dstr, s(:begin, val))
       end
 
       def process_string_concat(exp)
@@ -47,11 +49,7 @@ module RipperParser
         left = process(left)
         right = process(right)
 
-        if left.sexp_type == :str
-          merge_left_into_right(left, right)
-        else
-          merge_right_into_left(left, right)
-        end
+        s(:dstr, left, right)
       end
 
       def process_xstring_literal(exp)
@@ -62,10 +60,10 @@ module RipperParser
       def process_xstring(exp)
         _, *rest = shift_all exp
         string, rest = extract_string_parts(rest)
-        if rest.empty?
-          s(:xstr, string)
+        if string.empty?
+          s(:xstr, *rest)
         else
-          s(:dxstr, string, *rest)
+          s(:xstr, s(:str, string), *rest)
         end
       end
 
@@ -169,9 +167,15 @@ module RipperParser
       def handle_dyna_symbol_content(node)
         type, *body = *process(node)
         case type
-        when :str, :xstr
+        when :str
           s(:sym, body.first.to_sym)
-        when :dstr, :dxstr
+        when :xstr
+          if body.length == 1 && body.first.sexp_type == :str
+            s(:sym, body.first[1].to_sym)
+          else
+            s(:dsym, *body)
+          end
+        when :dstr
           s(:dsym, *body)
         end
       end
@@ -184,21 +188,6 @@ module RipperParser
           processed = process(node)
           symbol = processed[1].to_sym
           with_line_number(processed.line, s(:sym, symbol))
-        end
-      end
-
-      def merge_left_into_right(left, right)
-        right[1] = left[1] + right[1]
-        right
-      end
-
-      def merge_right_into_left(left, right)
-        if right.sexp_type == :str
-          left.push right
-        else
-          _, first, *rest = right
-          left.push s(:str, first) unless first.empty?
-          left.push(*rest)
         end
       end
     end
