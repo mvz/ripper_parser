@@ -3,19 +3,19 @@ module RipperParser
     # Sexp handlers for loops
     module Loops
       def process_until(exp)
-        handle_conditional_loop :until, :while, exp
+        handle_conditional_loop :until, exp
       end
 
       def process_until_mod(exp)
-        handle_conditional_loop_mod :until, :while, exp
+        handle_conditional_loop_mod :until, :until_post, exp
       end
 
       def process_while(exp)
-        handle_conditional_loop :while, :until, exp
+        handle_conditional_loop :while, exp
       end
 
       def process_while_mod(exp)
-        handle_conditional_loop_mod :while, :until, exp
+        handle_conditional_loop_mod :while, :while_post, exp
       end
 
       def process_for(exp)
@@ -38,32 +38,21 @@ module RipperParser
         block.sexp_type != :begin
       end
 
-      def handle_conditional_loop(type, negated_type, exp)
+      def handle_conditional_loop(type, exp)
         _, cond, body = exp.shift 3
 
-        construct_conditional_loop(type, negated_type,
-                                   process(cond),
-                                   unwrap_nil(process(body)),
-                                   true)
+        s(type, process(cond), unwrap_nil(process(body)))
       end
 
-      def handle_conditional_loop_mod(type, negated_type, exp)
+      def handle_conditional_loop_mod(type, post_type, exp)
         _, cond, body = exp.shift 3
 
-        check_at_start = check_at_start?(body)
-        construct_conditional_loop(type, negated_type,
-                                   process(cond),
-                                   process(body),
-                                   check_at_start)
+        type = post_type unless check_at_start?(body)
+        s(type, process(cond), process(body))
       end
 
-      def construct_conditional_loop(type, negated_type, cond, body, check_at_start)
-        if cond.sexp_type == :not
-          _, inner = cond
-          s(negated_type, inner, body, check_at_start)
-        else
-          s(type, cond, body, check_at_start)
-        end
+      def construct_conditional_loop(type, cond, body)
+        s(type, cond, body)
       end
     end
   end
