@@ -13,7 +13,7 @@ describe RipperParser::Parser do
       it 'works when assigning to constant in the root namespace' do
         '::Foo = bar'.
           must_be_parsed_as s(:casgn,
-                              s(:cbase, :Foo),
+                              s(:cbase), :Foo,
                               s(:send, nil, :bar))
       end
 
