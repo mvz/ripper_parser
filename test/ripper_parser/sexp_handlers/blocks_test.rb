@@ -380,7 +380,8 @@ describe RipperParser::Parser do
                               s(:rescue,
                                 s(:send, nil, :foo),
                                 s(:resbody,
-                                  s(:splat, s(:send, nil, :bar)), nil,
+                                  s(:array,
+                                    s(:splat, s(:send, nil, :bar))), nil,
                                   s(:send, nil, :baz)), nil))
       end
 

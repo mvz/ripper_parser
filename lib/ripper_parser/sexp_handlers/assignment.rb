@@ -6,13 +6,7 @@ module RipperParser
         _, lvalue, value = exp.shift 3
         lvalue = process(lvalue)
         value = process(value)
-
-        case value.sexp_type
-        when :mrhs
-          value = value.sexp_body.first
-        when :args
-          value = s(:array, *value.sexp_body)
-        end
+        value.sexp_type = :array if value.sexp_type == :mrhs
 
         with_line_number(lvalue.line,
                          create_regular_assignment_sub_type(lvalue, value))
@@ -20,28 +14,19 @@ module RipperParser
 
       def process_massign(exp)
         _, left, right = exp.shift 3
-
         left = process left
-
         right = process right
-
-        case right.sexp_type
-        when :args
-          right[0] = :array
-        when :mrhs
-          right = right[1]
-        else
-          right = right
-        end
+        right.sexp_type = :array if right.sexp_type == :mrhs
 
         s(:masgn, left, right)
       end
 
       def process_mrhs_new_from_args(exp)
         _, inner, last = exp.shift 3
-        process(inner).tap do |result|
-          result.push process(last) if last
-        end
+        result = process(inner)
+        result.sexp_type = :mrhs
+        result.push process(last) if last
+        result
       end
 
       def process_mrhs_add_star(exp)

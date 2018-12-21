@@ -77,11 +77,7 @@ module RipperParser
                     if eclass.first.is_a? Symbol
                       eclass = process(eclass)
                       body = eclass.sexp_body
-                      if eclass.sexp_type == :mrhs
-                        body.first
-                      else
-                        s(:array, *body)
-                      end
+                      s(:array, *body)
                     else
                       s(:array, process(eclass[0]))
                     end

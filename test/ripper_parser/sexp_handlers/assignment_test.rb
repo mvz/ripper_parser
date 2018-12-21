@@ -26,16 +26,18 @@ describe RipperParser::Parser do
         it 'works in the simple case' do
           'foo = *bar'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:splat,
-                                  s(:send, nil, :bar)))
+                                s(:array,
+                                  s(:splat,
+                                    s(:send, nil, :bar))))
         end
 
         it 'works with blocks' do
           'foo = *begin; bar; end'.
             must_be_parsed_as s(:lvasgn, :foo,
-                                s(:splat,
-                                  s(:kwbegin,
-                                    s(:send, nil, :bar))))
+                                s(:array,
+                                  s(:splat,
+                                    s(:kwbegin,
+                                      s(:send, nil, :bar)))))
         end
       end
 
@@ -305,21 +307,135 @@ describe RipperParser::Parser do
     end
 
     describe 'for multiple assignment' do
-      describe 'with a right-hand splat' do
-        specify do
-          'foo, bar = *baz'.
-            must_be_parsed_as s(:masgn,
-                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
-                                s(:splat, s(:send, nil, :baz)))
-        end
-        specify do
-          'foo, bar = baz, *qux'.
-            must_be_parsed_as s(:masgn,
-                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+      it 'works the same number of items on each side' do
+        'foo, bar = baz, qux'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:array,
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
+      end
+
+      it 'works with a single item on the right-hand side' do
+        'foo, bar = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with left-hand splat' do
+        'foo, *bar = baz, qux'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:splat, s(:lvasgn, :bar))),
+                              s(:array,
+                                s(:send, nil, :baz),
+                                s(:send, nil, :qux)))
+      end
+
+      it 'works with parentheses around the left-hand side' do
+        '(foo, bar) = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with complex destructuring' do
+        'foo, (bar, baz) = qux'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs,
+                                s(:lvasgn, :foo),
+                                s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
+                              s(:send, nil, :qux))
+      end
+
+      it 'works with complex destructuring of the value' do
+        'foo, (bar, baz) = [qux, [quz, quuz]]'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs,
+                                s(:lvasgn, :foo),
+                                s(:mlhs, s(:lvasgn, :bar), s(:lvasgn, :baz))),
+                              s(:array,
+                                s(:send, nil, :qux),
                                 s(:array,
-                                  s(:send, nil, :baz),
-                                  s(:splat, s(:send, nil, :qux))))
-        end
+                                  s(:send, nil, :quz),
+                                  s(:send, nil, :quuz))))
+      end
+
+      it 'works with instance variables' do
+        '@foo, @bar = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:ivasgn, :@foo), s(:ivasgn, :@bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with class variables' do
+        '@@foo, @@bar = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:cvdecl, :@@foo), s(:cvdecl, :@@bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with attributes' do
+        'foo.bar, foo.baz = qux'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs,
+                                s(:send, s(:send, nil, :foo), :bar=),
+                                s(:send, s(:send, nil, :foo), :baz=)),
+                              s(:send, nil, :qux))
+      end
+
+      it 'works with collection elements' do
+        'foo[1], bar[2] = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs,
+                                s(:indexasgn,
+                                  s(:send, nil, :foo), s(:int, 1)),
+                                s(:indexasgn,
+                                  s(:send, nil, :bar), s(:int, 2))),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with constants' do
+        'Foo, Bar = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:casgn, nil, :Foo), s(:casgn, nil, :Bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with instance variables and splat' do
+        '@foo, *@bar = baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs,
+                                s(:ivasgn, :@foo),
+                                s(:splat, s(:ivasgn, :@bar))),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with a right-hand single splat' do
+        'foo, bar = *baz'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:array,
+                                s(:splat, s(:send, nil, :baz))))
+      end
+
+      it 'works with a splat in a list of values on the right hand' do
+        'foo, bar = baz, *qux'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:array,
+                                s(:send, nil, :baz),
+                                s(:splat, s(:send, nil, :qux))))
+      end
+
+      it 'works with a right-hand single splat with begin..end block' do
+        'foo, bar = *begin; baz; end'.
+          must_be_parsed_as s(:masgn,
+                              s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                              s(:array,
+                                s(:splat,
+                                  s(:kwbegin,
+                                    s(:send, nil, :baz)))))
       end
     end
   end
