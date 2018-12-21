@@ -28,8 +28,6 @@ module RipperParser
         val = process(list.sexp_body.first)
 
         case val.sexp_type
-        when :str
-          val
         when :void_stmt
           s(:dstr, s(:begin))
         else
@@ -150,7 +148,7 @@ module RipperParser
         parts = map_process_list list
 
         string = ''
-        while !parts.empty? && parts.first.sexp_type == :str
+        if !parts.empty? && parts.first.sexp_type == :str
           str = parts.shift
           string += str[1]
         end

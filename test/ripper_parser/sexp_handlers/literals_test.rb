@@ -132,16 +132,29 @@ describe RipperParser::Parser do
         end
 
         describe 'containing just a literal string' do
-          it 'performs the interpolation when it is at the end' do
-            '/foo#{"bar"}/'.must_be_parsed_as s(:regexp, s(:str, 'foobar'), s(:regopt))
+          it 'performs no interpolation when it is at the end' do
+            '/foo#{"bar"}/'.
+              must_be_parsed_as s(:regexp,
+                                  s(:str, 'foo'),
+                                  s(:begin, s(:str, 'bar')),
+                                  s(:regopt))
           end
 
-          it 'performs the interpolation when it is in the middle' do
-            '/foo#{"bar"}baz/'.must_be_parsed_as s(:regexp, s(:str, 'foobarbaz'), s(:regopt))
+          it 'performs no interpolation when it is in the middle' do
+            '/foo#{"bar"}baz/'.
+              must_be_parsed_as s(:regexp,
+                                  s(:str, 'foo'),
+                                  s(:begin, s(:str, 'bar')),
+                                  s(:str, 'baz'),
+                                  s(:regopt))
           end
 
-          it 'performs the interpolation when it is at the start' do
-            '/#{"foo"}bar/'.must_be_parsed_as s(:regexp, s(:str, 'foobar'), s(:regopt))
+          it 'performs no interpolation when it is at the start' do
+            '/#{"foo"}bar/'.
+              must_be_parsed_as s(:regexp,
+                                  s(:begin, s(:str, 'foo')),
+                                  s(:str, 'bar'),
+                                  s(:regopt))
           end
         end
       end
@@ -262,16 +275,26 @@ describe RipperParser::Parser do
 
       describe 'with interpolations' do
         describe 'containing just a literal string' do
-          it 'performs the interpolation when it is at the end' do
-            '"foo#{"bar"}"'.must_be_parsed_as s(:str, 'foobar')
+          it 'performs no interpolation when it is at the end' do
+            '"foo#{"bar"}"'.
+              must_be_parsed_as s(:dstr,
+                                  s(:str, 'foo'),
+                                  s(:begin, s(:str, 'bar')))
           end
 
-          it 'performs the interpolation when it is in the middle' do
-            '"foo#{"bar"}baz"'.must_be_parsed_as s(:str, 'foobarbaz')
+          it 'performs no interpolation when it is in the middle' do
+            '"foo#{"bar"}baz"'.
+              must_be_parsed_as s(:dstr,
+                                  s(:str, 'foo'),
+                                  s(:begin, s(:str, 'bar')),
+                                  s(:str, 'baz'))
           end
 
-          it 'performs the interpolation when it is at the start' do
-            '"#{"foo"}bar"'.must_be_parsed_as s(:str, 'foobar')
+          it 'performs no interpolation when it is at the start' do
+            '"#{"foo"}bar"'.
+              must_be_parsed_as s(:dstr,
+                                  s(:begin, s(:str, 'foo')),
+                                  s(:str, 'bar'))
           end
         end
 
