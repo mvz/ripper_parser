@@ -33,7 +33,6 @@ module RipperParser
 
       @errors = []
 
-      @in_method_body = false
       @kwrest = []
     end
 

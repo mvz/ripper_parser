@@ -7,11 +7,9 @@ module RipperParser
 
         ident, pos = extract_node_symbol_with_position ident
 
-        in_method do
-          params = convert_special_args(process(params))
-          kwrest = kwrest_param(params)
-          body = with_kwrest(kwrest) { method_body(body) }
-        end
+        params = convert_special_args(process(params))
+        kwrest = kwrest_param(params)
+        body = with_kwrest(kwrest) { method_body(body) }
 
         with_position(pos, s(:def, ident, params, body))
       end
@@ -19,11 +17,9 @@ module RipperParser
       def process_defs(exp)
         _, receiver, _, method, params, body = exp.shift 6
 
-        in_method do
-          params = convert_special_args(process(params))
-          kwrest = kwrest_param(params)
-          body = with_kwrest(kwrest) { method_body(body) }
-        end
+        params = convert_special_args(process(params))
+        kwrest = kwrest_param(params)
+        body = with_kwrest(kwrest) { method_body(body) }
 
         s(:defs,
           process(receiver),
@@ -64,13 +60,6 @@ module RipperParser
       end
 
       private
-
-      def in_method
-        @in_method_body = true
-        result = yield
-        @in_method_body = false
-        result
-      end
 
       def method_body(exp)
         nil_if_empty process(exp)
