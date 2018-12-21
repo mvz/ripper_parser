@@ -10,6 +10,12 @@ Parse with Ripper, produce sexps that are compatible with Parser.
 
 * Drop-in replacement for Parser.
 
+## Known incompatibilities
+
+RipperParser has the following known incompatibilities with Parser:
+
+* RipperParser handles line continuations inside strings differently.
+
 ## Install
 
     gem install ripper_parser

@@ -174,9 +174,9 @@ describe RipperParser::Parser do
       end
 
       it 'handles line continuation with double-quoted strings' do
-        # FIXME: This is odd
+        # NOTE: Incompatibility with Parser
         "\"foo\\\nbar\"".
-          must_be_parsed_as s(:str, "foo\nbar")
+          must_be_parsed_as s(:str, 'foobar')
       end
 
       it 'escapes line continuation with double-quoted strings' do
@@ -430,9 +430,9 @@ describe RipperParser::Parser do
         end
 
         it 'handles line continuation' do
-          # FIXME: This is odd
+          # NOTE: Incompatibility with Parser
           "%Q[foo\\\nbar]".
-            must_be_parsed_as s(:str, "foo\nbar")
+            must_be_parsed_as s(:str, 'foobar')
         end
       end
 
