@@ -104,7 +104,7 @@ describe RipperParser::Parser do
       describe 'when assigning to a class variable' do
         it 'works outside a method' do
           '@@foo = bar'.
-            must_be_parsed_as s(:cvdecl,
+            must_be_parsed_as s(:cvasgn,
                                 :@@foo,
                                 s(:send, nil, :bar))
         end
@@ -149,7 +149,7 @@ describe RipperParser::Parser do
 
       it 'works when assigning to a global variable' do
         '$foo = bar'.
-          must_be_parsed_as s(:gasgn,
+          must_be_parsed_as s(:gvasgn,
                               :$foo,
                               s(:send, nil, :bar))
       end
@@ -371,7 +371,7 @@ describe RipperParser::Parser do
       it 'works with class variables' do
         '@@foo, @@bar = baz'.
           must_be_parsed_as s(:masgn,
-                              s(:mlhs, s(:cvdecl, :@@foo), s(:cvdecl, :@@bar)),
+                              s(:mlhs, s(:cvasgn, :@@foo), s(:cvasgn, :@@bar)),
                               s(:send, nil, :baz))
       end
 
