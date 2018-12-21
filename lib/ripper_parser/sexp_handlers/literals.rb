@@ -127,7 +127,7 @@ module RipperParser
                  when /^<</
                    unescape(content)
                  when '"', '`', ':"', /^%Q.$/, /^%.$/
-                   fix_encoding unescape(content)
+                   fix_encoding unescape_wordlist_word(content)
                  when /^%[WI].$/
                    fix_encoding unescape_wordlist_word(content)
                  when "'", ":'", /^%q.$/
