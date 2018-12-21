@@ -117,7 +117,7 @@ module RipperParser
 
       def process_rescue_mod(exp)
         _, scary, safe = exp.shift 3
-        s(:rescue, process(scary), s(:resbody, nil, nil, process(safe)))
+        s(:rescue, process(scary), s(:resbody, nil, nil, process(safe)), nil)
       end
 
       def process_ensure(exp)

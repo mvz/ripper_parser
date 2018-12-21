@@ -484,7 +484,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody, nil, nil,
-                                s(:send, nil, :bar)))
+                                s(:send, nil, :bar)), nil)
       end
 
       it 'works when the fallback value is a keyword' do
@@ -492,7 +492,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:rescue,
                               s(:send, nil, :foo),
                               s(:resbody, nil, nil,
-                                s(:next)))
+                                s(:next)), nil)
       end
 
       it 'works with assignment' do
@@ -500,7 +500,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:lvasgn, :foo,
                               s(:rescue,
                                 s(:send, nil, :bar),
-                                s(:resbody, nil, nil, s(:send, nil, :baz))))
+                                s(:resbody, nil, nil, s(:send, nil, :baz)), nil))
       end
 
       it 'works with assignment with argument' do
@@ -508,7 +508,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:lvasgn, :foo,
                               s(:rescue,
                                 s(:send, nil, :bar, s(:send, nil, :baz)),
-                                s(:resbody, nil, nil, s(:send, nil, :qux))))
+                                s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
       end
 
       it 'works with assignment with argument without brackets' do
@@ -520,7 +520,7 @@ describe RipperParser::Parser do
                      s(:lvasgn, :foo,
                        s(:rescue,
                          s(:send, nil, :bar, s(:send, nil, :baz)),
-                         s(:resbody, nil, nil, s(:send, nil, :qux))))
+                         s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
                    end
         'foo = bar baz rescue qux'.must_be_parsed_as expected
       end
@@ -534,7 +534,7 @@ describe RipperParser::Parser do
                      s(:lvasgn, :foo,
                        s(:rescue,
                          s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
-                         s(:resbody, nil, nil, s(:send, nil, :quuz))))
+                         s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
                    end
         'foo = Bar.baz qux rescue quuz'.
           must_be_parsed_as expected
@@ -546,7 +546,7 @@ describe RipperParser::Parser do
                               s(:masgn,
                                 s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                 s(:send, nil, :baz)),
-                              s(:resbody, nil, nil, s(:send, nil, :qux)))
+                              s(:resbody, nil, nil, s(:send, nil, :qux)), nil)
       end
     end
 
