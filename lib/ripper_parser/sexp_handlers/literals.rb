@@ -181,13 +181,13 @@ module RipperParser
       end
 
       def handle_symbol_content(node)
-        if node.sexp_type == :'@kw'
-          symbol, position = extract_node_symbol_with_position(node)
-          with_line_number(position, s(:sym, symbol))
-        else
+        if node.sexp_type == :'@tstring_content'
           processed = process(node)
           symbol = processed[1].to_sym
           with_line_number(processed.line, s(:sym, symbol))
+        else
+          symbol, position = extract_node_symbol_with_position(node)
+          with_position(position, s(:sym, symbol))
         end
       end
     end

@@ -724,6 +724,11 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:sym, :@foo)
       end
 
+      it 'works for symbols that look like class names' do
+        ':Foo'.
+          must_be_parsed_as s(:sym, :Foo)
+      end
+
       it 'works for simple dsyms' do
         ':"foo"'.
           must_be_parsed_as s(:sym, :foo)
