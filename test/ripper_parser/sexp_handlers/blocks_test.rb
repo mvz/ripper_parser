@@ -117,17 +117,39 @@ describe RipperParser::Parser do
       end
 
       it 'works with a single splat argument' do
-        'foo do |*bar|; end'.
+        'foo do |*bar|; baz bar; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, s(:restarg, :bar)), nil)
+                              s(:args, s(:restarg, :bar)),
+                              s(:send, nil, :baz, s(:lvar, :bar)))
       end
 
       it 'works with a combination of regular arguments and a splat argument' do
-        'foo do |bar, *baz|; end'.
+        'foo do |bar, *baz|; qux bar, baz; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
-                              s(:args, s(:arg, :bar), s(:restarg, :baz)), nil)
+                              s(:args, s(:arg, :bar), s(:restarg, :baz)),
+                              s(:send, nil, :qux,
+                                s(:lvar, :bar),
+                                s(:lvar, :baz)))
+      end
+
+      it 'works with a double splat argument' do
+        'foo do |**bar|; baz bar; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args, s(:kwrestarg, :bar)),
+                              s(:send, nil, :baz, s(:lvar, :bar)))
+      end
+
+      it 'works with a combination of regular arguments and a splat argument' do
+        'foo do |bar, **baz|; qux bar, baz; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args, s(:arg, :bar), s(:kwrestarg, :baz)),
+                              s(:send, nil, :qux,
+                                s(:lvar, :bar),
+                                s(:lvar, :baz)))
       end
     end
 

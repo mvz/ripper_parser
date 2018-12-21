@@ -150,7 +150,9 @@ module RipperParser
       def handle_generic_block(exp)
         type, args, stmts = exp.shift 3
         args = process(args)
-        s(type, args, s(unwrap_nil(process(stmts))))
+        kwrest = kwrest_param(args) if args
+        body = with_kwrest(kwrest) { process(stmts) }
+        s(type, args, s(unwrap_nil(body)))
       end
 
       def handle_normal_arguments(normal)

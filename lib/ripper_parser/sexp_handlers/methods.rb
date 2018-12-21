@@ -119,10 +119,9 @@ module RipperParser
       end
 
       def with_kwrest(kwrest)
-        old_kwrest = @kwrest
-        @kwrest = kwrest
+        @kwrest.push kwrest
         result = yield
-        @kwrest = old_kwrest
+        @kwrest.pop
         result
       end
     end
