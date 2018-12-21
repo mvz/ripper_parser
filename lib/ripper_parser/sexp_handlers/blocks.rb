@@ -185,7 +185,7 @@ module RipperParser
         kwargs.map do |sym, val|
           symbol = process(sym)[1]
           if val
-            s(:kwarg, symbol, process(val))
+            s(:kwoptarg, symbol, process(val))
           else
             s(:kwarg, symbol)
           end

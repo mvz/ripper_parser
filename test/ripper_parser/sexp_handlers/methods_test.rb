@@ -141,7 +141,7 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:def,
                               :foo,
                               s(:args,
-                                s(:kwarg, :bar, s(:int, 1))),
+                                s(:kwoptarg, :bar, s(:int, 1))),
                               nil)
       end
 
