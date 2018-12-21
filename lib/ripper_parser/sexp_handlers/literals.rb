@@ -71,14 +71,10 @@ module RipperParser
         string, rest = process(content).sexp_body
         optflags = character_flags_to_regopt flags
 
-        if rest.empty?
-          s(:regexp, s(:str, string), optflags)
+        if string.empty?
+          s(:regexp, *rest, optflags)
         else
-          if string.empty?
-            s(:regexp, *rest, optflags)
-          else
-            s(:regexp, s(:str, string), *rest, optflags)
-          end
+          s(:regexp, s(:str, string), *rest, optflags)
         end
       end
 

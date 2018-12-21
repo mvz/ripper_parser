@@ -528,7 +528,8 @@ describe RipperParser::Parser do
       it 'works with assignment with class method call with argument without brackets' do
         expected = if RUBY_VERSION < '2.4.0'
                      s(:rescue,
-                       s(:lvasgn, :foo, s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
+                       s(:lvasgn, :foo,
+                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
                        s(:resbody, nil, nil, s(:send, nil, :quuz)))
                    else
                      s(:lvasgn, :foo,

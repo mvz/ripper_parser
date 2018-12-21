@@ -117,23 +117,14 @@ module RipperParser
 
     def process_paren(exp)
       _, body = exp.shift 2
-      if body.sexp_type == :stmts
-        result = process body
-        case result.sexp_type
-        when :void_stmt
-          s(:nil)
-        when :begin
-          result
-        else
-          s(:begin, result)
-        end
+      result = process body
+      case result.sexp_type
+      when :void_stmt
+        s(:nil)
+      when :begin, :args, :arglist
+        result
       else
-        result = process body
-        if result.sexp_type == :void_stmt
-          s(:nil)
-        else
-          result
-        end
+        s(:begin, result)
       end
     end
 

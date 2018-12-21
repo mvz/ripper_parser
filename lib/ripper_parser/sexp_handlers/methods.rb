@@ -72,32 +72,34 @@ module RipperParser
       }.freeze
 
       def convert_special_args(args)
-        args.map! do |item|
-          if item.is_a? Symbol
-            item
-          else
-            case item.sexp_type
-            when :lvar
+        args.map! { |item| convert_argument item }
+      end
+
+      def convert_argument(item)
+        if item.is_a? Symbol
+          item
+        else
+          case item.sexp_type
+          when :lvar
+            s(:arg, item[1])
+          when :mlhs
+            s(:mlhs, *convert_special_args(item.sexp_body))
+          when :lvasgn
+            if item.length == 2
               s(:arg, item[1])
-            when :mlhs
-              s(:mlhs, *convert_special_args(item.sexp_body))
-            when :lvasgn
-              if item.length == 2
-                s(:arg, item[1])
-              else
-                s(:optarg, *item.sexp_body)
-              end
-            when *SPECIAL_ARG_MARKER.keys
-              type = SPECIAL_ARG_MARKER[item.sexp_type]
-              name = extract_node_symbol item[1]
-              if name
-                s(type, name)
-              else
-                s(type)
-              end
             else
-              item
+              s(:optarg, *item.sexp_body)
             end
+          when *SPECIAL_ARG_MARKER.keys
+            type = SPECIAL_ARG_MARKER[item.sexp_type]
+            name = extract_node_symbol item[1]
+            if name
+              s(type, name)
+            else
+              s(type)
+            end
+          else
+            item
           end
         end
       end
