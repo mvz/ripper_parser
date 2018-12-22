@@ -68,20 +68,19 @@ module RipperParser
       def process_regexp_literal(exp)
         _, content, (_, flags,) = exp.shift 3
 
-        string, rest = process(content).sexp_body
+        regexp = process(content)
         optflags = character_flags_to_regopt flags
-
-        if string.empty?
-          s(:regexp, *rest, optflags)
-        else
-          s(:regexp, s(:str, string), *rest, optflags)
-        end
+        regexp << optflags
       end
 
       def process_regexp(exp)
         _, *rest = shift_all exp
         string, rest = extract_string_parts(rest)
-        s(:regexp, string, rest)
+        if string.empty?
+          s(:regexp, *rest)
+        else
+          s(:regexp, s(:str, string), *rest)
+        end
       end
 
       def process_symbol_literal(exp)
