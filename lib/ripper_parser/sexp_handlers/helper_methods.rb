@@ -80,6 +80,14 @@ module RipperParser
         unwrap_nil(exp) || s()
       end
 
+      def unwrap_begin(exp)
+        if exp.sexp_type == :begin
+          exp[1]
+        else
+          exp
+        end
+      end
+
       def handle_argument_list(exp)
         process(exp).tap(&:shift)
       end

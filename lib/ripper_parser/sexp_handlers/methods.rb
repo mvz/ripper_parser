@@ -21,8 +21,10 @@ module RipperParser
         kwrest = kwrest_param(params)
         body = with_kwrest(kwrest) { method_body(body) }
 
+        receiver = unwrap_begin process(receiver)
+
         s(:defs,
-          process(receiver),
+          receiver,
           extract_node_symbol(method),
           params, body)
       end

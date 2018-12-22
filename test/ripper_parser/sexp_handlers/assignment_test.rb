@@ -145,6 +145,16 @@ describe RipperParser::Parser do
                                       s(:cvasgn, :@@baz, s(:send, nil, :qux))))),
                                 nil)
         end
+
+        it 'works inside the receiver in a method definition' do
+          'def (bar = (@@baz = qux)).foo; end'.
+            must_be_parsed_as s(:defs,
+                                s(:lvasgn, :bar,
+                                  s(:begin,
+                                    s(:cvasgn, :@@baz,
+                                      s(:send, nil, :qux)))), :foo,
+                                s(:args), nil)
+        end
       end
 
       it 'works when assigning to a global variable' do
