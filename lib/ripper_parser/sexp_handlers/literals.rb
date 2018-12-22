@@ -108,25 +108,22 @@ module RipperParser
 
       def process_at_tstring_content(exp)
         _, content, _, delim = exp.shift 4
-        string = case delim
-                 when /^<<[-~]?'/
-                   content
-                 when /^<</
-                   unescape unescape_continuations content
-                 when '"', '`', ':"', /^%Q.$/, /^%.$/
-                   fix_encoding unescape unescape_continuations content
-                 when /^%[WI].$/
-                   fix_encoding unescape(content)
-                 when "'", ":'", /^%q.$/
-                   fix_encoding simple_unescape(content)
-                 when '/', /^%r.$/
-                   fix_encoding unescape_regexp(content)
-                 when /^%[wi].$/
-                   fix_encoding simple_unescape_wordlist_word(content)
-                 else
-                   fix_encoding content
-                 end
-        s(:str, string)
+        content = perform_line_continuation_unescapes content, delim
+        case delim
+        when '"', "'"
+          substrings = content.split(/(\n)/).each_slice(2).map { |*it| it.join }
+          substrings = substrings.map do |substring|
+            s(:str, perform_unescapes(substring, delim))
+          end
+          if substrings.length == 1
+            substrings.first
+          else
+            s(:dstr, *substrings)
+          end
+        else
+          string = perform_unescapes(content, delim)
+          s(:str, string)
+        end
       end
 
       private
@@ -175,6 +172,50 @@ module RipperParser
         else
           symbol, position = extract_node_symbol_with_position(node)
           with_position(position, s(:sym, symbol))
+        end
+      end
+
+      def split_literal_string(string)
+        substrings = string.split(/(\n)/).each_slice(2).map { |*it| it.join }
+        if substrings.length == 1
+          s(:str, string)
+        else
+          sub_exprs = substrings.map { |it| s(:str, it) }
+          s(:dstr, *sub_exprs)
+        end
+      end
+
+      def perform_line_continuation_unescapes(content, delim)
+        case delim
+        when /^<<[-~]?'/
+          content
+        when /^<</
+          unescape_continuations content
+        when '"', '`', ':"', /^%Q.$/, /^%.$/
+          unescape_continuations content
+        else
+          content
+        end
+      end
+
+      def perform_unescapes(content, delim)
+        case delim
+        when /^<<[-~]?'/
+          content
+        when /^<</
+          unescape content
+        when '"', '`', ':"', /^%Q.$/, /^%.$/
+          fix_encoding unescape(content)
+        when /^%[WI].$/
+          fix_encoding unescape(content)
+        when "'", ":'", /^%q.$/
+          fix_encoding simple_unescape(content)
+        when '/', /^%r.$/
+          fix_encoding unescape_regexp(content)
+        when /^%[wi].$/
+          fix_encoding simple_unescape_wordlist_word(content)
+        else
+          fix_encoding content
         end
       end
     end

@@ -173,6 +173,13 @@ describe RipperParser::Parser do
         result[1].encoding.to_s.must_equal 'UTF-8'
       end
 
+      it 'handles line breaks within double-quoted strings' do
+        "\"foo\nbar\"".
+          must_be_parsed_as s(:dstr,
+                              s(:str, "foo\n"),
+                              s(:str, 'bar'))
+      end
+
       it 'handles line continuation with double-quoted strings' do
         # NOTE: Incompatibility with Parser
         "\"foo\\\nbar\"".
@@ -181,7 +188,9 @@ describe RipperParser::Parser do
 
       it 'escapes line continuation with double-quoted strings' do
         "\"foo\\\\\nbar\"".
-          must_be_parsed_as s(:str, "foo\\\nbar")
+          must_be_parsed_as s(:dstr,
+                              s(:str, "foo\\\n"),
+                              s(:str, 'bar'))
       end
 
       describe 'with double-quoted strings with escape sequences' do
@@ -414,7 +423,9 @@ describe RipperParser::Parser do
 
         it 'does not process line continuation' do
           "'foo\\\nbar'".
-            must_be_parsed_as s(:str, "foo\\\nbar")
+            must_be_parsed_as s(:dstr,
+                                s(:str, "foo\\\n"),
+                                s(:str, 'bar'))
         end
       end
 
