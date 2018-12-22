@@ -32,6 +32,14 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :x))
       end
 
+      it 'works for multi-line regex literals' do
+        "/foo\nbar/".
+          must_be_parsed_as s(:regexp,
+                              s(:str, "foo\n"),
+                              s(:str, "bar"),
+                              s(:regopt))
+      end
+
       it 'works for a regex literal with the ignorecase flag' do
         '/foo/i'.
           must_be_parsed_as s(:regexp, s(:str, 'foo'), s(:regopt, :i))
@@ -56,6 +64,14 @@ describe RipperParser::Parser do
         it 'works for the simple case with escape sequences' do
           '%r[foo\nbar]'.
             must_be_parsed_as s(:regexp, s(:str, 'foo\\nbar'), s(:regopt))
+        end
+
+        it 'works for a multi-line regex' do
+          "%r[foo\nbar]".
+            must_be_parsed_as s(:regexp,
+                                s(:str, "foo\n"),
+                                s(:str, 'bar'),
+                                s(:regopt))
         end
 
         it 'works with odd delimiters and escape sequences' do

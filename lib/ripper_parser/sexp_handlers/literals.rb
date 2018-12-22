@@ -110,7 +110,7 @@ module RipperParser
         _, content, _, delim = exp.shift 4
         content = perform_line_continuation_unescapes content, delim
         case delim
-        when '"', "'", /^<</
+        when '"', "'", /^<</, '/', /^%r.$/
           substrings = content.split(/(\n)/).each_slice(2).map { |*it| it.join }
           substrings = substrings.map do |substring|
             s(:str, perform_unescapes(substring, delim))
@@ -192,6 +192,8 @@ module RipperParser
         when /^<</
           unescape_continuations content
         when '"', '`', ':"', /^%Q.$/, /^%.$/
+          unescape_continuations content
+        when '/', /^%r.$/
           unescape_continuations content
         else
           content

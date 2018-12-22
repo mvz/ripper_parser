@@ -84,14 +84,8 @@ module RipperParser
     end
 
     def unescape_regexp(string)
-      string.gsub(/\\(\n|\\)/) do
-        bare = Regexp.last_match[1]
-        case bare
-        when "\n"
-          ''
-        else
-          '\\\\'
-        end
+      string.gsub(/\\\\/) do
+        '\\\\'
       end
     end
 
