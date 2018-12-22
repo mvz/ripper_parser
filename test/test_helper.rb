@@ -20,23 +20,6 @@ module MiniTest
       exp.inspect.gsub(/^  */, '').gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
     end
 
-    def to_comments(exp)
-      inner = exp.map do |sub_exp|
-        if sub_exp.is_a? Sexp
-          to_comments sub_exp
-        else
-          sub_exp
-        end
-      end
-
-      comments = exp.comments.to_s.gsub(/\n\s*\n/, "\n")
-      if comments.empty?
-        s(*inner)
-      else
-        s(:comment, comments, s(*inner))
-      end
-    end
-
     def assert_parsed_as(sexp, code)
       parser = RipperParser::Parser.new
       result = parser.parse code
@@ -53,10 +36,6 @@ module MiniTest
       newparser = RipperParser::Parser.new
       expected = oldparser.parse code.dup
       result = newparser.parse code
-      # expected = to_comments expected
-      # result = to_comments result
-      # require 'pry'
-      # binding.pry
       assert_equal formatted(expected), formatted(result)
     end
   end
