@@ -9,14 +9,14 @@ module RipperParser
 
       def process_string_content(exp)
         _, *rest = shift_all exp
-        string, rest = extract_string_parts(rest)
+        parts = extract_string_parts(rest)
 
-        if rest.empty?
-          s(:str, string)
-        elsif string.empty?
-          s(:dstr, *rest)
+        if parts.empty?
+          s(:str, '')
+        elsif parts.length == 1 && parts.first.sexp_type == :str
+          parts.first
         else
-          s(:dstr, s(:str, string), *rest)
+          s(:dstr, *parts)
         end
       end
 
@@ -57,12 +57,8 @@ module RipperParser
 
       def process_xstring(exp)
         _, *rest = shift_all exp
-        string, rest = extract_string_parts(rest)
-        if string.empty?
-          s(:xstr, *rest)
-        else
-          s(:xstr, s(:str, string), *rest)
-        end
+        rest = extract_string_parts(rest)
+        s(:xstr, *rest)
       end
 
       def process_regexp_literal(exp)
@@ -75,12 +71,8 @@ module RipperParser
 
       def process_regexp(exp)
         _, *rest = shift_all exp
-        string, rest = extract_string_parts(rest)
-        if string.empty?
-          s(:regexp, *rest)
-        else
-          s(:regexp, s(:str, string), *rest)
-        end
+        rest = extract_string_parts(rest)
+        s(:regexp, *rest)
       end
 
       def process_symbol_literal(exp)
@@ -141,16 +133,18 @@ module RipperParser
 
       def extract_string_parts(list)
         parts = map_process_list list
-
-        string = ''
-        if !parts.empty? && parts.first.sexp_type == :str
-          str = parts.shift
-          string += str[1]
+        result = []
+        parts.each do |sub_expr|
+          case sub_expr.sexp_type
+          when :dstr
+            result.push(*sub_expr.sexp_body)
+          when :str
+            result.push(sub_expr) unless sub_expr[1] == ''
+          else
+            result.push(sub_expr)
+          end
         end
-
-        rest = parts.map { |se| se.sexp_type == :dstr ? se.last : se }
-
-        return string, rest
+        result
       end
 
       def character_flags_to_regopt(flags)
