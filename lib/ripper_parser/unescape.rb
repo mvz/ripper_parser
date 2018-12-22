@@ -16,8 +16,8 @@ module RipperParser
         C-.               | # control (regular)
         c.                | # control (shorthand)
         M-.               | # meta
-        \n                | # line continuation
-        .                   # single-character
+        \n                | # line break
+        .                   # other single character
       )/x.freeze
 
     SINGLE_LETTER_ESCAPES = {
@@ -34,6 +34,8 @@ module RipperParser
 
     SINGLE_LETTER_ESCAPES_REGEXP =
       Regexp.new("^[#{SINGLE_LETTER_ESCAPES.keys.join}]$")
+
+    LINE_CONTINUATION_REGEXP = /\\(\n|.)/.freeze
 
     def simple_unescape(string)
       string.gsub(/\\(
@@ -55,18 +57,18 @@ module RipperParser
       end
     end
 
-    def unescape(string)
-      string.gsub(ESCAPE_SEQUENCE_REGEXP) do
+    def unescape_continuations(string)
+      string.gsub(LINE_CONTINUATION_REGEXP) do
         bare = Regexp.last_match[1]
         if bare == "\n"
           ''
         else
-          unescaped_value(bare)
+          "\\#{bare}"
         end
       end
     end
 
-    def unescape_wordlist_word(string)
+    def unescape(string)
       string.gsub(ESCAPE_SEQUENCE_REGEXP) do
         bare = Regexp.last_match[1]
         unescaped_value(bare)

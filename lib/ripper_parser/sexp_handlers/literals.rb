@@ -112,11 +112,11 @@ module RipperParser
                  when /^<<[-~]?'/
                    content
                  when /^<</
-                   unescape(content)
+                   unescape unescape_continuations content
                  when '"', '`', ':"', /^%Q.$/, /^%.$/
-                   fix_encoding unescape(content)
+                   fix_encoding unescape unescape_continuations content
                  when /^%[WI].$/
-                   fix_encoding unescape_wordlist_word(content)
+                   fix_encoding unescape(content)
                  when "'", ":'", /^%q.$/
                    fix_encoding simple_unescape(content)
                  when '/', /^%r.$/
