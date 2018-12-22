@@ -588,9 +588,9 @@ describe RipperParser::Parser do
                                 s(:str, "baz\n"))
         end
 
-        it 'does not convert to unicode even if possible' do
+        it 'converts to unicode' do
           "<<FOO\n2\\302\\275\nFOO".
-            must_be_parsed_as s(:str, "2\xC2\xBD\n".force_encoding('ascii-8bit'))
+            must_be_parsed_as s(:str, "2½\n")
         end
       end
     end

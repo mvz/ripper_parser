@@ -203,7 +203,7 @@ module RipperParser
         when /^<<[-~]?'/
           content
         when /^<</
-          unescape content
+          fix_encoding unescape(content)
         when '"', '`', ':"', /^%Q.$/, /^%.$/
           fix_encoding unescape(content)
         when /^%[WI].$/
