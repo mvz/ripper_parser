@@ -17,6 +17,25 @@ describe 'Using RipperParser and Parser' do
     end
   end
 
+  def to_line_numbers_ast(exp)
+    type = exp.type
+    children = exp.children.map do |sub_exp|
+      if sub_exp.is_a? AST::Node
+        to_line_numbers_ast sub_exp
+      else
+        sub_exp
+      end
+    end
+
+    mapped = s(type, *children)
+
+    if type == :scope
+      mapped
+    else
+      s(:line_number, exp.location.line, mapped)
+    end
+  end
+
   let :newparser do
     RipperParser::Parser.new
   end
@@ -55,7 +74,7 @@ describe 'Using RipperParser and Parser' do
 
     it 'gives the same result with line numbers' do
       formatted(to_line_numbers(imitation)).
-        must_equal formatted(to_line_numbers(original))
+        must_equal formatted(to_line_numbers_ast(original))
     end
   end
 end
