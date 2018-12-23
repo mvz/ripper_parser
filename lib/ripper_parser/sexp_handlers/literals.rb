@@ -111,7 +111,7 @@ module RipperParser
         content = perform_line_continuation_unescapes content, delim
 
         parts = case delim
-                when '"', "'", /^<</, '/', /^%r.$/
+                when '"', '`', ':"', /^%Q.$/, /^%.$/, "'", ":'", /^%q.$/, /^<</, '/', /^%r.$/
                   content.split(/(\n)/).each_slice(2).map { |*it| it.join }
                 else
                   [content]

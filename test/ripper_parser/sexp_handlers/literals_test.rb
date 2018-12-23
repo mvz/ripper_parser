@@ -456,10 +456,43 @@ describe RipperParser::Parser do
             must_be_parsed_as s(:str, "foo\nbar")
         end
 
+        it 'works for multi-line strings' do
+          "%Q[foo\nbar]".
+            must_be_parsed_as s(:dstr,
+                                s(:str, "foo\n"),
+                                s(:str, 'bar'))
+        end
+
         it 'handles line continuation' do
           # NOTE: Incompatibility with Parser
           "%Q[foo\\\nbar]".
             must_be_parsed_as s(:str, 'foobar')
+        end
+      end
+
+      describe 'with %q-delimited strings' do
+        it 'works for the simple case' do
+          '%q[bar]'.
+            must_be_parsed_as s(:str, 'bar')
+        end
+
+        it 'does not handle for escape sequences' do
+          '%q[foo\\nbar]'.
+            must_be_parsed_as s(:str, 'foo\nbar')
+        end
+
+        it 'works for multi-line strings' do
+          "%q[foo\nbar]".
+            must_be_parsed_as s(:dstr,
+                                s(:str, "foo\n"),
+                                s(:str, 'bar'))
+        end
+
+        it 'handles line continuation' do
+          "%q[foo\\\nbar]".
+            must_be_parsed_as s(:dstr,
+                                s(:str, "foo\\\n"),
+                                s(:str, 'bar'))
         end
       end
 
@@ -472,6 +505,19 @@ describe RipperParser::Parser do
         it 'works for escape sequences' do
           '%(foo\nbar)'.
             must_be_parsed_as s(:str, "foo\nbar")
+        end
+
+        it 'works for multiple lines' do
+          "%(foo\nbar)".
+            must_be_parsed_as s(:dstr,
+                                s(:str, "foo\n"),
+                                s(:str, 'bar'))
+        end
+
+        it 'works with line continuations' do
+          # NOTE: Incompatibility with Parser
+          "%(foo\\\nbar)".
+            must_be_parsed_as s(:str, 'foobar')
         end
 
         it 'works for odd delimiters' do
@@ -682,6 +728,14 @@ describe RipperParser::Parser do
                               s(:str, "foo\nbar"),
                               s(:str, 'baz'))
       end
+
+      it 'correctly handles multiple lines' do
+        "%W(foo\nbar baz)".
+          must_be_parsed_as s(:array,
+                              s(:str, 'foo'),
+                              s(:str, 'bar'),
+                              s(:str, 'baz'))
+      end
     end
 
     describe 'for symbol list literals with %i delimiter' do
@@ -737,6 +791,15 @@ describe RipperParser::Parser do
                               s(:sym, :"foo\nbar"),
                               s(:sym, :baz))
       end
+
+      it 'correctly handles multiple lines' do
+        "%I(foo\nbar baz)".
+          must_be_parsed_as s(:array,
+                              s(:sym, :foo),
+                              s(:sym, :bar),
+                              s(:sym, :baz))
+      end
+
     end
 
     describe 'for character literals' do
@@ -820,6 +883,19 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:sym, :"foo\nbar")
       end
 
+      it 'works for dsyms with multiple lines' do
+        ":\"foo\nbar\"".
+          must_be_parsed_as s(:dsym,
+                              s(:str, "foo\n"),
+                              s(:str, 'bar'))
+      end
+
+      it 'works for dsyms with line continuations' do
+        # NOTE: Incompatibility with Parser
+        ":\"foo\\\nbar\"".
+          must_be_parsed_as s(:sym, :foobar)
+      end
+
       it 'works with single quoted dsyms' do
         ":'foo'".
           must_be_parsed_as s(:sym, :foo)
@@ -828,6 +904,20 @@ describe RipperParser::Parser do
       it 'works with single quoted dsyms with escaped single quotes' do
         ":'foo\\'bar'".
           must_be_parsed_as s(:sym, :'foo\'bar')
+      end
+
+      it 'works with single quoted dsyms with multiple lines' do
+        ":'foo\nbar'".
+          must_be_parsed_as s(:dsym,
+                              s(:str, "foo\n"),
+                              s(:str, 'bar'))
+      end
+
+      it 'works with single quoted dsyms with line continuations' do
+        ":'foo\\\nbar'".
+          must_be_parsed_as s(:dsym,
+                              s(:str, "foo\\\n"),
+                              s(:str, 'bar'))
       end
 
       it 'works with single quoted dsyms with embedded backslashes' do
@@ -858,6 +948,19 @@ describe RipperParser::Parser do
       it 'works for backtick strings with escape sequences' do
         '`foo\\n`'.
           must_be_parsed_as s(:xstr, s(:str, "foo\n"))
+      end
+
+      it 'works for backtick strings with multiple lines' do
+        "`foo\nbar`".
+          must_be_parsed_as s(:xstr,
+                              s(:str, "foo\n"),
+                              s(:str, 'bar'))
+      end
+      it 'works for backtick strings with line continuations' do
+        # NOTE: Incompatibility with Parser
+        "`foo\\\nbar`".
+          must_be_parsed_as s(:xstr,
+                              s(:str, "foobar"))
       end
     end
 
