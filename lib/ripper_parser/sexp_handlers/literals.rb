@@ -109,20 +109,21 @@ module RipperParser
       def process_at_tstring_content(exp)
         _, content, _, delim = exp.shift 4
         content = perform_line_continuation_unescapes content, delim
-        case delim
-        when '"', "'", /^<</, '/', /^%r.$/
-          substrings = content.split(/(\n)/).each_slice(2).map { |*it| it.join }
-          substrings = substrings.map do |substring|
-            s(:str, perform_unescapes(substring, delim))
-          end
-          if substrings.length == 1
-            substrings.first
-          else
-            s(:dstr, *substrings)
-          end
+
+        parts = case delim
+                when '"', "'", /^<</, '/', /^%r.$/
+                  content.split(/(\n)/).each_slice(2).map { |*it| it.join }
+                else
+                  [content]
+                end
+
+        parts = parts.map { |it| perform_unescapes(it, delim) }
+        parts = parts.map { |it| s(:str, it) }
+
+        if parts.length == 1
+          parts.first
         else
-          string = perform_unescapes(content, delim)
-          s(:str, string)
+          s(:dstr, *parts)
         end
       end
 
