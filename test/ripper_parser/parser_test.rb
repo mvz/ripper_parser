@@ -95,31 +95,6 @@ describe RipperParser::Parser do
       end
     end
 
-    describe 'for the for statement' do
-      it 'works with do' do
-        'for foo in bar do; baz; end'.
-          must_be_parsed_as s(:for,
-                              s(:lvasgn, :foo),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
-      end
-
-      it 'works without do' do
-        'for foo in bar; baz; end'.
-          must_be_parsed_as s(:for,
-                              s(:lvasgn, :foo),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
-      end
-
-      it 'works with an empty body' do
-        'for foo in bar; end'.
-          must_be_parsed_as s(:for,
-                              s(:lvasgn, :foo),
-                              s(:send, nil, :bar), nil)
-      end
-    end
-
     describe 'for a begin..end block' do
       it 'works with no statements' do
         'begin; end'.

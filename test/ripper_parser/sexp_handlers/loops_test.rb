@@ -149,12 +149,27 @@ describe RipperParser::Parser do
     end
 
     describe 'for the for statement' do
-      it 'works with a single assignment' do
-        'for foo in bar; end'.
+      it 'works with do' do
+        'for foo in bar do; baz; end'.
           must_be_parsed_as s(:for,
                               s(:lvasgn, :foo),
                               s(:send, nil, :bar),
-                              nil)
+                              s(:send, nil, :baz))
+      end
+
+      it 'works without do' do
+        'for foo in bar; baz; end'.
+          must_be_parsed_as s(:for,
+                              s(:lvasgn, :foo),
+                              s(:send, nil, :bar),
+                              s(:send, nil, :baz))
+      end
+
+      it 'works with an empty body' do
+        'for foo in bar; end'.
+          must_be_parsed_as s(:for,
+                              s(:lvasgn, :foo),
+                              s(:send, nil, :bar), nil)
       end
 
       it 'works with explicit multiple assignment' do
