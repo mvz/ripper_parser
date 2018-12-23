@@ -106,12 +106,20 @@ module RipperParser
         s(:symbols, *items)
       end
 
+      INTERPOLATING_HEREDOC = /^<<[-~]?[^']/
+      NON_INTERPOLATING_HEREDOC = /^<<[-~]?'/
+      INTERPOLATING_STRINGS = '"', '`', ':"', /^%Q.$/, /^%.$/
+      NON_INTERPOLATING_STRINGS = "'", ":'", /^%q.$/
+      INTERPOLATING_WORD_LIST = /^%[WI].$/
+      NON_INTERPOLATING_WORD_LIST = /^%[wi].$/
+      REGEXP_LITERALS = '/', /^%r.$/
+
       def process_at_tstring_content(exp)
         _, content, _, delim = exp.shift 4
         content = perform_line_continuation_unescapes content, delim
 
         parts = case delim
-                when '"', '`', ':"', /^%Q.$/, /^%.$/, "'", ":'", /^%q.$/, /^<</, '/', /^%r.$/
+                when *INTERPOLATING_STRINGS, *NON_INTERPOLATING_STRINGS, INTERPOLATING_HEREDOC, NON_INTERPOLATING_HEREDOC, *REGEXP_LITERALS
                   content.split(/(\n)/).each_slice(2).map { |*it| it.join }
                 else
                   [content]
@@ -188,13 +196,11 @@ module RipperParser
 
       def perform_line_continuation_unescapes(content, delim)
         case delim
-        when /^<<[-~]?'/
-          content
-        when /^<</
+        when INTERPOLATING_HEREDOC
           unescape_continuations content
-        when '"', '`', ':"', /^%Q.$/, /^%.$/
+        when *INTERPOLATING_STRINGS
           unescape_continuations content
-        when '/', /^%r.$/
+        when *REGEXP_LITERALS
           unescape_continuations content
         else
           content
@@ -203,19 +209,19 @@ module RipperParser
 
       def perform_unescapes(content, delim)
         case delim
-        when /^<<[-~]?'/
+        when NON_INTERPOLATING_HEREDOC
           content
-        when /^<</
+        when INTERPOLATING_HEREDOC
           fix_encoding unescape(content)
-        when '"', '`', ':"', /^%Q.$/, /^%.$/
+        when *INTERPOLATING_STRINGS
           fix_encoding unescape(content)
-        when /^%[WI].$/
+        when INTERPOLATING_WORD_LIST
           fix_encoding unescape(content)
-        when "'", ":'", /^%q.$/
+        when *NON_INTERPOLATING_STRINGS
           fix_encoding simple_unescape(content)
-        when '/', /^%r.$/
+        when *REGEXP_LITERALS
           fix_encoding unescape_regexp(content)
-        when /^%[wi].$/
+        when NON_INTERPOLATING_WORD_LIST
           fix_encoding simple_unescape_wordlist_word(content)
         else
           fix_encoding content
