@@ -106,13 +106,13 @@ module RipperParser
         s(:symbols, *items)
       end
 
-      INTERPOLATING_HEREDOC = /^<<[-~]?[^']/
-      NON_INTERPOLATING_HEREDOC = /^<<[-~]?'/
-      INTERPOLATING_STRINGS = '"', '`', ':"', /^%Q.$/, /^%.$/
-      NON_INTERPOLATING_STRINGS = "'", ":'", /^%q.$/
-      INTERPOLATING_WORD_LIST = /^%[WI].$/
-      NON_INTERPOLATING_WORD_LIST = /^%[wi].$/
-      REGEXP_LITERALS = '/', /^%r.$/
+      INTERPOLATING_HEREDOC = /^<<[-~]?[^']/.freeze
+      NON_INTERPOLATING_HEREDOC = /^<<[-~]?'/.freeze
+      INTERPOLATING_STRINGS = ['"', '`', ':"', /^%Q.$/, /^%.$/].freeze
+      NON_INTERPOLATING_STRINGS = ["'", ":'", /^%q.$/].freeze
+      INTERPOLATING_WORD_LIST = /^%[WI].$/.freeze
+      NON_INTERPOLATING_WORD_LIST = /^%[wi].$/.freeze
+      REGEXP_LITERALS = ['/', /^%r.$/].freeze
 
       def process_at_tstring_content(exp)
         _, content, _, delim = exp.shift 4

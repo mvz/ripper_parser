@@ -36,7 +36,7 @@ describe RipperParser::Parser do
         "/foo\nbar/".
           must_be_parsed_as s(:regexp,
                               s(:str, "foo\n"),
-                              s(:str, "bar"),
+                              s(:str, 'bar'),
                               s(:regopt))
       end
 
@@ -799,7 +799,6 @@ describe RipperParser::Parser do
                               s(:sym, :bar),
                               s(:sym, :baz))
       end
-
     end
 
     describe 'for character literals' do
@@ -956,11 +955,12 @@ describe RipperParser::Parser do
                               s(:str, "foo\n"),
                               s(:str, 'bar'))
       end
+
       it 'works for backtick strings with line continuations' do
         # NOTE: Incompatibility with Parser
         "`foo\\\nbar`".
           must_be_parsed_as s(:xstr,
-                              s(:str, "foobar"))
+                              s(:str, 'foobar'))
       end
     end
 
