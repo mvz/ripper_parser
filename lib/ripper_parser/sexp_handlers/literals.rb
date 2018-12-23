@@ -119,10 +119,10 @@ module RipperParser
         content = perform_line_continuation_unescapes content, delim
 
         parts = case delim
-                when *INTERPOLATING_STRINGS, *NON_INTERPOLATING_STRINGS, INTERPOLATING_HEREDOC, NON_INTERPOLATING_HEREDOC, *REGEXP_LITERALS
-                  content.split(/(\n)/).each_slice(2).map { |*it| it.join }
-                else
+                when INTERPOLATING_WORD_LIST, NON_INTERPOLATING_WORD_LIST
                   [content]
+                else
+                  content.split(/(\n)/).each_slice(2).map { |*it| it.join }
                 end
 
         parts = parts.map { |it| perform_unescapes(it, delim) }
@@ -196,11 +196,7 @@ module RipperParser
 
       def perform_line_continuation_unescapes(content, delim)
         case delim
-        when INTERPOLATING_HEREDOC
-          unescape_continuations content
-        when *INTERPOLATING_STRINGS
-          unescape_continuations content
-        when *REGEXP_LITERALS
+        when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, *REGEXP_LITERALS
           unescape_continuations content
         else
           content
@@ -211,11 +207,7 @@ module RipperParser
         case delim
         when NON_INTERPOLATING_HEREDOC
           content
-        when INTERPOLATING_HEREDOC
-          fix_encoding unescape(content)
-        when *INTERPOLATING_STRINGS
-          fix_encoding unescape(content)
-        when INTERPOLATING_WORD_LIST
+        when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
           fix_encoding unescape(content)
         when *NON_INTERPOLATING_STRINGS
           fix_encoding simple_unescape(content)
