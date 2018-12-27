@@ -4,5 +4,5 @@ source 'https://rubygems.org'
 gemspec
 
 group :local_development do
-  gem 'irbtools-more'
+  gem 'irbtools'
 end
