@@ -47,6 +47,8 @@ If you want to send pull requests or patches, please:
 
 ## License
 
+RipperParser is based on RipperRubyParser, started in 2012.
+
 (The MIT License)
 
 Copyright (c) 2012, 2014-2018 Matijs van Zuijlen
