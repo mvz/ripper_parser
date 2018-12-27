@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ripper_parser/sexp_handlers/helper_methods'
 
 require 'ripper_parser/sexp_handlers/arguments'

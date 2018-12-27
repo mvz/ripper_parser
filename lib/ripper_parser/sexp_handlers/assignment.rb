@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RipperParser
   module SexpHandlers
     # Sexp handlers for assignments

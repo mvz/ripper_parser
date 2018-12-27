@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ripper_parser/commenting_ripper_parser'
 require 'ripper_parser/sexp_processor'
 
