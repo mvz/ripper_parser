@@ -28,6 +28,7 @@ module RipperParser
       @processors[:@kw] = :process_at_kw
       @processors[:@op] = :process_at_op
       @processors[:@backref] = :process_at_backref
+      @processors[:@period] = :process_at_period
 
       @processors[:@tstring_content] = :process_at_tstring_content
 
@@ -226,6 +227,11 @@ module RipperParser
           s(:back_ref, name.to_sym)
         end
       end
+    end
+
+    def process_at_period(exp)
+      _, period, = exp.shift 3
+      s(:period, period)
     end
 
     private

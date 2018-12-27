@@ -52,7 +52,7 @@ module RipperParser
           child = args.sexp_body.first
           child.sexp_type = :procarg0 if child.sexp_type == :arg
         when 2
-          args.pop if args.sexp_body.last.sexp_type == :zerosplat
+          args.pop if args.sexp_body.last.sexp_type == :excessed_comma
         end
         args
       end
@@ -171,7 +171,8 @@ module RipperParser
 
       def handle_splat(splat)
         if splat == 0
-          [s(:zerosplat)]
+          # Only relevant for Ruby < 2.6
+          [s(:excessed_comma)]
         elsif splat
           [process(splat)]
         else
