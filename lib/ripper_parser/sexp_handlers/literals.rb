@@ -148,8 +148,6 @@ module RipperParser
             result.push(*sub_expr.sexp_body)
           when :str
             result.push(sub_expr) unless sub_expr[1] == ''
-          else
-            result.push(sub_expr)
           end
         end
         result
@@ -207,8 +205,6 @@ module RipperParser
           fix_encoding unescape_regexp(content)
         when NON_INTERPOLATING_WORD_LIST
           fix_encoding simple_unescape_wordlist_word(content)
-        else
-          fix_encoding content
         end
       end
     end
