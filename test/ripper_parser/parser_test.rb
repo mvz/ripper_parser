@@ -208,39 +208,6 @@ describe RipperParser::Parser do
       end
     end
 
-    describe 'for operators' do
-      it 'handles :!=' do
-        'foo != bar'.
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :!=,
-                              s(:send, nil, :bar))
-      end
-
-      it 'handles unary !' do
-        '!foo'.
-          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
-      end
-
-      it 'converts :not to :!' do
-        'not foo'.
-          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
-      end
-
-      it 'handles unary ! with a number literal' do
-        '!1'.
-          must_be_parsed_as s(:send, s(:int, 1), :!)
-      end
-
-      it 'handles the ternary operator' do
-        'foo ? bar : baz'.
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
-      end
-    end
-
     describe 'for expressions' do
       it 'handles assignment inside binary operator expressions' do
         'foo + (bar = baz)'.
