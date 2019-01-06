@@ -861,6 +861,20 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:sym, :Foo)
       end
 
+      it 'works for symbols that look like keywords' do
+        ':class'.must_be_parsed_as s(:sym, :class)
+      end
+
+      it 'works for :__LINE__' do
+        ':__LINE__'.
+          must_be_parsed_as s(:sym, :__LINE__)
+      end
+
+      it 'works for :__FILE__' do
+        ':__FILE__'.
+          must_be_parsed_as s(:sym, :__FILE__)
+      end
+
       it 'works for simple dsyms' do
         ':"foo"'.
           must_be_parsed_as s(:sym, :foo)
@@ -924,6 +938,12 @@ describe RipperParser::Parser do
       it 'works with single quoted dsyms with embedded backslashes' do
         ":'foo\\abar'".
           must_be_parsed_as s(:sym, :"foo\\abar")
+      end
+
+      it 'works with barewords that need to be interpreted as symbols' do
+        'alias foo bar'.
+          must_be_parsed_as s(:alias,
+                              s(:sym, :foo), s(:sym, :bar))
       end
     end
 

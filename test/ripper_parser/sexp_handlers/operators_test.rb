@@ -130,6 +130,60 @@ describe RipperParser::Parser do
                                 s(:send, nil, :baz)),
                               s(:send, nil, :qux))
       end
+
+      it 'handles :!=' do
+        'foo != bar'.
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
+                              :!=,
+                              s(:send, nil, :bar))
+      end
+
+      it 'keeps :kwbegin for the first argument of a binary operator' do
+        'begin; bar; end + foo'.
+          must_be_parsed_as s(:send,
+                              s(:kwbegin, s(:send, nil, :bar)),
+                              :+,
+                              s(:send, nil, :foo))
+      end
+
+      it 'keeps :kwbegin for the second argument of a binary operator' do
+        'foo + begin; bar; end'.
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
+                              :+,
+                              s(:kwbegin, s(:send, nil, :bar)))
+      end
+
+      it 'keeps :kwbegin for the first argument of a boolean operator' do
+        'begin; bar; end and foo'.
+          must_be_parsed_as s(:and,
+                              s(:kwbegin, s(:send, nil, :bar)),
+                              s(:send, nil, :foo))
+      end
+
+      it 'keeps :kwbegin for the second argument of a boolean operator' do
+        'foo and begin; bar; end'.
+          must_be_parsed_as s(:and,
+                              s(:send, nil, :foo),
+                              s(:kwbegin, s(:send, nil, :bar)))
+      end
+
+      it 'keeps :kwbegin for the first argument of a shift operator' do
+        'begin; bar; end << foo'.
+          must_be_parsed_as s(:send,
+                              s(:kwbegin, s(:send, nil, :bar)),
+                              :<<,
+                              s(:send, nil, :foo))
+      end
+
+      it 'keeps :kwbegin for the second argument of a shift operator' do
+        'foo >> begin; bar; end'.
+          must_be_parsed_as s(:send,
+                              s(:send, nil, :foo),
+                              :>>,
+                              s(:kwbegin, s(:send, nil, :bar)))
+      end
     end
 
     describe 'for the range operator' do
@@ -206,7 +260,7 @@ describe RipperParser::Parser do
       end
     end
 
-    describe 'for unary numerical operators' do
+    describe 'for unary operators' do
       it 'handles unary minus with an integer literal' do
         '- 1'.must_be_parsed_as s(:send, s(:int, 1), :-@)
       end
@@ -235,6 +289,62 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:send,
                               s(:send, nil, :foo),
                               :+@)
+      end
+
+      it 'handles unary !' do
+        '!foo'.
+          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
+      end
+
+      it 'converts :not to :!' do
+        'not foo'.
+          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
+      end
+
+      it 'handles unary ! with a number literal' do
+        '!1'.
+          must_be_parsed_as s(:send, s(:int, 1), :!)
+      end
+
+      it 'keeps :kwbegin for the argument' do
+        '- begin; foo; end'.
+          must_be_parsed_as s(:send,
+                              s(:kwbegin, s(:send, nil, :foo)),
+                              :-@)
+      end
+    end
+
+    describe 'for the ternary operator' do
+      it 'works in the simple case' do
+        'foo ? bar : baz'.
+          must_be_parsed_as s(:if,
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar),
+                              s(:send, nil, :baz))
+      end
+
+      it 'keeps :kwbegin for the first argument' do
+        'begin; foo; end ? bar : baz'.
+          must_be_parsed_as s(:if,
+                              s(:kwbegin, s(:send, nil, :foo)),
+                              s(:send, nil, :bar),
+                              s(:send, nil, :baz))
+      end
+
+      it 'keeps :kwbegin for the second argument' do
+        'foo ? begin; bar; end : baz'.
+          must_be_parsed_as s(:if,
+                              s(:send, nil, :foo),
+                              s(:kwbegin, s(:send, nil, :bar)),
+                              s(:send, nil, :baz))
+      end
+
+      it 'keeps :kwbegin for the third argument' do
+        'foo ? bar : begin; baz; end'.
+          must_be_parsed_as s(:if,
+                              s(:send, nil, :foo),
+                              s(:send, nil, :bar),
+                              s(:kwbegin, s(:send, nil, :baz)))
       end
     end
 

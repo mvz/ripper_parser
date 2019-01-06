@@ -39,6 +39,16 @@ describe RipperParser::Parser do
       end
     end
 
+    describe 'for brace blocks' do
+      it 'works with no statements in the block body' do
+        'foo { }'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args),
+                              nil)
+      end
+    end
+
     describe 'for block parameters' do
       specify do
         'foo do |(bar, baz)| end'.
@@ -118,6 +128,30 @@ describe RipperParser::Parser do
                               s(:args, s(:arg, :bar), s(:arg, :baz)), nil)
       end
 
+      it 'works with an argument with a default value' do
+        'foo do |bar=baz|; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args,
+                                s(:optarg, :bar, s(:send, nil, :baz))), nil)
+      end
+
+      it 'works with a keyword argument with no default value' do
+        'foo do |bar:|; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args,
+                                s(:kwarg, :bar)), nil)
+      end
+
+      it 'works with a keyword argument with a default value' do
+        'foo do |bar: baz|; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args,
+                                s(:kwoptarg, :bar, s(:send, nil, :baz))), nil)
+      end
+
       it 'works with a single splat argument' do
         'foo do |*bar|; baz bar; end'.
           must_be_parsed_as s(:block,
@@ -136,7 +170,7 @@ describe RipperParser::Parser do
                                 s(:lvar, :baz)))
       end
 
-      it 'works with a double splat argument' do
+      it 'works with a kwrest argument' do
         'foo do |**bar|; baz bar; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
@@ -144,7 +178,15 @@ describe RipperParser::Parser do
                               s(:send, nil, :baz, s(:lvar, :bar)))
       end
 
-      it 'works with a combination of regular arguments and a splat argument' do
+      it 'works with a regular argument after a splat argument' do
+        'foo do |*bar, baz|; end'.
+          must_be_parsed_as s(:block,
+                              s(:send, nil, :foo),
+                              s(:args, s(:restarg, :bar), s(:arg, :baz)),
+                              nil)
+      end
+
+      it 'works with a combination of regular arguments and a kwrest argument' do
         'foo do |bar, **baz|; qux bar, baz; end'.
           must_be_parsed_as s(:block,
                               s(:send, nil, :foo),
@@ -170,83 +212,6 @@ describe RipperParser::Parser do
           must_be_parsed_as s(:kwbegin,
                               s(:send, nil, :foo),
                               s(:send, nil, :bar))
-      end
-
-      it 'keeps :kwbegin for the argument of a unary operator' do
-        '- begin; foo; end'.
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :foo)),
-                              :-@)
-      end
-
-      it 'keeps :kwbegin for the first argument of a binary operator' do
-        'begin; bar; end + foo'.
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              :+,
-                              s(:send, nil, :foo))
-      end
-
-      it 'keeps :kwbegin for the second argument of a binary operator' do
-        'foo + begin; bar; end'.
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :+,
-                              s(:kwbegin, s(:send, nil, :bar)))
-      end
-
-      it 'keeps :kwbegin for the first argument of a boolean operator' do
-        'begin; bar; end and foo'.
-          must_be_parsed_as s(:and,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              s(:send, nil, :foo))
-      end
-
-      it 'keeps :kwbegin for the second argument of a boolean operator' do
-        'foo and begin; bar; end'.
-          must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
-                              s(:kwbegin, s(:send, nil, :bar)))
-      end
-
-      it 'keeps :kwbegin for the first argument of a shift operator' do
-        'begin; bar; end << foo'.
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              :<<,
-                              s(:send, nil, :foo))
-      end
-
-      it 'keeps :kwbegin for the second argument of a shift operator' do
-        'foo >> begin; bar; end'.
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :>>,
-                              s(:kwbegin, s(:send, nil, :bar)))
-      end
-
-      it 'keeps :kwbegin for the first argument of a ternary operator' do
-        'begin; foo; end ? bar : baz'.
-          must_be_parsed_as s(:if,
-                              s(:kwbegin, s(:send, nil, :foo)),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
-      end
-
-      it 'keeps :kwbegin for the second argument of a ternary operator' do
-        'foo ? begin; bar; end : baz'.
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
-      end
-
-      it 'keeps :kwbegin for the third argument of a ternary operator' do
-        'foo ? bar : begin; baz; end'.
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
-                              s(:kwbegin, s(:send, nil, :baz)))
       end
 
       it 'keeps :kwbegin for the truepart of a postfix if' do
@@ -732,6 +697,14 @@ describe RipperParser::Parser do
     describe 'for stabby lambda' do
       it 'works in the simple case' do
         '->(foo) { bar }'.
+          must_be_parsed_as s(:block,
+                              s(:lambda),
+                              s(:args, s(:arg, :foo)),
+                              s(:send, nil, :bar))
+      end
+
+      it 'works in the simple case without parentheses' do
+        '-> foo { bar }'.
           must_be_parsed_as s(:block,
                               s(:lambda),
                               s(:args, s(:arg, :foo)),

@@ -137,6 +137,42 @@ module RipperParser
         end
       end
 
+      def process_array(exp)
+        _, elems = exp.shift 2
+        return s(:array) if elems.nil?
+
+        s(:array, *handle_array_elements(elems))
+      end
+
+      # Handle hash literals sexps. These can be either empty, or contain a
+      # nested :assoclist_from_args Sexp.
+      #
+      # @example Empty hash
+      #   s(:hash, nil)
+      # @example Hash with contents
+      #   s(:hash, s(:assoclist_from_args, ...))
+      def process_hash(exp)
+        _, body = exp.shift 2
+        return s(:hash) unless body
+
+        _, elems = body
+        s(:hash, *map_process_list(elems))
+      end
+
+      # @example
+      #   s(:assoc_splat, s(:vcall, s(:@ident, "bar")))
+      def process_assoc_splat(exp)
+        _, param = exp.shift 2
+        s(:kwsplat, process(param))
+      end
+
+      # @example
+      #   s(:assoc_new, s(:@label, "baz:", s(1, 9)), s(:vcall, s(:@ident, "qux", s(1, 14))))
+      def process_assoc_new(exp)
+        _, left, right = exp.shift 3
+        s(:pair, process(left), process(right))
+      end
+
       private
 
       def extract_string_parts(list)
@@ -148,8 +184,6 @@ module RipperParser
             result.push(*sub_expr.sexp_body)
           when :str
             result.push(sub_expr) unless sub_expr[1] == ''
-          else
-            result.push(sub_expr)
           end
         end
         result
@@ -207,8 +241,6 @@ module RipperParser
           fix_encoding unescape_regexp(content)
         when NON_INTERPOLATING_WORD_LIST
           fix_encoding simple_unescape_wordlist_word(content)
-        else
-          fix_encoding content
         end
       end
     end
