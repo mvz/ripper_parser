@@ -151,26 +151,6 @@ describe RipperParser::Parser do
       end
     end
 
-    describe 'for collection indexing' do
-      it 'works in the simple case' do
-        'foo[bar]'.
-          must_be_parsed_as s(:index,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
-      end
-
-      it 'works without any indexes' do
-        'foo[]'.must_be_parsed_as s(:index,
-                                    s(:send, nil, :foo))
-      end
-
-      it 'works with self[]' do
-        'self[foo]'.must_be_parsed_as s(:index,
-                                        s(:self),
-                                        s(:send, nil, :foo))
-      end
-    end
-
     describe 'for yield' do
       it 'works with no arguments and no parentheses' do
         'yield'.

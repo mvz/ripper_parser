@@ -141,11 +141,27 @@ describe RipperParser::Parser do
         end
       end
 
-      describe 'safe call' do
-        before do
-          skip 'This is not valid syntax below Ruby 2.3' if RUBY_VERSION < '2.3.0'
+      describe 'for collection indexing' do
+        it 'works in the simple case' do
+          'foo[bar]'.
+            must_be_parsed_as s(:index,
+                                s(:send, nil, :foo),
+                                s(:send, nil, :bar))
         end
 
+        it 'works without any indexes' do
+          'foo[]'.must_be_parsed_as s(:index,
+                                      s(:send, nil, :foo))
+        end
+
+        it 'works with self[]' do
+          'self[foo]'.must_be_parsed_as s(:index,
+                                          s(:self),
+                                          s(:send, nil, :foo))
+        end
+      end
+
+      describe 'safe call' do
         it 'works without arguments' do
           'foo&.bar'.must_be_parsed_as s(:safe_call, s(:send, nil, :foo), :bar)
         end
