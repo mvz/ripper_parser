@@ -186,16 +186,6 @@ module RipperParser
         end
       end
 
-      def split_literal_string(string)
-        substrings = string.split(/(\n)/).each_slice(2).map { |*it| it.join }
-        if substrings.length == 1
-          s(:str, string)
-        else
-          sub_exprs = substrings.map { |it| s(:str, it) }
-          s(:dstr, *sub_exprs)
-        end
-      end
-
       def perform_line_continuation_unescapes(content, delim)
         case delim
         when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, *REGEXP_LITERALS
