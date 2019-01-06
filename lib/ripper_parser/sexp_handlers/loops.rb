@@ -52,10 +52,6 @@ module RipperParser
         type = post_type unless check_at_start?(body)
         s(type, process(cond), process(body))
       end
-
-      def construct_conditional_loop(type, cond, body)
-        s(type, cond, body)
-      end
     end
   end
 end
