@@ -48,55 +48,6 @@ describe RipperParser::Parser do
       end
     end
 
-    describe 'for the return statement' do
-      it 'works with no arguments' do
-        'return'.
-          must_be_parsed_as s(:return)
-      end
-
-      it 'works with one argument' do
-        'return foo'.
-          must_be_parsed_as s(:return,
-                              s(:send, nil, :foo))
-      end
-
-      it 'works with a splat argument' do
-        'return *foo'.
-          must_be_parsed_as s(:return,
-                              s(:splat,
-                                s(:send, nil, :foo)))
-      end
-
-      it 'works with multiple arguments' do
-        'return foo, bar'.
-          must_be_parsed_as s(:return,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
-      end
-
-      it 'works with a regular argument and a splat argument' do
-        'return foo, *bar'.
-          must_be_parsed_as s(:return,
-                              s(:send, nil, :foo),
-                              s(:splat,
-                                s(:send, nil, :bar)))
-      end
-
-      it 'works with a function call with parentheses' do
-        'return foo(bar)'.
-          must_be_parsed_as s(:return,
-                              s(:send, nil, :foo,
-                                s(:send, nil, :bar)))
-      end
-
-      it 'works with a function call without parentheses' do
-        'return foo bar'.
-          must_be_parsed_as s(:return,
-                              s(:send, nil, :foo,
-                                s(:send, nil, :bar)))
-      end
-    end
-
     describe 'for a begin..end block' do
       it 'works with no statements' do
         'begin; end'.
@@ -148,63 +99,6 @@ describe RipperParser::Parser do
                                 s(:pair,
                                   s(:send, nil, :bar),
                                   s(:send, nil, :baz))))
-      end
-    end
-
-    describe 'for yield' do
-      it 'works with no arguments and no parentheses' do
-        'yield'.
-          must_be_parsed_as s(:yield)
-      end
-
-      it 'works with parentheses but no arguments' do
-        'yield()'.
-          must_be_parsed_as s(:yield)
-      end
-
-      it 'works with one argument and no parentheses' do
-        'yield foo'.
-          must_be_parsed_as s(:yield, s(:send, nil, :foo))
-      end
-
-      it 'works with one argument and parentheses' do
-        'yield(foo)'.
-          must_be_parsed_as s(:yield, s(:send, nil, :foo))
-      end
-
-      it 'works with multiple arguments and no parentheses' do
-        'yield foo, bar'.
-          must_be_parsed_as s(:yield,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
-      end
-
-      it 'works with multiple arguments and parentheses' do
-        'yield(foo, bar)'.
-          must_be_parsed_as s(:yield,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
-      end
-
-      it 'works with splat' do
-        'yield foo, *bar'.
-          must_be_parsed_as s(:yield,
-                              s(:send, nil, :foo),
-                              s(:splat, s(:send, nil, :bar)))
-      end
-
-      it 'works with a function call with parentheses' do
-        'yield foo(bar)'.
-          must_be_parsed_as s(:yield,
-                              s(:send, nil, :foo,
-                                s(:send, nil, :bar)))
-      end
-
-      it 'works with a function call without parentheses' do
-        'yield foo bar'.
-          must_be_parsed_as s(:yield,
-                              s(:send, nil, :foo,
-                                s(:send, nil, :bar)))
       end
     end
 
