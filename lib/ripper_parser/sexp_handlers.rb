@@ -2,12 +2,9 @@
 
 require 'ripper_parser/sexp_handlers/helper_methods'
 
-require 'ripper_parser/sexp_handlers/arguments'
-require 'ripper_parser/sexp_handlers/arrays'
 require 'ripper_parser/sexp_handlers/assignment'
 require 'ripper_parser/sexp_handlers/blocks'
 require 'ripper_parser/sexp_handlers/conditionals'
-require 'ripper_parser/sexp_handlers/hashes'
 require 'ripper_parser/sexp_handlers/literals'
 require 'ripper_parser/sexp_handlers/loops'
 require 'ripper_parser/sexp_handlers/method_calls'
@@ -23,12 +20,9 @@ module RipperParser
       base.class_eval do
         include HelperMethods
 
-        include Arguments
-        include Arrays
         include Assignment
         include Blocks
         include Conditionals
-        include Hashes
         include Literals
         include Loops
         include MethodCalls

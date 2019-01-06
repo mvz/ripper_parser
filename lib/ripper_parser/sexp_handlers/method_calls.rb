@@ -17,6 +17,30 @@ module RipperParser
         call
       end
 
+      def process_args_add_block(exp)
+        _, regular, block = exp.shift 3
+        args = process(regular)
+        args << s(:block_pass, process(block)) if block
+        s(:arglist, *args.sexp_body)
+      end
+
+      def process_args_add_star(exp)
+        generic_add_star exp
+      end
+
+      def process_arg_paren(exp)
+        _, args = exp.shift 2
+        args = s() if args.nil?
+        args.unshift :arglist unless args.first.is_a? Symbol
+        process(args)
+      end
+
+      # Handle implied hashes, such as at the end of argument lists.
+      def process_bare_assoc_hash(exp)
+        _, elems = exp.shift 2
+        s(:hash, *map_process_list(elems))
+      end
+
       CALL_OP_MAP = {
         '.': :send,
         '::': :send,
@@ -76,6 +100,15 @@ module RipperParser
         args = process(args)
         args.shift
         s(:super, *args)
+      end
+
+      def process_aref(exp)
+        _, coll, idx = exp.shift 3
+
+        coll = process(coll)
+        idx = process(idx) || s(:arglist)
+        idx.shift
+        s(:index, coll, *idx)
       end
 
       private
