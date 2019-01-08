@@ -8,13 +8,26 @@ Parse with Ripper, produce sexps that are compatible with Parser.
 
 ## Features/Notes
 
-* Drop-in replacement for Parser.
+This is an experimental implementation based on `ripper_ruby_parser`. Its main
+purpose is to see if this could be done, after the success with RubyParser. It
+also helps find differences in interpretation of Ruby code by Ripper and
+Parser: It has already lead to one bug fix in Parser's string literal handling.
+
+**Note:** If you want a production ready system with many nice features such as
+advanced location information and rewriting, use Parser!
+
+* Produces Sexp objects with the same structure as Parser's AST::Node results.
+* Does not produce compatible location data
+* Does not produce compatible comment data
+* ~~Drop-in replacement for Parser.~~
+* Should theoretically be slightly faster
 
 ## Known incompatibilities
 
 RipperParser has the following known incompatibilities with Parser:
 
-* RipperParser handles line continuations inside strings differently.
+* RipperParser handles line continuations inside strings differently. See
+  [parser issue #537](https://github.com/whitequark/parser/issues/537).
 
 ## Install
 
