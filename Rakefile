@@ -17,14 +17,8 @@ namespace :test do
     t.warning = true
   end
 
-  Rake::TestTask.new(:pt_testcase) do |t|
-    t.libs = ['lib']
-    t.test_files = FileList['test/pt_testcase/*_test.rb']
-    t.warning = true
-  end
-
-  desc 'Run all three test suites'
-  task run: [:unit, :end_to_end, :pt_testcase]
+  desc 'Run all test suites'
+  task run: [:unit, :end_to_end]
 end
 
 desc 'Alias to test:run'
