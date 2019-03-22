@@ -199,7 +199,6 @@ describe RipperParser::Parser do
       end
 
       it 'handles line continuation with double-quoted strings' do
-        # NOTE: Incompatibility with Parser
         "\"foo\\\nbar\"".
           must_be_parsed_as s(:str, 'foobar')
       end
@@ -466,7 +465,6 @@ describe RipperParser::Parser do
         end
 
         it 'handles line continuation' do
-          # NOTE: Incompatibility with Parser
           "%Q[foo\\\nbar]".
             must_be_parsed_as s(:str, 'foobar')
         end

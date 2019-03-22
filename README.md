@@ -22,13 +22,6 @@ advanced location information and rewriting, use Parser!
 * ~~Drop-in replacement for Parser.~~
 * Should theoretically be slightly faster
 
-## Known incompatibilities
-
-RipperParser has the following known incompatibilities with Parser:
-
-* RipperParser handles line continuations inside strings differently. See
-  [parser issue #537](https://github.com/whitequark/parser/issues/537).
-
 ## Install
 
     gem install ripper_parser
