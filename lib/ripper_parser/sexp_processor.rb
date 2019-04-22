@@ -221,7 +221,7 @@ module RipperParser
       _, str, pos = exp.shift 3
       name = str[1..-1]
       with_position pos do
-        if name =~ /[0-9]/
+        if /[0-9]/.match?(name)
           s(:nth_ref, name.to_i)
         else
           s(:back_ref, name.to_sym)
