@@ -40,23 +40,28 @@ module RipperParser
     LINE_CONTINUATION_REGEXP = /\\(\n|.)/.freeze
 
     def simple_unescape(string)
-      string.gsub(/\\(
-        '   | # single quote
-        \\    # backslash
-      )/x) do
-        Regexp.last_match[1]
-      end
+      string.gsub(/
+                  \\ # a backslash
+                  (  # followed by a
+                   '   | # single quote or
+                   \\    # backslash
+                  )/x) do
+                    Regexp.last_match[1]
+                  end
     end
 
     def simple_unescape_wordlist_word(string)
-      string.gsub(/\\(
-        '   | # single quote
-        \\  | # backslash
-        [ ] | # space
-        \n    # newline
-      )/x) do
-        Regexp.last_match[1]
-      end
+      string.gsub(/
+                  \\ # a backslash
+                  (  # followed by a
+                    '   | # single quote or
+                    \\  | # backslash or
+                    [ ] | # space or
+                    \n    # newline
+                  )
+                  /x) do
+                    Regexp.last_match[1]
+                  end
     end
 
     def unescape_continuations(string)
