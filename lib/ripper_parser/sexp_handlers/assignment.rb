@@ -74,7 +74,7 @@ module RipperParser
 
         lvalue = process(lvalue)
         value = process(value)
-        operator = operator[1].delete('=').to_sym
+        operator = operator[1].delete("=").to_sym
 
         create_operator_assignment_sub_type lvalue, value, operator
       end

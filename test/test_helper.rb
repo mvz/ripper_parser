@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'simplecov'
+require "simplecov"
 SimpleCov.start do
-  add_filter '/test/'
+  add_filter "/test/"
 end
 
-require 'minitest/autorun'
+require "minitest/autorun"
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
-require 'ripper_parser'
-require 'parser/current'
+require "ripper_parser"
+require "parser/current"
 Parser::Builders::Default.emit_lambda   = true
 Parser::Builders::Default.emit_procarg0 = true
 Parser::Builders::Default.emit_encoding = true
@@ -19,7 +19,7 @@ Parser::Builders::Default.emit_index    = true
 module MiniTest
   class Spec
     def formatted(exp)
-      exp.inspect.gsub(/^  */, '').gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
+      exp.inspect.gsub(/^  */, "").gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
     end
 
     def assert_parsed_as(sexp, code)
