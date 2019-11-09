@@ -6,27 +6,27 @@ describe RipperParser::Parser do
   describe "#parse" do
     describe "for single assignment" do
       it "works when assigning to a namespaced constant" do
-        "Foo::Bar = baz"
+        _("Foo::Bar = baz")
           .must_be_parsed_as s(:casgn,
                                s(:const, s(:const, nil, :Foo), :Bar),
                                s(:send, nil, :baz))
       end
 
       it "works when assigning to constant in the root namespace" do
-        "::Foo = bar"
+        _("::Foo = bar")
           .must_be_parsed_as s(:casgn,
                                s(:cbase), :Foo,
                                s(:send, nil, :bar))
       end
 
       it "works with blocks" do
-        "foo = begin; bar; end"
+        _("foo = begin; bar; end")
           .must_be_parsed_as s(:lvasgn, :foo, s(:kwbegin, s(:send, nil, :bar)))
       end
 
       describe "with a right-hand splat" do
         it "works in the simple case" do
-          "foo = *bar"
+          _("foo = *bar")
             .must_be_parsed_as s(:lvasgn, :foo,
                                  s(:array,
                                    s(:splat,
@@ -34,7 +34,7 @@ describe RipperParser::Parser do
         end
 
         it "works with blocks" do
-          "foo = *begin; bar; end"
+          _("foo = *begin; bar; end")
             .must_be_parsed_as s(:lvasgn, :foo,
                                  s(:array,
                                    s(:splat,
@@ -45,7 +45,7 @@ describe RipperParser::Parser do
 
       describe "with several items on the right hand side" do
         it "works in the simple case" do
-          "foo = bar, baz"
+          _("foo = bar, baz")
             .must_be_parsed_as s(:lvasgn, :foo,
                                  s(:array,
                                    s(:send, nil, :bar),
@@ -53,7 +53,7 @@ describe RipperParser::Parser do
         end
 
         it "works with a splat" do
-          "foo = bar, *baz"
+          _("foo = bar, *baz")
             .must_be_parsed_as s(:lvasgn, :foo,
                                  s(:array,
                                    s(:send, nil, :bar),
@@ -64,7 +64,7 @@ describe RipperParser::Parser do
 
       describe "with an array literal on the right hand side" do
         specify do
-          "foo = [bar, baz]"
+          _("foo = [bar, baz]")
             .must_be_parsed_as s(:lvasgn, :foo,
                                  s(:array,
                                    s(:send, nil, :bar),
@@ -73,14 +73,14 @@ describe RipperParser::Parser do
       end
 
       it "works when assigning to an instance variable" do
-        "@foo = bar"
+        _("@foo = bar")
           .must_be_parsed_as s(:ivasgn,
                                :@foo,
                                s(:send, nil, :bar))
       end
 
       it "works when assigning to a constant" do
-        "FOO = bar"
+        _("FOO = bar")
           .must_be_parsed_as s(:casgn,
                                nil,
                                :FOO,
@@ -88,7 +88,7 @@ describe RipperParser::Parser do
       end
 
       it "works when assigning to a collection element" do
-        "foo[bar] = baz"
+        _("foo[bar] = baz")
           .must_be_parsed_as s(:indexasgn,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -96,7 +96,7 @@ describe RipperParser::Parser do
       end
 
       it "works when assigning to an attribute" do
-        "foo.bar = baz"
+        _("foo.bar = baz")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :bar=,
@@ -105,21 +105,21 @@ describe RipperParser::Parser do
 
       describe "when assigning to a class variable" do
         it "works outside a method" do
-          "@@foo = bar"
+          _("@@foo = bar")
             .must_be_parsed_as s(:cvasgn,
                                  :@@foo,
                                  s(:send, nil, :bar))
         end
 
         it "works inside a method" do
-          "def foo; @@bar = baz; end"
+          _("def foo; @@bar = baz; end")
             .must_be_parsed_as s(:def,
                                  :foo, s(:args),
                                  s(:cvasgn, :@@bar, s(:send, nil, :baz)))
         end
 
         it "works inside a method with a receiver" do
-          "def self.foo; @@bar = baz; end"
+          _("def self.foo; @@bar = baz; end")
             .must_be_parsed_as s(:defs,
                                  s(:self),
                                  :foo, s(:args),
@@ -127,7 +127,7 @@ describe RipperParser::Parser do
         end
 
         it "works inside method arguments" do
-          "def foo(bar = (@@baz = qux)); end"
+          _("def foo(bar = (@@baz = qux)); end")
             .must_be_parsed_as s(:def,
                                  :foo,
                                  s(:args,
@@ -138,7 +138,7 @@ describe RipperParser::Parser do
         end
 
         it "works inside method arguments of a singleton method" do
-          "def self.foo(bar = (@@baz = qux)); end"
+          _("def self.foo(bar = (@@baz = qux)); end")
             .must_be_parsed_as s(:defs,
                                  s(:self), :foo,
                                  s(:args,
@@ -149,7 +149,7 @@ describe RipperParser::Parser do
         end
 
         it "works inside the receiver in a method definition" do
-          "def (bar = (@@baz = qux)).foo; end"
+          _("def (bar = (@@baz = qux)).foo; end")
             .must_be_parsed_as s(:defs,
                                  s(:lvasgn, :bar,
                                    s(:begin,
@@ -160,7 +160,7 @@ describe RipperParser::Parser do
       end
 
       it "works when assigning to a global variable" do
-        "$foo = bar"
+        _("$foo = bar")
           .must_be_parsed_as s(:gvasgn,
                                :$foo,
                                s(:send, nil, :bar))
@@ -169,14 +169,14 @@ describe RipperParser::Parser do
 
     describe "for multiple assignment" do
       specify do
-        "foo, * = bar"
+        _("foo, * = bar")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:splat)),
                                s(:send, nil, :bar))
       end
 
       specify do
-        "(foo, *bar) = baz"
+        _("(foo, *bar) = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:lvasgn, :foo),
@@ -185,7 +185,7 @@ describe RipperParser::Parser do
       end
 
       specify do
-        "*foo, bar = baz"
+        _("*foo, bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:splat, s(:lvasgn, :foo)),
@@ -196,7 +196,7 @@ describe RipperParser::Parser do
 
     describe "for assignment to a collection element" do
       it "handles multiple indices" do
-        "foo[bar, baz] = qux"
+        _("foo[bar, baz] = qux")
           .must_be_parsed_as s(:indexasgn,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -207,7 +207,7 @@ describe RipperParser::Parser do
 
     describe "for operator assignment" do
       it "works with +=" do
-        "foo += bar"
+        _("foo += bar")
           .must_be_parsed_as s(:op_asgn,
                                s(:lvasgn, :foo),
                                :+,
@@ -215,7 +215,7 @@ describe RipperParser::Parser do
       end
 
       it "works with -=" do
-        "foo -= bar"
+        _("foo -= bar")
           .must_be_parsed_as s(:op_asgn,
                                s(:lvasgn, :foo),
                                :-,
@@ -223,7 +223,7 @@ describe RipperParser::Parser do
       end
 
       it "works with *=" do
-        "foo *= bar"
+        _("foo *= bar")
           .must_be_parsed_as s(:op_asgn,
                                s(:lvasgn, :foo),
                                :*,
@@ -231,7 +231,7 @@ describe RipperParser::Parser do
       end
 
       it "works with /=" do
-        "foo /= bar"
+        _("foo /= bar")
           .must_be_parsed_as s(:op_asgn,
                                s(:lvasgn, :foo),
                                :/,
@@ -239,14 +239,14 @@ describe RipperParser::Parser do
       end
 
       it "works with ||=" do
-        "foo ||= bar"
+        _("foo ||= bar")
           .must_be_parsed_as s(:or_asgn,
                                s(:lvasgn, :foo),
                                s(:send, nil, :bar))
       end
 
       it "works when assigning to an instance variable" do
-        "@foo += bar"
+        _("@foo += bar")
           .must_be_parsed_as s(:op_asgn,
                                s(:ivasgn, :@foo),
                                :+,
@@ -254,7 +254,7 @@ describe RipperParser::Parser do
       end
 
       it "works when assigning to a collection element" do
-        "foo[bar] += baz"
+        _("foo[bar] += baz")
           .must_be_parsed_as s(:op_asgn,
                                s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
                                :+,
@@ -262,14 +262,14 @@ describe RipperParser::Parser do
       end
 
       it "works with ||= when assigning to a collection element" do
-        "foo[bar] ||= baz"
+        _("foo[bar] ||= baz")
           .must_be_parsed_as s(:or_asgn,
                                s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
                                s(:send, nil, :baz))
       end
 
       it "works when assigning to an attribute" do
-        "foo.bar += baz"
+        _("foo.bar += baz")
           .must_be_parsed_as s(:op_asgn,
                                s(:send, s(:send, nil, :foo), :bar),
                                :+,
@@ -277,14 +277,14 @@ describe RipperParser::Parser do
       end
 
       it "works with ||= when assigning to an attribute" do
-        "foo.bar ||= baz"
+        _("foo.bar ||= baz")
           .must_be_parsed_as s(:or_asgn,
                                s(:send, s(:send, nil, :foo), :bar),
                                s(:send, nil, :baz))
       end
       describe "assigning to a collection element" do
         it "handles multiple indices" do
-          "foo[bar, baz] += qux"
+          _("foo[bar, baz] += qux")
             .must_be_parsed_as s(:op_asgn,
                                  s(:indexasgn,
                                    s(:send, nil, :foo),
@@ -294,14 +294,14 @@ describe RipperParser::Parser do
         end
 
         it "works with boolean operators" do
-          "foo &&= bar"
+          _("foo &&= bar")
             .must_be_parsed_as s(:and_asgn,
                                  s(:lvasgn, :foo),
                                  s(:send, nil, :bar))
         end
 
         it "works with boolean operators and blocks" do
-          "foo &&= begin; bar; end"
+          _("foo &&= begin; bar; end")
             .must_be_parsed_as s(:and_asgn,
                                  s(:lvasgn, :foo),
                                  s(:kwbegin,
@@ -309,7 +309,7 @@ describe RipperParser::Parser do
         end
 
         it "works with arithmetic operators and blocks" do
-          "foo += begin; bar; end"
+          _("foo += begin; bar; end")
             .must_be_parsed_as s(:op_asgn,
                                  s(:lvasgn, :foo), :+,
                                  s(:kwbegin,
@@ -320,7 +320,7 @@ describe RipperParser::Parser do
 
     describe "for multiple assignment" do
       it "works the same number of items on each side" do
-        "foo, bar = baz, qux"
+        _("foo, bar = baz, qux")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:array,
@@ -329,14 +329,14 @@ describe RipperParser::Parser do
       end
 
       it "works with a single item on the right-hand side" do
-        "foo, bar = baz"
+        _("foo, bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:send, nil, :baz))
       end
 
       it "works with left-hand splat" do
-        "foo, *bar = baz, qux"
+        _("foo, *bar = baz, qux")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:splat, s(:lvasgn, :bar))),
                                s(:array,
@@ -345,14 +345,14 @@ describe RipperParser::Parser do
       end
 
       it "works with parentheses around the left-hand side" do
-        "(foo, bar) = baz"
+        _("(foo, bar) = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:send, nil, :baz))
       end
 
       it "works with complex destructuring" do
-        "foo, (bar, baz) = qux"
+        _("foo, (bar, baz) = qux")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:lvasgn, :foo),
@@ -361,7 +361,7 @@ describe RipperParser::Parser do
       end
 
       it "works with complex destructuring of the value" do
-        "foo, (bar, baz) = [qux, [quz, quuz]]"
+        _("foo, (bar, baz) = [qux, [quz, quuz]]")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:lvasgn, :foo),
@@ -374,21 +374,21 @@ describe RipperParser::Parser do
       end
 
       it "works with instance variables" do
-        "@foo, @bar = baz"
+        _("@foo, @bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:ivasgn, :@foo), s(:ivasgn, :@bar)),
                                s(:send, nil, :baz))
       end
 
       it "works with class variables" do
-        "@@foo, @@bar = baz"
+        _("@@foo, @@bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:cvasgn, :@@foo), s(:cvasgn, :@@bar)),
                                s(:send, nil, :baz))
       end
 
       it "works with attributes" do
-        "foo.bar, foo.baz = qux"
+        _("foo.bar, foo.baz = qux")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:send, s(:send, nil, :foo), :bar=),
@@ -397,7 +397,7 @@ describe RipperParser::Parser do
       end
 
       it "works with collection elements" do
-        "foo[1], bar[2] = baz"
+        _("foo[1], bar[2] = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:indexasgn,
@@ -408,14 +408,14 @@ describe RipperParser::Parser do
       end
 
       it "works with constants" do
-        "Foo, Bar = baz"
+        _("Foo, Bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:casgn, nil, :Foo), s(:casgn, nil, :Bar)),
                                s(:send, nil, :baz))
       end
 
       it "works with instance variables and splat" do
-        "@foo, *@bar = baz"
+        _("@foo, *@bar = baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs,
                                  s(:ivasgn, :@foo),
@@ -424,7 +424,7 @@ describe RipperParser::Parser do
       end
 
       it "works with a right-hand single splat" do
-        "foo, bar = *baz"
+        _("foo, bar = *baz")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:array,
@@ -432,7 +432,7 @@ describe RipperParser::Parser do
       end
 
       it "works with a splat in a list of values on the right hand" do
-        "foo, bar = baz, *qux"
+        _("foo, bar = baz, *qux")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:array,
@@ -441,7 +441,7 @@ describe RipperParser::Parser do
       end
 
       it "works with a right-hand single splat with begin..end block" do
-        "foo, bar = *begin; baz; end"
+        _("foo, bar = *begin; baz; end")
           .must_be_parsed_as s(:masgn,
                                s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
                                s(:array,

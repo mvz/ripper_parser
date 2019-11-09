@@ -9,7 +9,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 
@@ -35,7 +35,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 
@@ -45,7 +45,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 
@@ -63,7 +63,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 
@@ -87,7 +87,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 
@@ -97,7 +97,7 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      program.must_be_parsed_as_before
+      _(program).must_be_parsed_as_before
     end
   end
 end

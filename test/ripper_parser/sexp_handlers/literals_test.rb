@@ -6,60 +6,60 @@ describe RipperParser::Parser do
   describe "#parse" do
     describe "for character literals" do
       it "works for simple character literals" do
-        "?a"
+        _("?a")
           .must_be_parsed_as s(:str, "a")
       end
 
       it "works for escaped character literals" do
-        '?\\n'
+        _('?\\n')
           .must_be_parsed_as s(:str, "\n")
       end
 
       it "works for escaped character literals with ctrl" do
-        '?\\C-a'
+        _('?\\C-a')
           .must_be_parsed_as s(:str, "\u0001")
       end
 
       it "works for escaped character literals with meta" do
-        '?\\M-a'
+        _('?\\M-a')
           .must_be_parsed_as s(:str, [0xE1].pack("c"))
       end
 
       it "works for escaped character literals with meta plus shorthand ctrl" do
-        '?\\M-\\ca'
+        _('?\\M-\\ca')
           .must_be_parsed_as s(:str, [0x81].pack("c"))
       end
 
       it "works for escaped character literals with shorthand ctrl plus meta" do
-        '?\\c\\M-a'
+        _('?\\c\\M-a')
           .must_be_parsed_as s(:str, [0x81].pack("c"))
       end
 
       it "works for escaped character literals with meta plus ctrl" do
-        '?\\M-\\C-a'
+        _('?\\M-\\C-a')
           .must_be_parsed_as s(:str, [0x81].pack("c"))
       end
 
       it "works for escaped character literals with ctrl plus meta" do
-        '?\\C-\\M-a'
+        _('?\\C-\\M-a')
           .must_be_parsed_as s(:str, [0x81].pack("c"))
       end
     end
 
     describe "for array literals" do
       it "works for an empty array" do
-        "[]"
+        _("[]")
           .must_be_parsed_as s(:array)
       end
 
       it "works for a simple case with splat" do
-        "[*foo]"
+        _("[*foo]")
           .must_be_parsed_as s(:array,
                                s(:splat, s(:send, nil, :foo)))
       end
 
       it "works for a multi-element case with splat" do
-        "[foo, *bar]"
+        _("[foo, *bar]")
           .must_be_parsed_as s(:array,
                                s(:send, nil, :foo),
                                s(:splat, s(:send, nil, :bar)))
@@ -68,12 +68,12 @@ describe RipperParser::Parser do
 
     describe "for hash literals" do
       it "works for an empty hash" do
-        "{}"
+        _("{}")
           .must_be_parsed_as s(:hash)
       end
 
       it "works for a hash with one pair" do
-        "{foo => bar}"
+        _("{foo => bar}")
           .must_be_parsed_as s(:hash,
                                s(:pair,
                                  s(:send, nil, :foo),
@@ -81,7 +81,7 @@ describe RipperParser::Parser do
       end
 
       it "works for a hash with multiple pairs" do
-        "{foo => bar, baz => qux}"
+        _("{foo => bar, baz => qux}")
           .must_be_parsed_as s(:hash,
                                s(:pair,
                                  s(:send, nil, :foo),
@@ -92,7 +92,7 @@ describe RipperParser::Parser do
       end
 
       it "works for a hash with label keys" do
-        "{foo: bar, baz: qux}"
+        _("{foo: bar, baz: qux}")
           .must_be_parsed_as s(:hash,
                                s(:pair,
                                  s(:sym, :foo),
@@ -103,7 +103,7 @@ describe RipperParser::Parser do
       end
 
       it "works for a hash with dynamic label keys" do
-        "{'foo': bar}"
+        _("{'foo': bar}")
           .must_be_parsed_as s(:hash,
                                s(:pair,
                                  s(:sym, :foo),
@@ -111,7 +111,7 @@ describe RipperParser::Parser do
       end
 
       it "works for a hash with splat" do
-        "{foo: bar, baz: qux, **quux}"
+        _("{foo: bar, baz: qux, **quux}")
           .must_be_parsed_as s(:hash,
                                s(:pair, s(:sym, :foo), s(:send, nil, :bar)),
                                s(:pair, s(:sym, :baz), s(:send, nil, :qux)),
@@ -121,42 +121,42 @@ describe RipperParser::Parser do
 
     describe "for number literals" do
       it "works for floats" do
-        "3.14"
+        _("3.14")
           .must_be_parsed_as s(:float, 3.14)
       end
 
       it "works for octal integer literals" do
-        "0700"
+        _("0700")
           .must_be_parsed_as s(:int, 448)
       end
 
       it "handles negative sign for integers" do
-        "-1"
+        _("-1")
           .must_be_parsed_as s(:int, -1)
       end
 
       it "handles space after negative sign for integers" do
-        "-1 "
+        _("-1 ")
           .must_be_parsed_as s(:int, -1)
       end
 
       it "handles negative sign for floats" do
-        "-3.14"
+        _("-3.14")
           .must_be_parsed_as s(:float, -3.14)
       end
 
       it "handles space after negative sign for floats" do
-        "-3.14 "
+        _("-3.14 ")
           .must_be_parsed_as s(:float, -3.14)
       end
 
       it "handles positive sign" do
-        "+1"
+        _("+1")
           .must_be_parsed_as s(:int, 1)
       end
 
       it "works for rationals" do
-        "1000r"
+        _("1000r")
           .must_be_parsed_as s(:rational, 1000r)
       end
     end

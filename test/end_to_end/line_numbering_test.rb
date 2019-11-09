@@ -71,11 +71,11 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result" do
-      formatted(imitation).must_equal formatted(original)
+      _(formatted(imitation)).must_equal formatted(original)
     end
 
     it "gives the same result with line numbers" do
-      formatted(to_line_numbers(imitation))
+      _(formatted(to_line_numbers(imitation)))
         .must_equal formatted(to_line_numbers_ast(original))
     end
   end

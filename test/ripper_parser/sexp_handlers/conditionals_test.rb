@@ -6,7 +6,7 @@ describe RipperParser::Parser do
   describe "#parse" do
     describe "for regular if" do
       it "works with a single statement" do
-        "if foo; bar; end"
+        _("if foo; bar; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -14,7 +14,7 @@ describe RipperParser::Parser do
       end
 
       it "works with multiple statements" do
-        "if foo; bar; baz; end"
+        _("if foo; bar; baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:begin,
@@ -24,7 +24,7 @@ describe RipperParser::Parser do
       end
 
       it "works with zero statements" do
-        "if foo; end"
+        _("if foo; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                nil,
@@ -32,7 +32,7 @@ describe RipperParser::Parser do
       end
 
       it "works with a begin..end block" do
-        "if foo; begin; bar; end; end"
+        _("if foo; begin; bar; end; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:kwbegin, s(:send, nil, :bar)),
@@ -40,7 +40,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an else clause" do
-        "if foo; bar; else; baz; end"
+        _("if foo; bar; else; baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -48,7 +48,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty main clause" do
-        "if foo; else; bar; end"
+        _("if foo; else; bar; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                nil,
@@ -56,7 +56,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty else clause" do
-        "if foo; bar; else; end"
+        _("if foo; bar; else; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -64,7 +64,7 @@ describe RipperParser::Parser do
       end
 
       it "handles a negative condition correctly" do
-        "if not foo; bar; end"
+        _("if not foo; bar; end")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :foo), :!),
                                s(:send, nil, :bar),
@@ -72,7 +72,7 @@ describe RipperParser::Parser do
       end
 
       it "handles bare regex literal in condition" do
-        "if /foo/; bar; end"
+        _("if /foo/; bar; end")
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -82,7 +82,7 @@ describe RipperParser::Parser do
       end
 
       it "handles interpolated regex in condition" do
-        'if /#{foo}/; bar; end'
+        _('if /#{foo}/; bar; end')
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -93,7 +93,7 @@ describe RipperParser::Parser do
       end
 
       it "handles block conditions" do
-        "if (foo; bar); baz; end"
+        _("if (foo; bar); baz; end")
           .must_be_parsed_as s(:if,
                                s(:begin,
                                  s(:send, nil, :foo),
@@ -103,7 +103,7 @@ describe RipperParser::Parser do
       end
 
       it "converts :dot2 to :iflipflop" do
-        "if foo..bar; baz; end"
+        _("if foo..bar; baz; end")
           .must_be_parsed_as s(:if,
                                s(:iflipflop,
                                  s(:send, nil, :foo),
@@ -112,7 +112,7 @@ describe RipperParser::Parser do
       end
 
       it "converts :dot3 to :eflipflop" do
-        "if foo...bar; baz; end"
+        _("if foo...bar; baz; end")
           .must_be_parsed_as s(:if,
                                s(:eflipflop,
                                  s(:send, nil, :foo),
@@ -121,7 +121,7 @@ describe RipperParser::Parser do
       end
 
       it "handles negative match operator" do
-        "if foo !~ bar; baz; else; qux; end"
+        _("if foo !~ bar; baz; else; qux; end")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                                s(:send, nil, :baz),
@@ -129,7 +129,7 @@ describe RipperParser::Parser do
       end
 
       it "works with begin..end block in condition" do
-        "if begin foo end; bar; end"
+        _("if begin foo end; bar; end")
           .must_be_parsed_as s(:if,
                                s(:kwbegin,
                                  s(:send, nil, :foo)),
@@ -137,7 +137,7 @@ describe RipperParser::Parser do
       end
 
       it "works with special conditions inside begin..end block" do
-        "if begin foo..bar end; baz; end"
+        _("if begin foo..bar end; baz; end")
           .must_be_parsed_as s(:if,
                                s(:kwbegin,
                                  s(:irange, s(:send, nil, :foo), s(:send, nil, :bar))),
@@ -146,7 +146,7 @@ describe RipperParser::Parser do
       end
 
       it "works with assignment in the condition" do
-        "if foo = bar; baz; end"
+        _("if foo = bar; baz; end")
           .must_be_parsed_as s(:if,
                                s(:lvasgn, :foo,
                                  s(:send, nil, :bar)),
@@ -154,7 +154,7 @@ describe RipperParser::Parser do
       end
 
       it "works with bracketed assignment in the condition" do
-        "if (foo = bar); baz; end"
+        _("if (foo = bar); baz; end")
           .must_be_parsed_as s(:if,
                                s(:begin,
                                  s(:lvasgn, :foo,
@@ -165,7 +165,7 @@ describe RipperParser::Parser do
 
     describe "for postfix if" do
       it "works with a simple condition" do
-        "foo if bar"
+        _("foo if bar")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :bar),
                                s(:send, nil, :foo),
@@ -173,7 +173,7 @@ describe RipperParser::Parser do
       end
 
       it "handles negative conditions" do
-        "foo if not bar"
+        _("foo if not bar")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :bar), :!),
                                s(:send, nil, :foo),
@@ -181,7 +181,7 @@ describe RipperParser::Parser do
       end
 
       it "handles bare regex literal in condition" do
-        "foo if /bar/"
+        _("foo if /bar/")
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp, s(:str, "bar"), s(:regopt))),
@@ -190,7 +190,7 @@ describe RipperParser::Parser do
       end
 
       it "handles interpolated regex in condition" do
-        'foo if /#{bar}/'
+        _('foo if /#{bar}/')
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -201,7 +201,7 @@ describe RipperParser::Parser do
       end
 
       it "handles negative match operator" do
-        "baz if foo !~ bar"
+        _("baz if foo !~ bar")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                                s(:send, nil, :baz),
@@ -209,7 +209,7 @@ describe RipperParser::Parser do
       end
 
       it "works with begin..end block in condition" do
-        "foo if begin bar end"
+        _("foo if begin bar end")
           .must_be_parsed_as s(:if,
                                s(:kwbegin,
                                  s(:send, nil, :bar)),
@@ -219,7 +219,7 @@ describe RipperParser::Parser do
 
     describe "for regular unless" do
       it "works with a single statement" do
-        "unless bar; foo; end"
+        _("unless bar; foo; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :bar),
                                nil,
@@ -227,7 +227,7 @@ describe RipperParser::Parser do
       end
 
       it "works with multiple statements" do
-        "unless foo; bar; baz; end"
+        _("unless foo; bar; baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                nil,
@@ -237,7 +237,7 @@ describe RipperParser::Parser do
       end
 
       it "works with zero statements" do
-        "unless foo; end"
+        _("unless foo; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                nil,
@@ -245,7 +245,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an else clause" do
-        "unless foo; bar; else; baz; end"
+        _("unless foo; bar; else; baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :baz),
@@ -253,7 +253,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty main clause" do
-        "unless foo; else; bar; end"
+        _("unless foo; else; bar; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -261,7 +261,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty else block" do
-        "unless foo; bar; else; end"
+        _("unless foo; bar; else; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                nil,
@@ -269,7 +269,7 @@ describe RipperParser::Parser do
       end
 
       it "handles bare regex literal in condition" do
-        "unless /foo/; bar; end"
+        _("unless /foo/; bar; end")
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -280,7 +280,7 @@ describe RipperParser::Parser do
       end
 
       it "handles interpolated regex in condition" do
-        'unless /#{foo}/; bar; end'
+        _('unless /#{foo}/; bar; end')
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp, s(:begin, s(:send, nil, :foo)), s(:regopt))),
@@ -289,7 +289,7 @@ describe RipperParser::Parser do
       end
 
       it "handles negative match operator" do
-        "unless foo !~ bar; baz; else; qux; end"
+        _("unless foo !~ bar; baz; else; qux; end")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                                s(:send, nil, :qux),
@@ -299,7 +299,7 @@ describe RipperParser::Parser do
 
     describe "for postfix unless" do
       it "works with a simple condition" do
-        "foo unless bar"
+        _("foo unless bar")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :bar),
                                nil,
@@ -307,7 +307,7 @@ describe RipperParser::Parser do
       end
 
       it "handles bare regex literal in condition" do
-        "foo unless /bar/"
+        _("foo unless /bar/")
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -318,7 +318,7 @@ describe RipperParser::Parser do
       end
 
       it "handles interpolated regex in condition" do
-        'foo unless /#{bar}/'
+        _('foo unless /#{bar}/')
           .must_be_parsed_as s(:if,
                                s(:match_current_line,
                                  s(:regexp,
@@ -330,7 +330,7 @@ describe RipperParser::Parser do
       end
 
       it "handles negative match operator" do
-        "baz unless foo !~ bar"
+        _("baz unless foo !~ bar")
           .must_be_parsed_as s(:if,
                                s(:send, s(:send, nil, :foo), :!~, s(:send, nil, :bar)),
                                nil,
@@ -340,7 +340,7 @@ describe RipperParser::Parser do
 
     describe "for elsif" do
       it "works with a single statement" do
-        "if foo; bar; elsif baz; qux; end"
+        _("if foo; bar; elsif baz; qux; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -351,7 +351,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty consequesnt" do
-        "if foo; bar; elsif baz; end"
+        _("if foo; bar; elsif baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -362,7 +362,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty else" do
-        "if foo; bar; elsif baz; qux; else; end"
+        _("if foo; bar; elsif baz; qux; else; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -373,7 +373,7 @@ describe RipperParser::Parser do
       end
 
       it "handles a negative condition correctly" do
-        "if foo; bar; elsif not baz; qux; end"
+        _("if foo; bar; elsif not baz; qux; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -383,7 +383,7 @@ describe RipperParser::Parser do
       end
 
       it "replaces :dot2 with :iflipflop" do
-        "if foo; bar; elsif baz..qux; quuz; end"
+        _("if foo; bar; elsif baz..qux; quuz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -393,7 +393,7 @@ describe RipperParser::Parser do
       end
 
       it "does not rewrite the negative match operator" do
-        "if foo; bar; elsif baz !~ qux; quuz; end"
+        _("if foo; bar; elsif baz !~ qux; quuz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -407,7 +407,7 @@ describe RipperParser::Parser do
       end
 
       it "works with begin..end block in condition" do
-        "if foo; bar; elsif begin baz end; qux; end"
+        _("if foo; bar; elsif begin baz end; qux; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -421,7 +421,7 @@ describe RipperParser::Parser do
 
     describe "for case block" do
       it "works with a single when clause" do
-        "case foo; when bar; baz; end"
+        _("case foo; when bar; baz; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -431,7 +431,7 @@ describe RipperParser::Parser do
       end
 
       it "works with multiple when clauses" do
-        "case foo; when bar; baz; when qux; quux; end"
+        _("case foo; when bar; baz; when qux; quux; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -444,7 +444,7 @@ describe RipperParser::Parser do
       end
 
       it "works with multiple statements in the when block" do
-        "case foo; when bar; baz; qux; end"
+        _("case foo; when bar; baz; qux; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -456,7 +456,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an else clause" do
-        "case foo; when bar; baz; else; qux; end"
+        _("case foo; when bar; baz; else; qux; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -466,7 +466,7 @@ describe RipperParser::Parser do
       end
 
       it "works with multiple statements in the else block" do
-        "case foo; when bar; baz; else; qux; quuz end"
+        _("case foo; when bar; baz; else; qux; quuz end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -478,7 +478,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty when block" do
-        "case foo; when bar; end"
+        _("case foo; when bar; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when, s(:send, nil, :bar), nil),
@@ -486,7 +486,7 @@ describe RipperParser::Parser do
       end
 
       it "works with an empty else block" do
-        "case foo; when bar; baz; else; end"
+        _("case foo; when bar; baz; else; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,
@@ -496,7 +496,7 @@ describe RipperParser::Parser do
       end
 
       it "works with a splat in the when clause" do
-        "case foo; when *bar; baz; end"
+        _("case foo; when *bar; baz; end")
           .must_be_parsed_as s(:case,
                                s(:send, nil, :foo),
                                s(:when,

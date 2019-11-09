@@ -6,14 +6,14 @@ describe RipperParser::Parser do
   describe "#parse" do
     describe "for boolean operators" do
       it "handles :and" do
-        "foo and bar"
+        _("foo and bar")
           .must_be_parsed_as s(:and,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
       end
 
       it "handles double :and" do
-        "foo and bar and baz"
+        _("foo and bar and baz")
           .must_be_parsed_as s(:and,
                                s(:and,
                                  s(:send, nil, :foo),
@@ -22,14 +22,14 @@ describe RipperParser::Parser do
       end
 
       it "handles :or" do
-        "foo or bar"
+        _("foo or bar")
           .must_be_parsed_as s(:or,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
       end
 
       it "handles double :or" do
-        "foo or bar or baz"
+        _("foo or bar or baz")
           .must_be_parsed_as s(:or,
                                s(:or,
                                  s(:send, nil, :foo),
@@ -38,7 +38,7 @@ describe RipperParser::Parser do
       end
 
       it "handles :or after :and" do
-        "foo and bar or baz"
+        _("foo and bar or baz")
           .must_be_parsed_as s(:or,
                                s(:and,
                                  s(:send, nil, :foo),
@@ -47,7 +47,7 @@ describe RipperParser::Parser do
       end
 
       it "handles :and after :or" do
-        "foo or bar and baz"
+        _("foo or bar and baz")
           .must_be_parsed_as s(:and,
                                s(:or,
                                  s(:send, nil, :foo),
@@ -56,14 +56,14 @@ describe RipperParser::Parser do
       end
 
       it "converts :&& to :and" do
-        "foo && bar"
+        _("foo && bar")
           .must_be_parsed_as s(:and,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
       end
 
       it "handles :|| after :&&" do
-        "foo && bar || baz"
+        _("foo && bar || baz")
           .must_be_parsed_as s(:or,
                                s(:and,
                                  s(:send, nil, :foo),
@@ -72,7 +72,7 @@ describe RipperParser::Parser do
       end
 
       it "handles :&& after :||" do
-        "foo || bar && baz"
+        _("foo || bar && baz")
           .must_be_parsed_as s(:or,
                                s(:send, nil, :foo),
                                s(:and,
@@ -81,7 +81,7 @@ describe RipperParser::Parser do
       end
 
       it "handles :|| with parentheses" do
-        "(foo || bar) || baz"
+        _("(foo || bar) || baz")
           .must_be_parsed_as s(:or,
                                s(:begin,
                                  s(:or,
@@ -91,7 +91,7 @@ describe RipperParser::Parser do
       end
 
       it "handles nested :|| with parentheses" do
-        "foo || (bar || baz) || qux"
+        _("foo || (bar || baz) || qux")
           .must_be_parsed_as s(:or,
                                s(:or,
                                  s(:send, nil, :foo),
@@ -103,14 +103,14 @@ describe RipperParser::Parser do
       end
 
       it "converts :|| to :or" do
-        "foo || bar"
+        _("foo || bar")
           .must_be_parsed_as s(:or,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
       end
 
       it "handles triple :and" do
-        "foo and bar and baz and qux"
+        _("foo and bar and baz and qux")
           .must_be_parsed_as s(:and,
                                s(:and,
                                  s(:and,
@@ -121,7 +121,7 @@ describe RipperParser::Parser do
       end
 
       it "handles triple :&&" do
-        "foo && bar && baz && qux"
+        _("foo && bar && baz && qux")
           .must_be_parsed_as s(:and,
                                s(:and,
                                  s(:and,
@@ -132,7 +132,7 @@ describe RipperParser::Parser do
       end
 
       it "handles :!=" do
-        "foo != bar"
+        _("foo != bar")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :!=,
@@ -140,7 +140,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the first argument of a binary operator" do
-        "begin; bar; end + foo"
+        _("begin; bar; end + foo")
           .must_be_parsed_as s(:send,
                                s(:kwbegin, s(:send, nil, :bar)),
                                :+,
@@ -148,7 +148,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the second argument of a binary operator" do
-        "foo + begin; bar; end"
+        _("foo + begin; bar; end")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :+,
@@ -156,21 +156,21 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the first argument of a boolean operator" do
-        "begin; bar; end and foo"
+        _("begin; bar; end and foo")
           .must_be_parsed_as s(:and,
                                s(:kwbegin, s(:send, nil, :bar)),
                                s(:send, nil, :foo))
       end
 
       it "keeps :kwbegin for the second argument of a boolean operator" do
-        "foo and begin; bar; end"
+        _("foo and begin; bar; end")
           .must_be_parsed_as s(:and,
                                s(:send, nil, :foo),
                                s(:kwbegin, s(:send, nil, :bar)))
       end
 
       it "keeps :kwbegin for the first argument of a shift operator" do
-        "begin; bar; end << foo"
+        _("begin; bar; end << foo")
           .must_be_parsed_as s(:send,
                                s(:kwbegin, s(:send, nil, :bar)),
                                :<<,
@@ -178,7 +178,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the second argument of a shift operator" do
-        "foo >> begin; bar; end"
+        _("foo >> begin; bar; end")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :>>,
@@ -188,35 +188,35 @@ describe RipperParser::Parser do
 
     describe "for the range operator" do
       it "handles positive number literals" do
-        "1..2"
+        _("1..2")
           .must_be_parsed_as s(:irange,
                                s(:int, 1),
                                s(:int, 2))
       end
 
       it "handles negative number literals" do
-        "-1..-2"
+        _("-1..-2")
           .must_be_parsed_as s(:irange,
                                s(:int, -1),
                                s(:int, -2))
       end
 
       it "handles float literals" do
-        "1.0..2.0"
+        _("1.0..2.0")
           .must_be_parsed_as s(:irange,
                                s(:float, 1.0),
                                s(:float, 2.0))
       end
 
       it "handles string literals" do
-        "'a'..'z'"
+        _("'a'..'z'")
           .must_be_parsed_as s(:irange,
                                s(:str, "a"),
                                s(:str, "z"))
       end
 
       it "handles non-literals" do
-        "foo..bar"
+        _("foo..bar")
           .must_be_parsed_as s(:irange,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
@@ -225,35 +225,35 @@ describe RipperParser::Parser do
 
     describe "for the exclusive range operator" do
       it "handles positive number literals" do
-        "1...2"
+        _("1...2")
           .must_be_parsed_as s(:erange,
                                s(:int, 1),
                                s(:int, 2))
       end
 
       it "handles negative number literals" do
-        "-1...-2"
+        _("-1...-2")
           .must_be_parsed_as s(:erange,
                                s(:int, -1),
                                s(:int, -2))
       end
 
       it "handles float literals" do
-        "1.0...2.0"
+        _("1.0...2.0")
           .must_be_parsed_as s(:erange,
                                s(:float, 1.0),
                                s(:float, 2.0))
       end
 
       it "handles string literals" do
-        "'a'...'z'"
+        _("'a'...'z'")
           .must_be_parsed_as s(:erange,
                                s(:str, "a"),
                                s(:str, "z"))
       end
 
       it "handles non-literals" do
-        "foo...bar"
+        _("foo...bar")
           .must_be_parsed_as s(:erange,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
@@ -262,52 +262,52 @@ describe RipperParser::Parser do
 
     describe "for unary operators" do
       it "handles unary minus with an integer literal" do
-        "- 1".must_be_parsed_as s(:send, s(:int, 1), :-@)
+        _("- 1").must_be_parsed_as s(:send, s(:int, 1), :-@)
       end
 
       it "handles unary minus with a float literal" do
-        "- 3.14".must_be_parsed_as s(:send, s(:float, 3.14), :-@)
+        _("- 3.14").must_be_parsed_as s(:send, s(:float, 3.14), :-@)
       end
 
       it "handles unary minus with a non-literal" do
-        "-foo"
+        _("-foo")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :-@)
       end
 
       it "handles unary minus with a negative number literal" do
-        "- -1".must_be_parsed_as s(:send, s(:int, -1), :-@)
+        _("- -1").must_be_parsed_as s(:send, s(:int, -1), :-@)
       end
 
       it "handles unary plus with a number literal" do
-        "+ 1".must_be_parsed_as s(:send, s(:int, 1), :+@)
+        _("+ 1").must_be_parsed_as s(:send, s(:int, 1), :+@)
       end
 
       it "handles unary plus with a non-literal" do
-        "+foo"
+        _("+foo")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :+@)
       end
 
       it "handles unary !" do
-        "!foo"
+        _("!foo")
           .must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it "converts :not to :!" do
-        "not foo"
+        _("not foo")
           .must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it "handles unary ! with a number literal" do
-        "!1"
+        _("!1")
           .must_be_parsed_as s(:send, s(:int, 1), :!)
       end
 
       it "keeps :kwbegin for the argument" do
-        "- begin; foo; end"
+        _("- begin; foo; end")
           .must_be_parsed_as s(:send,
                                s(:kwbegin, s(:send, nil, :foo)),
                                :-@)
@@ -316,7 +316,7 @@ describe RipperParser::Parser do
 
     describe "for the ternary operator" do
       it "works in the simple case" do
-        "foo ? bar : baz"
+        _("foo ? bar : baz")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -324,7 +324,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the first argument" do
-        "begin; foo; end ? bar : baz"
+        _("begin; foo; end ? bar : baz")
           .must_be_parsed_as s(:if,
                                s(:kwbegin, s(:send, nil, :foo)),
                                s(:send, nil, :bar),
@@ -332,7 +332,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the second argument" do
-        "foo ? begin; bar; end : baz"
+        _("foo ? begin; bar; end : baz")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:kwbegin, s(:send, nil, :bar)),
@@ -340,7 +340,7 @@ describe RipperParser::Parser do
       end
 
       it "keeps :kwbegin for the third argument" do
-        "foo ? bar : begin; baz; end"
+        _("foo ? bar : begin; baz; end")
           .must_be_parsed_as s(:if,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar),
@@ -350,7 +350,7 @@ describe RipperParser::Parser do
 
     describe "for match operators" do
       it "handles :=~ with two non-literals" do
-        "foo =~ bar"
+        _("foo =~ bar")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :=~,
@@ -358,14 +358,14 @@ describe RipperParser::Parser do
       end
 
       it "handles :=~ with literal regexp on the left hand side" do
-        "/foo/ =~ bar"
+        _("/foo/ =~ bar")
           .must_be_parsed_as s(:match_with_lvasgn,
                                s(:regexp, s(:str, "foo"), s(:regopt)),
                                s(:send, nil, :bar))
       end
 
       it "handles :=~ with literal regexp on the right hand side" do
-        "foo =~ /bar/"
+        _("foo =~ /bar/")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo),
                                :=~,
@@ -373,10 +373,10 @@ describe RipperParser::Parser do
       end
 
       it "handles negated match operators" do
-        "foo !~ bar".must_be_parsed_as s(:send,
-                                         s(:send, nil, :foo),
-                                         :!~,
-                                         s(:send, nil, :bar))
+        _("foo !~ bar").must_be_parsed_as s(:send,
+                                            s(:send, nil, :foo),
+                                            :!~,
+                                            s(:send, nil, :bar))
       end
     end
   end

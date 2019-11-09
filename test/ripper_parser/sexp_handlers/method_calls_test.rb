@@ -7,41 +7,41 @@ describe RipperParser::Parser do
     describe "for method calls" do
       describe "without a receiver" do
         it "works without parentheses" do
-          "foo bar"
+          _("foo bar")
             .must_be_parsed_as s(:send, nil, :foo,
                                  s(:send, nil, :bar))
         end
 
         it "works with parentheses" do
-          "foo(bar)"
+          _("foo(bar)")
             .must_be_parsed_as s(:send, nil, :foo,
                                  s(:send, nil, :bar))
         end
 
         it "works with an empty parameter list and no parentheses" do
-          "foo"
+          _("foo")
             .must_be_parsed_as s(:send, nil, :foo)
         end
 
         it "works with parentheses around an empty parameter list" do
-          "foo()"
+          _("foo()")
             .must_be_parsed_as s(:send, nil, :foo)
         end
 
         it "works for methods ending in a question mark" do
-          "foo?"
+          _("foo?")
             .must_be_parsed_as s(:send, nil, :foo?)
         end
 
         it "works with nested calls without parentheses" do
-          "foo bar baz"
+          _("foo bar baz")
             .must_be_parsed_as s(:send, nil, :foo,
                                  s(:send, nil, :bar,
                                    s(:send, nil, :baz)))
         end
 
         it "works with a non-final splat argument" do
-          "foo(bar, *baz, qux)"
+          _("foo(bar, *baz, qux)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -51,7 +51,7 @@ describe RipperParser::Parser do
         end
 
         it "works with a splat argument followed by several regular arguments" do
-          "foo(bar, *baz, qux, quuz)"
+          _("foo(bar, *baz, qux, quuz)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -62,7 +62,7 @@ describe RipperParser::Parser do
         end
 
         it "works with a named argument" do
-          "foo(bar, baz: qux)"
+          _("foo(bar, baz: qux)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -73,7 +73,7 @@ describe RipperParser::Parser do
         end
 
         it "works with several named arguments" do
-          "foo(bar, baz: qux, quux: quuz)"
+          _("foo(bar, baz: qux, quux: quuz)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -84,7 +84,7 @@ describe RipperParser::Parser do
         end
 
         it "works with a double splat argument" do
-          "foo(bar, **baz)"
+          _("foo(bar, **baz)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -94,7 +94,7 @@ describe RipperParser::Parser do
         end
 
         it "works with a named argument followed by a double splat argument" do
-          "foo(bar, baz: qux, **quuz)"
+          _("foo(bar, baz: qux, **quuz)")
             .must_be_parsed_as s(:send,
                                  nil,
                                  :foo,
@@ -107,7 +107,7 @@ describe RipperParser::Parser do
 
       describe "with a receiver" do
         it "works without parentheses" do
-          "foo.bar baz"
+          _("foo.bar baz")
             .must_be_parsed_as s(:send,
                                  s(:send, nil, :foo),
                                  :bar,
@@ -115,7 +115,7 @@ describe RipperParser::Parser do
         end
 
         it "works with parentheses" do
-          "foo.bar(baz)"
+          _("foo.bar(baz)")
             .must_be_parsed_as s(:send,
                                  s(:send, nil, :foo),
                                  :bar,
@@ -123,7 +123,7 @@ describe RipperParser::Parser do
         end
 
         it "works with parentheses around a call with no parentheses" do
-          "foo.bar(baz qux)"
+          _("foo.bar(baz qux)")
             .must_be_parsed_as s(:send,
                                  s(:send, nil, :foo),
                                  :bar,
@@ -132,7 +132,7 @@ describe RipperParser::Parser do
         end
 
         it "works with nested calls without parentheses" do
-          "foo.bar baz qux"
+          _("foo.bar baz qux")
             .must_be_parsed_as s(:send,
                                  s(:send, nil, :foo),
                                  :bar,
@@ -143,31 +143,31 @@ describe RipperParser::Parser do
 
       describe "for collection indexing" do
         it "works in the simple case" do
-          "foo[bar]"
+          _("foo[bar]")
             .must_be_parsed_as s(:index,
                                  s(:send, nil, :foo),
                                  s(:send, nil, :bar))
         end
 
         it "works without any indexes" do
-          "foo[]".must_be_parsed_as s(:index,
-                                      s(:send, nil, :foo))
+          _("foo[]").must_be_parsed_as s(:index,
+                                         s(:send, nil, :foo))
         end
 
         it "works with self[]" do
-          "self[foo]".must_be_parsed_as s(:index,
-                                          s(:self),
-                                          s(:send, nil, :foo))
+          _("self[foo]").must_be_parsed_as s(:index,
+                                             s(:self),
+                                             s(:send, nil, :foo))
         end
       end
 
       describe "safe call" do
         it "works without arguments" do
-          "foo&.bar".must_be_parsed_as s(:safe_call, s(:send, nil, :foo), :bar)
+          _("foo&.bar").must_be_parsed_as s(:safe_call, s(:send, nil, :foo), :bar)
         end
 
         it "works with arguments" do
-          "foo&.bar baz"
+          _("foo&.bar baz")
             .must_be_parsed_as s(:safe_call,
                                  s(:send, nil, :foo),
                                  :bar,
@@ -177,7 +177,7 @@ describe RipperParser::Parser do
 
       describe "with blocks" do
         it "works for a do block" do
-          "foo.bar do baz; end"
+          _("foo.bar do baz; end")
             .must_be_parsed_as s(:block,
                                  s(:send,
                                    s(:send, nil, :foo),
@@ -187,7 +187,7 @@ describe RipperParser::Parser do
         end
 
         it "works for a do block with several statements" do
-          "foo.bar do baz; qux; end"
+          _("foo.bar do baz; qux; end")
             .must_be_parsed_as s(:block,
                                  s(:send,
                                    s(:send, nil, :foo),
@@ -201,24 +201,24 @@ describe RipperParser::Parser do
     end
 
     describe "for calls to super" do
-      specify { "super".must_be_parsed_as s(:zsuper) }
+      specify { _("super").must_be_parsed_as s(:zsuper) }
       specify do
-        "super foo".must_be_parsed_as s(:super,
-                                        s(:send, nil, :foo))
+        _("super foo").must_be_parsed_as s(:super,
+                                           s(:send, nil, :foo))
       end
       specify do
-        "super foo, bar".must_be_parsed_as s(:super,
-                                             s(:send, nil, :foo),
-                                             s(:send, nil, :bar))
+        _("super foo, bar").must_be_parsed_as s(:super,
+                                                s(:send, nil, :foo),
+                                                s(:send, nil, :bar))
       end
       specify do
-        "super foo, *bar".must_be_parsed_as s(:super,
-                                              s(:send, nil, :foo),
-                                              s(:splat,
-                                                s(:send, nil, :bar)))
+        _("super foo, *bar").must_be_parsed_as s(:super,
+                                                 s(:send, nil, :foo),
+                                                 s(:splat,
+                                                   s(:send, nil, :bar)))
       end
       specify do
-        "super foo, *bar, &baz"
+        _("super foo, *bar, &baz")
           .must_be_parsed_as s(:super,
                                s(:send, nil, :foo),
                                s(:splat, s(:send, nil, :bar)),
@@ -227,7 +227,7 @@ describe RipperParser::Parser do
     end
 
     it "handles calling a proc" do
-      "foo.()"
+      _("foo.()")
         .must_be_parsed_as s(:send, s(:send, nil, :foo), :call)
     end
   end
