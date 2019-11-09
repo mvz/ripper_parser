@@ -300,90 +300,88 @@ describe RipperParser::Parser do
         end
       end
 
-      describe "with interpolations" do
-        describe "containing just a literal string" do
-          it "performs no interpolation when it is at the end" do
-            _('"foo#{"bar"}"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:str, "foo"),
-                                   s(:begin, s(:str, "bar")))
-          end
-
-          it "performs no interpolation when it is in the middle" do
-            _('"foo#{"bar"}baz"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:str, "foo"),
-                                   s(:begin, s(:str, "bar")),
-                                   s(:str, "baz"))
-          end
-
-          it "performs no interpolation when it is at the start" do
-            _('"#{"foo"}bar"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:begin, s(:str, "foo")),
-                                   s(:str, "bar"))
-          end
+      describe "with interpolations containing just a literal string" do
+        it "performs no interpolation when it is at the end" do
+          _('"foo#{"bar"}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin, s(:str, "bar")))
         end
 
-        describe "without braces" do
-          it "works for ivars" do
-            _("\"foo\#@bar\"").must_be_parsed_as s(:dstr,
-                                                   s(:str, "foo"),
-                                                   s(:begin, s(:ivar, :@bar)))
-          end
-
-          it "works for gvars" do
-            _("\"foo\#$bar\"").must_be_parsed_as s(:dstr,
-                                                   s(:str, "foo"),
-                                                   s(:begin, s(:gvar, :$bar)))
-          end
-
-          it "works for cvars" do
-            _("\"foo\#@@bar\"").must_be_parsed_as s(:dstr,
-                                                    s(:str, "foo"),
-                                                    s(:begin, s(:cvar, :@@bar)))
-          end
+        it "performs no interpolation when it is in the middle" do
+          _('"foo#{"bar"}baz"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin, s(:str, "bar")),
+                                 s(:str, "baz"))
         end
 
-        describe "with braces" do
-          it "works for trivial interpolated strings" do
-            _('"#{foo}"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:begin,
-                                     s(:send, nil, :foo)))
-          end
+        it "performs no interpolation when it is at the start" do
+          _('"#{"foo"}bar"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:str, "foo")),
+                                 s(:str, "bar"))
+        end
+      end
 
-          it "works for basic interpolated strings" do
-            _('"foo#{bar}"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:str, "foo"),
-                                   s(:begin,
-                                     s(:send, nil, :bar)))
-          end
+      describe "with interpolations without braces" do
+        it "works for ivars" do
+          _("\"foo\#@bar\"").must_be_parsed_as s(:dstr,
+                                                 s(:str, "foo"),
+                                                 s(:begin, s(:ivar, :@bar)))
+        end
 
-          it "works for strings with several interpolations" do
-            _('"foo#{bar}baz#{qux}"')
-              .must_be_parsed_as s(:dstr,
-                                   s(:str, "foo"),
-                                   s(:begin, s(:send, nil, :bar)),
-                                   s(:str, "baz"),
-                                   s(:begin, s(:send, nil, :qux)))
-          end
+        it "works for gvars" do
+          _("\"foo\#$bar\"").must_be_parsed_as s(:dstr,
+                                                 s(:str, "foo"),
+                                                 s(:begin, s(:gvar, :$bar)))
+        end
 
-          it "correctly handles two interpolations in a row" do
-            _("\"\#{bar}\#{qux}\"")
-              .must_be_parsed_as s(:dstr,
-                                   s(:begin, s(:send, nil, :bar)),
-                                   s(:begin, s(:send, nil, :qux)))
-          end
+        it "works for cvars" do
+          _("\"foo\#@@bar\"").must_be_parsed_as s(:dstr,
+                                                  s(:str, "foo"),
+                                                  s(:begin, s(:cvar, :@@bar)))
+        end
+      end
 
-          it "works with an empty interpolation" do
-            _("\"foo\#{}bar\"")
-              .must_be_parsed_as s(:dstr,
-                                   s(:str, "foo"),
-                                   s(:begin),
-                                   s(:str, "bar"))
-          end
+      describe "with interpolations with braces" do
+        it "works for trivial interpolated strings" do
+          _('"#{foo}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin,
+                                   s(:send, nil, :foo)))
+        end
+
+        it "works for basic interpolated strings" do
+          _('"foo#{bar}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin,
+                                   s(:send, nil, :bar)))
+        end
+
+        it "works for strings with several interpolations" do
+          _('"foo#{bar}baz#{qux}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, "baz"),
+                                 s(:begin, s(:send, nil, :qux)))
+        end
+
+        it "correctly handles two interpolations in a row" do
+          _("\"\#{bar}\#{qux}\"")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:begin, s(:send, nil, :qux)))
+        end
+
+        it "works with an empty interpolation" do
+          _("\"foo\#{}bar\"")
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin),
+                                 s(:str, "bar"))
         end
       end
 
