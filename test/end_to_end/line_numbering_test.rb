@@ -48,7 +48,7 @@ describe "Using RipperParser and Parser" do
 
   describe "for a multi-line program" do
     let :program do
-      <<-END
+      <<-RUBY
       class Foo
         def foo()
           bar()
@@ -59,7 +59,7 @@ describe "Using RipperParser and Parser" do
       module Bar
         @@baz = {}
       end
-      END
+      RUBY
     end
 
     let :original do

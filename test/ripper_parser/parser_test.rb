@@ -268,7 +268,7 @@ describe RipperParser::Parser do
       end
 
       it "drops comments inside method bodies" do
-        result = parser.parse <<-END
+        result = parser.parse <<-RUBY
           # Foo
           class Foo
             # foo
@@ -281,7 +281,7 @@ describe RipperParser::Parser do
               baz
             end
           end
-        END
+        RUBY
         result.must_equal s(:class,
                             s(:const, nil, :Foo),
                             nil,

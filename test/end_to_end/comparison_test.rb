@@ -15,7 +15,7 @@ describe "Using RipperParser and Parser" do
 
   describe "for a more complex program" do
     let :program do
-      <<-END
+      <<-RUBY
       module Quux
         class Foo
           def bar
@@ -31,7 +31,7 @@ describe "Using RipperParser and Parser" do
       end
 
       Quux::Foo.new.bar
-      END
+      RUBY
     end
 
     it "gives the same result" do
@@ -51,7 +51,7 @@ describe "Using RipperParser and Parser" do
 
   describe "for an example with floats from Reek" do
     let :program do
-      <<-END
+      <<-RUBY
         def total_envy
           fred = @item
           total = 0
@@ -59,7 +59,7 @@ describe "Using RipperParser and Parser" do
           total += fred.tax
           total *= 1.15
         end
-      END
+      RUBY
     end
 
     it "gives the same result" do
@@ -69,7 +69,7 @@ describe "Using RipperParser and Parser" do
 
   describe "for an example with operators and explicit block parameter from Reek" do
     let :program do
-      <<-END
+      <<-RUBY
         def parse(arg, argv, &error)
           if !(val = arg) and (argv.empty? or /\\A-/ =~ (val = argv[0]))
             return nil, block, nil
@@ -83,7 +83,7 @@ describe "Using RipperParser and Parser" do
           end
           val
         end
-      END
+      RUBY
     end
 
     it "gives the same result" do
