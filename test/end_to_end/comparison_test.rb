@@ -8,8 +8,8 @@ describe "Using RipperParser and Parser" do
       "puts 'Hello World'"
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 
@@ -34,8 +34,8 @@ describe "Using RipperParser and Parser" do
       RUBY
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 
@@ -44,8 +44,8 @@ describe "Using RipperParser and Parser" do
       "def fred() yield(3) if block_given?; end"
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 
@@ -62,8 +62,8 @@ describe "Using RipperParser and Parser" do
       RUBY
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 
@@ -86,8 +86,8 @@ describe "Using RipperParser and Parser" do
       RUBY
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 
@@ -96,8 +96,8 @@ describe "Using RipperParser and Parser" do
       "/(\#{@types})\\s*(\\w+)\\s*\\(([^)]*)\\)/"
     end
 
-    it "gives the same result" do
-      _(program).must_be_parsed_as_before
+    it "gives the same result with line numbers" do
+      _(program).must_be_parsed_as_before with_line_numbers: true
     end
   end
 end

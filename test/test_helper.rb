@@ -28,6 +28,8 @@ module MiniTest
       end
 
       plain = "s(#{parts.join(', ')})"
+      # HACK: Empty args sexp sometimes has no line number in Parser
+      return plain if plain == "s(:args)"
       if (line = exp.line)
         "#{plain}.line(#{line})"
       else
@@ -47,6 +49,8 @@ module MiniTest
       parts.unshift exp.type.inspect
 
       plain = "s(#{parts.join(', ')})"
+      # HACK: Empty args sexp sometimes has no line number in Parser
+      return plain if plain == "s(:args)"
       if (line = exp.location.line)
         "#{plain}.line(#{line})"
       else
