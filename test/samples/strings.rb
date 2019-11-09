@@ -6,6 +6,7 @@
 %w(foo\nbar baz)
 
 "foo\u273bbar"
+"foo\a\b\e\f\r\s\t\vbar\nbaz"
 "\0"
 "foo#{bar}\0"
 "foo#{bar}baz\0"
@@ -13,6 +14,7 @@
 "#{foo}2\302\275"
 %W(2\302\275)
 /2\302\275/
+"foo\u{101D1}bar"
 
 # Encoding
 "日本語"
@@ -39,6 +41,23 @@ FOO
 \n
 FOO
 
+# Escape sequences in heredocs, in particular carriage returns
+#
+<<FOO
+foo\rbar\tbaz\r
+FOO
+
+<<'FOO'
+foo\rbar\tbaz\r
+FOO
+
+# Dedented heredocs
+foo = <<~BAR
+  baz
+  #{qux}
+  quuz
+BAR
+
 # Line continuation
 "foo\
 bar"
@@ -57,6 +76,18 @@ EOS
 <<'EOS'
 foo4\
 bar
+EOS
+
+<<EOS
+#{bar}
+baz \
+qux
+EOS
+
+<<-EOS
+#{bar}
+baz \
+qux
 EOS
 
 %Q[foo5\

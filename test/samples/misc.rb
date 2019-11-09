@@ -127,6 +127,42 @@ class Foo
         baz
       end
     end
+
+    case foo
+    when bar
+      begin
+        baz
+        qux
+      end
+    end
+
+    case foo
+    when bar
+      begin
+        baz
+        qux
+      end
+      quuz
+    end
+
+    case foo
+    when bar
+    else
+      begin
+        baz
+        qux
+      end
+    end
+
+    case foo
+    when bar
+    else
+      begin
+        baz
+        qux
+      end
+      quuz
+    end
   end
 
   # Using splat and double-splat args
@@ -150,6 +186,9 @@ class Foo
     puts [foo, bar]
   end
 
+  def foobarbaz(**)
+  end
+
   # rescue
   def barfoo
     foo
@@ -159,6 +198,13 @@ class Foo
     zyxxy
   rescue *qux => err
     puts err
+  end
+
+  # begin/rescue with multiple assignment
+  foo, bar = begin
+    baz
+  rescue qux
+    quuz
   end
 
   # alias
@@ -196,4 +242,42 @@ class Foo
   # definitions.
   def foo(bar = ($baz = qux))
   end
+
+  # Argument destructuring
+  def foo((bar, baz))
+  end
+
+  def foo((bar, baz), (qux, quuz))
+  end
+
+  def foo((bar, *qux))
+  end
+
+  def foo((bar, (baz, qux)))
+  end
+
+  def foo((bar, (baz, *qux)))
+  end
+
+  def self.foo((bar, baz))
+  end
+
+  def self.foo((bar, baz), (qux, quuz))
+  end
+
+  def self.foo((bar, *qux))
+  end
+
+  def self.foo((bar, (baz, qux)))
+  end
+
+  def self.foo((bar, (baz, *qux)))
+  end
 end
+
+# Special symbols
+[:`, :|, :*, :&, :%, :'^', :-@, :+@, :'~@']
+
+# Blocks
+foo do |bar, | end
+foo do |bar, **| end
