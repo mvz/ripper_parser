@@ -92,14 +92,14 @@ describe RipperParser::Parser do
 
       it "handles nested :|| with parentheses" do
         "foo || (bar || baz) || qux"
-          .must_be_parsed_as  s(:or,
-                                s(:or,
-                                  s(:send, nil, :foo),
-                                  s(:begin,
-                                    s(:or,
-                                      s(:send, nil, :bar),
-                                      s(:send, nil, :baz)))),
-                                s(:send, nil, :qux))
+          .must_be_parsed_as s(:or,
+                               s(:or,
+                                 s(:send, nil, :foo),
+                                 s(:begin,
+                                   s(:or,
+                                     s(:send, nil, :bar),
+                                     s(:send, nil, :baz)))),
+                               s(:send, nil, :qux))
       end
 
       it "converts :|| to :or" do
