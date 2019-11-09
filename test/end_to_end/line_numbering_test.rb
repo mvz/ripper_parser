@@ -75,8 +75,8 @@ describe "Using RipperParser and Parser" do
     end
 
     it "gives the same result with line numbers" do
-      formatted(to_line_numbers(imitation)).
-        must_equal formatted(to_line_numbers_ast(original))
+      formatted(to_line_numbers(imitation))
+        .must_equal formatted(to_line_numbers_ast(original))
     end
   end
 end

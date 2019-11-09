@@ -6,257 +6,257 @@ describe RipperParser::Parser do
   describe "#parse" do
     describe "for boolean operators" do
       it "handles :and" do
-        "foo and bar".
-          must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo and bar"
+          .must_be_parsed_as s(:and,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
 
       it "handles double :and" do
-        "foo and bar and baz".
-          must_be_parsed_as s(:and,
-                              s(:and,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo and bar and baz"
+          .must_be_parsed_as s(:and,
+                               s(:and,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "handles :or" do
-        "foo or bar".
-          must_be_parsed_as s(:or,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo or bar"
+          .must_be_parsed_as s(:or,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
 
       it "handles double :or" do
-        "foo or bar or baz".
-          must_be_parsed_as s(:or,
-                              s(:or,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo or bar or baz"
+          .must_be_parsed_as s(:or,
+                               s(:or,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "handles :or after :and" do
-        "foo and bar or baz".
-          must_be_parsed_as s(:or,
-                              s(:and,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo and bar or baz"
+          .must_be_parsed_as s(:or,
+                               s(:and,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "handles :and after :or" do
-        "foo or bar and baz".
-          must_be_parsed_as s(:and,
-                              s(:or,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo or bar and baz"
+          .must_be_parsed_as s(:and,
+                               s(:or,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "converts :&& to :and" do
-        "foo && bar".
-          must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo && bar"
+          .must_be_parsed_as s(:and,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
 
       it "handles :|| after :&&" do
-        "foo && bar || baz".
-          must_be_parsed_as s(:or,
-                              s(:and,
-                                s(:send, nil, :foo),
-                                s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo && bar || baz"
+          .must_be_parsed_as s(:or,
+                               s(:and,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "handles :&& after :||" do
-        "foo || bar && baz".
-          must_be_parsed_as s(:or,
-                              s(:send, nil, :foo),
-                              s(:and,
-                                s(:send, nil, :bar),
-                                s(:send, nil, :baz)))
+        "foo || bar && baz"
+          .must_be_parsed_as s(:or,
+                               s(:send, nil, :foo),
+                               s(:and,
+                                 s(:send, nil, :bar),
+                                 s(:send, nil, :baz)))
       end
 
       it "handles :|| with parentheses" do
-        "(foo || bar) || baz".
-          must_be_parsed_as s(:or,
-                              s(:begin,
-                                s(:or,
-                                  s(:send, nil, :foo),
-                                  s(:send, nil, :bar))),
-                              s(:send, nil, :baz))
+        "(foo || bar) || baz"
+          .must_be_parsed_as s(:or,
+                               s(:begin,
+                                 s(:or,
+                                   s(:send, nil, :foo),
+                                   s(:send, nil, :bar))),
+                               s(:send, nil, :baz))
       end
 
       it "handles nested :|| with parentheses" do
-        "foo || (bar || baz) || qux".
-          must_be_parsed_as  s(:or,
-                               s(:or,
-                                 s(:send, nil, :foo),
-                                 s(:begin,
-                                   s(:or,
-                                     s(:send, nil, :bar),
-                                     s(:send, nil, :baz)))),
-                               s(:send, nil, :qux))
+        "foo || (bar || baz) || qux"
+          .must_be_parsed_as  s(:or,
+                                s(:or,
+                                  s(:send, nil, :foo),
+                                  s(:begin,
+                                    s(:or,
+                                      s(:send, nil, :bar),
+                                      s(:send, nil, :baz)))),
+                                s(:send, nil, :qux))
       end
 
       it "converts :|| to :or" do
-        "foo || bar".
-          must_be_parsed_as s(:or,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo || bar"
+          .must_be_parsed_as s(:or,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
 
       it "handles triple :and" do
-        "foo and bar and baz and qux".
-          must_be_parsed_as s(:and,
-                              s(:and,
-                                s(:and,
-                                  s(:send, nil, :foo),
-                                  s(:send, nil, :bar)),
-                                s(:send, nil, :baz)),
-                              s(:send, nil, :qux))
+        "foo and bar and baz and qux"
+          .must_be_parsed_as s(:and,
+                               s(:and,
+                                 s(:and,
+                                   s(:send, nil, :foo),
+                                   s(:send, nil, :bar)),
+                                 s(:send, nil, :baz)),
+                               s(:send, nil, :qux))
       end
 
       it "handles triple :&&" do
-        "foo && bar && baz && qux".
-          must_be_parsed_as s(:and,
-                              s(:and,
-                                s(:and,
-                                  s(:send, nil, :foo),
-                                  s(:send, nil, :bar)),
-                                s(:send, nil, :baz)),
-                              s(:send, nil, :qux))
+        "foo && bar && baz && qux"
+          .must_be_parsed_as s(:and,
+                               s(:and,
+                                 s(:and,
+                                   s(:send, nil, :foo),
+                                   s(:send, nil, :bar)),
+                                 s(:send, nil, :baz)),
+                               s(:send, nil, :qux))
       end
 
       it "handles :!=" do
-        "foo != bar".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :!=,
-                              s(:send, nil, :bar))
+        "foo != bar"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :!=,
+                               s(:send, nil, :bar))
       end
 
       it "keeps :kwbegin for the first argument of a binary operator" do
-        "begin; bar; end + foo".
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              :+,
-                              s(:send, nil, :foo))
+        "begin; bar; end + foo"
+          .must_be_parsed_as s(:send,
+                               s(:kwbegin, s(:send, nil, :bar)),
+                               :+,
+                               s(:send, nil, :foo))
       end
 
       it "keeps :kwbegin for the second argument of a binary operator" do
-        "foo + begin; bar; end".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :+,
-                              s(:kwbegin, s(:send, nil, :bar)))
+        "foo + begin; bar; end"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :+,
+                               s(:kwbegin, s(:send, nil, :bar)))
       end
 
       it "keeps :kwbegin for the first argument of a boolean operator" do
-        "begin; bar; end and foo".
-          must_be_parsed_as s(:and,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              s(:send, nil, :foo))
+        "begin; bar; end and foo"
+          .must_be_parsed_as s(:and,
+                               s(:kwbegin, s(:send, nil, :bar)),
+                               s(:send, nil, :foo))
       end
 
       it "keeps :kwbegin for the second argument of a boolean operator" do
-        "foo and begin; bar; end".
-          must_be_parsed_as s(:and,
-                              s(:send, nil, :foo),
-                              s(:kwbegin, s(:send, nil, :bar)))
+        "foo and begin; bar; end"
+          .must_be_parsed_as s(:and,
+                               s(:send, nil, :foo),
+                               s(:kwbegin, s(:send, nil, :bar)))
       end
 
       it "keeps :kwbegin for the first argument of a shift operator" do
-        "begin; bar; end << foo".
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              :<<,
-                              s(:send, nil, :foo))
+        "begin; bar; end << foo"
+          .must_be_parsed_as s(:send,
+                               s(:kwbegin, s(:send, nil, :bar)),
+                               :<<,
+                               s(:send, nil, :foo))
       end
 
       it "keeps :kwbegin for the second argument of a shift operator" do
-        "foo >> begin; bar; end".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :>>,
-                              s(:kwbegin, s(:send, nil, :bar)))
+        "foo >> begin; bar; end"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :>>,
+                               s(:kwbegin, s(:send, nil, :bar)))
       end
     end
 
     describe "for the range operator" do
       it "handles positive number literals" do
-        "1..2".
-          must_be_parsed_as s(:irange,
-                              s(:int, 1),
-                              s(:int, 2))
+        "1..2"
+          .must_be_parsed_as s(:irange,
+                               s(:int, 1),
+                               s(:int, 2))
       end
 
       it "handles negative number literals" do
-        "-1..-2".
-          must_be_parsed_as s(:irange,
-                              s(:int, -1),
-                              s(:int, -2))
+        "-1..-2"
+          .must_be_parsed_as s(:irange,
+                               s(:int, -1),
+                               s(:int, -2))
       end
 
       it "handles float literals" do
-        "1.0..2.0".
-          must_be_parsed_as s(:irange,
-                              s(:float, 1.0),
-                              s(:float, 2.0))
+        "1.0..2.0"
+          .must_be_parsed_as s(:irange,
+                               s(:float, 1.0),
+                               s(:float, 2.0))
       end
 
       it "handles string literals" do
-        "'a'..'z'".
-          must_be_parsed_as s(:irange,
-                              s(:str, "a"),
-                              s(:str, "z"))
+        "'a'..'z'"
+          .must_be_parsed_as s(:irange,
+                               s(:str, "a"),
+                               s(:str, "z"))
       end
 
       it "handles non-literals" do
-        "foo..bar".
-          must_be_parsed_as s(:irange,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo..bar"
+          .must_be_parsed_as s(:irange,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
     end
 
     describe "for the exclusive range operator" do
       it "handles positive number literals" do
-        "1...2".
-          must_be_parsed_as s(:erange,
-                              s(:int, 1),
-                              s(:int, 2))
+        "1...2"
+          .must_be_parsed_as s(:erange,
+                               s(:int, 1),
+                               s(:int, 2))
       end
 
       it "handles negative number literals" do
-        "-1...-2".
-          must_be_parsed_as s(:erange,
-                              s(:int, -1),
-                              s(:int, -2))
+        "-1...-2"
+          .must_be_parsed_as s(:erange,
+                               s(:int, -1),
+                               s(:int, -2))
       end
 
       it "handles float literals" do
-        "1.0...2.0".
-          must_be_parsed_as s(:erange,
-                              s(:float, 1.0),
-                              s(:float, 2.0))
+        "1.0...2.0"
+          .must_be_parsed_as s(:erange,
+                               s(:float, 1.0),
+                               s(:float, 2.0))
       end
 
       it "handles string literals" do
-        "'a'...'z'".
-          must_be_parsed_as s(:erange,
-                              s(:str, "a"),
-                              s(:str, "z"))
+        "'a'...'z'"
+          .must_be_parsed_as s(:erange,
+                               s(:str, "a"),
+                               s(:str, "z"))
       end
 
       it "handles non-literals" do
-        "foo...bar".
-          must_be_parsed_as s(:erange,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "foo...bar"
+          .must_be_parsed_as s(:erange,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
     end
 
@@ -270,10 +270,10 @@ describe RipperParser::Parser do
       end
 
       it "handles unary minus with a non-literal" do
-        "-foo".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :-@)
+        "-foo"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :-@)
       end
 
       it "handles unary minus with a negative number literal" do
@@ -285,91 +285,91 @@ describe RipperParser::Parser do
       end
 
       it "handles unary plus with a non-literal" do
-        "+foo".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :+@)
+        "+foo"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :+@)
       end
 
       it "handles unary !" do
-        "!foo".
-          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
+        "!foo"
+          .must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it "converts :not to :!" do
-        "not foo".
-          must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
+        "not foo"
+          .must_be_parsed_as s(:send, s(:send, nil, :foo), :!)
       end
 
       it "handles unary ! with a number literal" do
-        "!1".
-          must_be_parsed_as s(:send, s(:int, 1), :!)
+        "!1"
+          .must_be_parsed_as s(:send, s(:int, 1), :!)
       end
 
       it "keeps :kwbegin for the argument" do
-        "- begin; foo; end".
-          must_be_parsed_as s(:send,
-                              s(:kwbegin, s(:send, nil, :foo)),
-                              :-@)
+        "- begin; foo; end"
+          .must_be_parsed_as s(:send,
+                               s(:kwbegin, s(:send, nil, :foo)),
+                               :-@)
       end
     end
 
     describe "for the ternary operator" do
       it "works in the simple case" do
-        "foo ? bar : baz".
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
+        "foo ? bar : baz"
+          .must_be_parsed_as s(:if,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar),
+                               s(:send, nil, :baz))
       end
 
       it "keeps :kwbegin for the first argument" do
-        "begin; foo; end ? bar : baz".
-          must_be_parsed_as s(:if,
-                              s(:kwbegin, s(:send, nil, :foo)),
-                              s(:send, nil, :bar),
-                              s(:send, nil, :baz))
+        "begin; foo; end ? bar : baz"
+          .must_be_parsed_as s(:if,
+                               s(:kwbegin, s(:send, nil, :foo)),
+                               s(:send, nil, :bar),
+                               s(:send, nil, :baz))
       end
 
       it "keeps :kwbegin for the second argument" do
-        "foo ? begin; bar; end : baz".
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:kwbegin, s(:send, nil, :bar)),
-                              s(:send, nil, :baz))
+        "foo ? begin; bar; end : baz"
+          .must_be_parsed_as s(:if,
+                               s(:send, nil, :foo),
+                               s(:kwbegin, s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "keeps :kwbegin for the third argument" do
-        "foo ? bar : begin; baz; end".
-          must_be_parsed_as s(:if,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar),
-                              s(:kwbegin, s(:send, nil, :baz)))
+        "foo ? bar : begin; baz; end"
+          .must_be_parsed_as s(:if,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar),
+                               s(:kwbegin, s(:send, nil, :baz)))
       end
     end
 
     describe "for match operators" do
       it "handles :=~ with two non-literals" do
-        "foo =~ bar".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :=~,
-                              s(:send, nil, :bar))
+        "foo =~ bar"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :=~,
+                               s(:send, nil, :bar))
       end
 
       it "handles :=~ with literal regexp on the left hand side" do
-        "/foo/ =~ bar".
-          must_be_parsed_as s(:match_with_lvasgn,
-                              s(:regexp, s(:str, "foo"), s(:regopt)),
-                              s(:send, nil, :bar))
+        "/foo/ =~ bar"
+          .must_be_parsed_as s(:match_with_lvasgn,
+                               s(:regexp, s(:str, "foo"), s(:regopt)),
+                               s(:send, nil, :bar))
       end
 
       it "handles :=~ with literal regexp on the right hand side" do
-        "foo =~ /bar/".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo),
-                              :=~,
-                              s(:regexp, s(:str, "bar"), s(:regopt)))
+        "foo =~ /bar/"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo),
+                               :=~,
+                               s(:regexp, s(:str, "bar"), s(:regopt)))
       end
 
       it "handles negated match operators" do

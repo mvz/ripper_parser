@@ -18,10 +18,10 @@ describe RipperParser::Parser do
 
     describe "for a class declaration" do
       it "works with a namespaced class name" do
-        "class Foo::Bar; end".
-          must_be_parsed_as s(:class,
-                              s(:const, s(:const, nil, :Foo), :Bar),
-                              nil, nil)
+        "class Foo::Bar; end"
+          .must_be_parsed_as s(:class,
+                               s(:const, s(:const, nil, :Foo), :Bar),
+                               nil, nil)
       end
 
       it "works for singleton classes" do
@@ -31,14 +31,14 @@ describe RipperParser::Parser do
 
     describe "for a module declaration" do
       it "works with a simple module name" do
-        "module Foo; end".
-          must_be_parsed_as s(:module, s(:const, nil, :Foo), nil)
+        "module Foo; end"
+          .must_be_parsed_as s(:module, s(:const, nil, :Foo), nil)
       end
 
       it "works with a namespaced module name" do
-        "module Foo::Bar; end".
-          must_be_parsed_as s(:module,
-                              s(:const, s(:const, nil, :Foo), :Bar), nil)
+        "module Foo::Bar; end"
+          .must_be_parsed_as s(:module,
+                               s(:const, s(:const, nil, :Foo), :Bar), nil)
       end
     end
 
@@ -50,70 +50,70 @@ describe RipperParser::Parser do
 
     describe "for a begin..end block" do
       it "works with no statements" do
-        "begin; end".
-          must_be_parsed_as s(:kwbegin)
+        "begin; end"
+          .must_be_parsed_as s(:kwbegin)
       end
 
       it "works with one statement" do
-        "begin; foo; end".
-          must_be_parsed_as s(:kwbegin, s(:send, nil, :foo))
+        "begin; foo; end"
+          .must_be_parsed_as s(:kwbegin, s(:send, nil, :foo))
       end
 
       it "works with multiple statements" do
-        "begin; foo; bar; end".
-          must_be_parsed_as s(:kwbegin,
-                              s(:send, nil, :foo),
-                              s(:send, nil, :bar))
+        "begin; foo; bar; end"
+          .must_be_parsed_as s(:kwbegin,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar))
       end
     end
 
     describe "for arguments" do
       it "works for a simple case with splat" do
-        "foo *bar".
-          must_be_parsed_as s(:send,
-                              nil,
-                              :foo,
-                              s(:splat, s(:send, nil, :bar)))
+        "foo *bar"
+          .must_be_parsed_as s(:send,
+                               nil,
+                               :foo,
+                               s(:splat, s(:send, nil, :bar)))
       end
 
       it "works for a multi-argument case with splat" do
-        "foo bar, *baz".
-          must_be_parsed_as s(:send,
-                              nil,
-                              :foo,
-                              s(:send, nil, :bar),
-                              s(:splat, s(:send, nil, :baz)))
+        "foo bar, *baz"
+          .must_be_parsed_as s(:send,
+                               nil,
+                               :foo,
+                               s(:send, nil, :bar),
+                               s(:splat, s(:send, nil, :baz)))
       end
 
       it "works for a simple case passing a block" do
-        "foo &bar".
-          must_be_parsed_as s(:send, nil, :foo,
-                              s(:block_pass,
-                                s(:send, nil, :bar)))
+        "foo &bar"
+          .must_be_parsed_as s(:send, nil, :foo,
+                               s(:block_pass,
+                                 s(:send, nil, :bar)))
       end
 
       it "works for a bare hash" do
-        "foo bar => baz".
-          must_be_parsed_as s(:send, nil, :foo,
-                              s(:hash,
-                                s(:pair,
-                                  s(:send, nil, :bar),
-                                  s(:send, nil, :baz))))
+        "foo bar => baz"
+          .must_be_parsed_as s(:send, nil, :foo,
+                               s(:hash,
+                                 s(:pair,
+                                   s(:send, nil, :bar),
+                                   s(:send, nil, :baz))))
       end
     end
 
     describe "for the __ENCODING__ keyword" do
       it "evaluates to the equivalent of Encoding::UTF_8" do
-        "__ENCODING__".
-          must_be_parsed_as s(:__ENCODING__)
+        "__ENCODING__"
+          .must_be_parsed_as s(:__ENCODING__)
       end
     end
 
     describe "for the __FILE__ keyword" do
       describe "when not passing a file name" do
         it "creates a string sexp with value '(string)'" do
-          "__FILE__".
-            must_be_parsed_as s(:str, "(string)")
+          "__FILE__"
+            .must_be_parsed_as s(:str, "(string)")
         end
       end
 
@@ -127,48 +127,48 @@ describe RipperParser::Parser do
 
     describe "for the __LINE__ keyword" do
       it "creates a literal sexp with value of the line number" do
-        "__LINE__".
-          must_be_parsed_as s(:int, 1)
-        "\n__LINE__".
-          must_be_parsed_as s(:int, 2)
+        "__LINE__"
+          .must_be_parsed_as s(:int, 1)
+        "\n__LINE__"
+          .must_be_parsed_as s(:int, 2)
       end
     end
 
     describe "for the END keyword" do
       it "converts to a :postexe iterator" do
-        "END { foo }".
-          must_be_parsed_as s(:postexe, s(:send, nil, :foo))
+        "END { foo }"
+          .must_be_parsed_as s(:postexe, s(:send, nil, :foo))
       end
 
       it "works with an empty block" do
-        "END { }".
-          must_be_parsed_as s(:postexe, nil)
+        "END { }"
+          .must_be_parsed_as s(:postexe, nil)
       end
     end
 
     describe "for the BEGIN keyword" do
       it "converts to a :preexe iterator" do
-        "BEGIN { foo }".
-          must_be_parsed_as s(:preexe, s(:send, nil, :foo))
+        "BEGIN { foo }"
+          .must_be_parsed_as s(:preexe, s(:send, nil, :foo))
       end
 
       it "works with an empty block" do
-        "BEGIN { }".
-          must_be_parsed_as s(:preexe, nil)
+        "BEGIN { }"
+          .must_be_parsed_as s(:preexe, nil)
       end
     end
 
     describe "for constant lookups" do
       it "works when explicitely starting from the root namespace" do
-        "::Foo".
-          must_be_parsed_as s(:const, s(:cbase), :Foo)
+        "::Foo"
+          .must_be_parsed_as s(:const, s(:cbase), :Foo)
       end
 
       it "works with a three-level constant lookup" do
-        "Foo::Bar::Baz".
-          must_be_parsed_as s(:const,
-                              s(:const, s(:const, nil, :Foo), :Bar),
-                              :Baz)
+        "Foo::Bar::Baz"
+          .must_be_parsed_as s(:const,
+                               s(:const, s(:const, nil, :Foo), :Bar),
+                               :Baz)
       end
 
       it "works looking up a constant in a non-constant" do
@@ -180,50 +180,50 @@ describe RipperParser::Parser do
 
     describe "for variable references" do
       it "works for self" do
-        "self".
-          must_be_parsed_as s(:self)
+        "self"
+          .must_be_parsed_as s(:self)
       end
 
       it "works for instance variables" do
-        "@foo".
-          must_be_parsed_as s(:ivar, :@foo)
+        "@foo"
+          .must_be_parsed_as s(:ivar, :@foo)
       end
 
       it "works for global variables" do
-        "$foo".
-          must_be_parsed_as s(:gvar, :$foo)
+        "$foo"
+          .must_be_parsed_as s(:gvar, :$foo)
       end
 
       it "works for regexp match references" do
-        "$1".
-          must_be_parsed_as s(:nth_ref, 1)
+        "$1"
+          .must_be_parsed_as s(:nth_ref, 1)
       end
 
       specify { "$'".must_be_parsed_as s(:back_ref, :"'") }
       specify { "$&".must_be_parsed_as s(:back_ref, :"&") }
 
       it "works for class variables" do
-        "@@foo".
-          must_be_parsed_as s(:cvar, :@@foo)
+        "@@foo"
+          .must_be_parsed_as s(:cvar, :@@foo)
       end
     end
 
     describe "for expressions" do
       it "handles assignment inside binary operator expressions" do
-        "foo + (bar = baz)".
-          must_be_parsed_as s(:send,
-                              s(:send, nil, :foo), :+,
-                              s(:begin,
-                                s(:lvasgn, :bar,
-                                  s(:send, nil, :baz))))
+        "foo + (bar = baz)"
+          .must_be_parsed_as s(:send,
+                               s(:send, nil, :foo), :+,
+                               s(:begin,
+                                 s(:lvasgn, :bar,
+                                   s(:send, nil, :baz))))
       end
 
       it "handles assignment inside unary operator expressions" do
-        "+(foo = bar)".
-          must_be_parsed_as s(:send,
-                              s(:begin,
-                                s(:lvasgn, :foo, s(:send, nil, :bar))),
-                              :+@)
+        "+(foo = bar)"
+          .must_be_parsed_as s(:send,
+                               s(:begin,
+                                 s(:lvasgn, :foo, s(:send, nil, :bar))),
+                               :+@)
       end
     end
 
