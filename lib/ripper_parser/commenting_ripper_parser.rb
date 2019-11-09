@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'ripper'
-require 'ripper_parser/syntax_error'
-require 'ripper_parser/unescape'
+require "ripper"
+require "ripper_parser/syntax_error"
+require "ripper_parser/unescape"
 
 module RipperParser
   # Variant of Ripper's SexpBuilder parser class that inserts comments as
@@ -12,7 +12,7 @@ module RipperParser
   class CommentingRipperParser < Ripper::SexpBuilder
     def initialize(*args)
       super
-      @comment = ''
+      @comment = ""
       @comment_stack = []
       @delimiter_stack = []
       @space_before = false
@@ -22,7 +22,7 @@ module RipperParser
 
     def parse
       result = super
-      raise 'Ripper parse failed.' unless result
+      raise "Ripper parse failed." unless result
 
       Sexp.from_array(result)
     end
@@ -49,10 +49,10 @@ module RipperParser
 
     def on_kw(tok)
       case tok
-      when 'class', 'def', 'module'
+      when "class", "def", "module"
         unless @in_symbol
           @comment_stack.push [tok.to_sym, @comment]
-          @comment = ''
+          @comment = ""
         end
       end
       super
@@ -240,7 +240,7 @@ module RipperParser
     def on_unary(operator, value)
       if !@space_before && operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
         type, literal, lines = value
-        if literal[0] == '-'
+        if literal[0] == "-"
           super
         else
           [type, "-#{literal}", lines]
@@ -294,7 +294,7 @@ module RipperParser
 
     def commentize(_name, exp)
       _tok, comment = @comment_stack.pop
-      @comment = ''
+      @comment = ""
       [:comment, comment, exp]
     end
   end

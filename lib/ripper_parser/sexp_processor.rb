@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'sexp_processor'
-require 'ripper_parser/sexp_handlers'
-require 'ripper_parser/unescape'
+require "sexp_processor"
+require "ripper_parser/sexp_handlers"
+require "ripper_parser/unescape"
 
 module RipperParser
   # Processes the sexp created by Ripper to what Parser would produce.
@@ -148,28 +148,6 @@ module RipperParser
       _, body = exp.shift 2
       body = map_process_list_nils body.sexp_body
       s(:postexe, *body)
-    end
-
-    # number literals
-    def process_at_int(exp)
-      _, val, pos = exp.shift 3
-      with_position(pos, s(:int, Integer(val)))
-    end
-
-    def process_at_float(exp)
-      _, val, pos = exp.shift 3
-      with_position(pos, s(:float, val.to_f))
-    end
-
-    def process_at_rational(exp)
-      _, val, pos = exp.shift 3
-      with_position(pos, s(:rational, val.to_r))
-    end
-
-    # character literals
-    def process_at_CHAR(exp)
-      _, val, pos = exp.shift 3
-      with_position(pos, s(:str, unescape(val[1..-1])))
     end
 
     def process_at_label(exp)

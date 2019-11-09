@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'ripper_parser/commenting_ripper_parser'
-require 'ripper_parser/sexp_processor'
+require "ripper_parser/commenting_ripper_parser"
+require "ripper_parser/sexp_processor"
 
 module RipperParser
   # Main parser class. Brings together Ripper and our
   # RipperParser::SexpProcessor.
   class Parser
-    def parse(source, filename = '(string)', lineno = 1)
+    def parse(source, filename = "(string)", lineno = 1)
       parser = CommentingRipperParser.new(source, filename, lineno)
       exp = parser.parse
 

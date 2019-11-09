@@ -23,15 +23,15 @@ module RipperParser
       )/x.freeze
 
     SINGLE_LETTER_ESCAPES = {
-      'a' => "\a",
-      'b' => "\b",
-      'e' => "\e",
-      'f' => "\f",
-      'n' => "\n",
-      'r' => "\r",
-      's' => "\s",
-      't' => "\t",
-      'v' => "\v"
+      "a" => "\a",
+      "b" => "\b",
+      "e" => "\e",
+      "f" => "\f",
+      "n" => "\n",
+      "r" => "\r",
+      "s" => "\s",
+      "t" => "\t",
+      "v" => "\v"
     }.freeze
 
     SINGLE_LETTER_ESCAPES_REGEXP =
@@ -68,7 +68,7 @@ module RipperParser
       string.gsub(LINE_CONTINUATION_REGEXP) do
         bare = Regexp.last_match[1]
         if bare == "\n"
-          ''
+          ""
         else
           "\\#{bare}"
         end

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require File.expand_path('../test_helper.rb', File.dirname(__FILE__))
+require File.expand_path("../test_helper.rb", File.dirname(__FILE__))
 
-describe 'Using RipperParser and Parser' do
+describe "Using RipperParser and Parser" do
   def to_line_numbers(exp)
     exp.map! do |sub_exp|
       if sub_exp.is_a? Sexp
@@ -46,9 +46,9 @@ describe 'Using RipperParser and Parser' do
     Parser::CurrentRuby
   end
 
-  describe 'for a multi-line program' do
+  describe "for a multi-line program" do
     let :program do
-      <<-END
+      <<-RUBY
       class Foo
         def foo()
           bar()
@@ -59,7 +59,7 @@ describe 'Using RipperParser and Parser' do
       module Bar
         @@baz = {}
       end
-      END
+      RUBY
     end
 
     let :original do
@@ -70,13 +70,13 @@ describe 'Using RipperParser and Parser' do
       newparser.parse program
     end
 
-    it 'gives the same result' do
+    it "gives the same result" do
       formatted(imitation).must_equal formatted(original)
     end
 
-    it 'gives the same result with line numbers' do
-      formatted(to_line_numbers(imitation)).
-        must_equal formatted(to_line_numbers_ast(original))
+    it "gives the same result with line numbers" do
+      formatted(to_line_numbers(imitation))
+        .must_equal formatted(to_line_numbers_ast(original))
     end
   end
 end
