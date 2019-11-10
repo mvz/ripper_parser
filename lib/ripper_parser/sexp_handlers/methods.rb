@@ -95,16 +95,20 @@ module RipperParser
               s(:optarg, *item.sexp_body)
             end
           when *SPECIAL_ARG_MARKER.keys
-            type = SPECIAL_ARG_MARKER[item.sexp_type]
-            name = extract_node_symbol item[1]
-            if name
-              s(type, name)
-            else
-              s(type)
-            end
+            convert_marked_argument item
           else
             item
           end
+        end
+      end
+
+      def convert_marked_argument(item)
+        type = SPECIAL_ARG_MARKER[item.sexp_type]
+        name = extract_node_symbol item[1]
+        if name && name != :''
+          s(type, name)
+        else
+          s(type)
         end
       end
 

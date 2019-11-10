@@ -178,6 +178,14 @@ describe RipperParser::Parser do
                                s(:send, nil, :baz, s(:lvar, :bar)))
       end
 
+      it "works with a nameless kwrest argument" do
+        _("foo do |**|; bar; end")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :foo),
+                               s(:args, s(:kwrestarg)),
+                               s(:send, nil, :bar))
+      end
+
       it "works with a regular argument after a splat argument" do
         _("foo do |*bar, baz|; end")
           .must_be_parsed_as s(:block,
@@ -194,6 +202,17 @@ describe RipperParser::Parser do
                                s(:send, nil, :qux,
                                  s(:lvar, :bar),
                                  s(:lvar, :baz)))
+      end
+
+      it "works with a combination of regular arguments and an anonymous kwrest argument" do
+        _("foo do |bar, **|; qux bar; end")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :foo),
+                               s(:args,
+                                 s(:arg, :bar),
+                                 s(:kwrestarg)),
+                               s(:send, nil, :qux,
+                                 s(:lvar, :bar)))
       end
     end
 
