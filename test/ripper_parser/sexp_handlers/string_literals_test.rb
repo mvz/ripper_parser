@@ -907,6 +907,11 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:alias,
                                s(:sym, :foo), s(:sym, :bar))
       end
+
+      it "works for empty dsyms" do
+        _(':""')
+          .must_be_parsed_as s(:dsym)
+      end
     end
 
     describe "for backtick string literals" do

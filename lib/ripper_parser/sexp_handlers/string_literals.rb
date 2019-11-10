@@ -161,7 +161,11 @@ module RipperParser
         type, *body = *process(node)
         case type
         when :str
-          s(:sym, body.first.to_sym)
+          if body.first.empty?
+            s(:dsym)
+          else
+            s(:sym, body.first.to_sym)
+          end
         when :xstr
           if body.length == 1 && body.first.sexp_type == :str
             s(:sym, body.first[1].to_sym)
