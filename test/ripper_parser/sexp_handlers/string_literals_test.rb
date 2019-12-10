@@ -837,6 +837,10 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:sym, :__FILE__)
       end
 
+      it "works for a backtick symbol" do
+        _(":`").must_be_parsed_as s(:sym, :`)
+      end
+
       it "works for simple dsyms" do
         _(':"foo"')
           .must_be_parsed_as s(:sym, :foo)

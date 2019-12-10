@@ -14,7 +14,7 @@ module RipperParser
         _, elems = exp.shift 2
         return s(:array) if elems.nil?
 
-        s(:array, *handle_array_elements(elems))
+        s(:array, *process(elems).sexp_body)
       end
 
       # Handle hash literals sexps. These can be either empty, or contain a

@@ -94,10 +94,6 @@ module RipperParser
         process(exp).tap(&:shift)
       end
 
-      def handle_array_elements(elems)
-        process(elems).sexp_body
-      end
-
       def shift_all(exp)
         [].tap do |result|
           result << exp.shift until exp.empty?
