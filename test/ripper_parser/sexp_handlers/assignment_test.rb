@@ -468,7 +468,6 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz)), :+,
                                s(:send, nil, :qux))
       end
-
     end
   end
 end
