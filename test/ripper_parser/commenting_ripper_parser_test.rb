@@ -26,7 +26,8 @@ describe RipperParser::CommentingRipperParser do
                                  s(:def,
                                    s(:@ident, "foo", s(2, 4)),
                                    empty_params_list,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(2, 12))), nil, nil, nil)))))
     end
 
     it "produces a blank comment node surrounding a def that has no comment" do
@@ -38,7 +39,8 @@ describe RipperParser::CommentingRipperParser do
                                  s(:def,
                                    s(:@ident, "foo", s(1, 4)),
                                    empty_params_list,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(1, 12))), nil, nil, nil)))))
     end
 
     it "produces a comment node surrounding a commented class" do
@@ -50,7 +52,8 @@ describe RipperParser::CommentingRipperParser do
                                  s(:class,
                                    s(:const_ref, s(:@const, "Foo", s(2, 6))),
                                    nil,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(2, 10))), nil, nil, nil)))))
     end
 
     it "produce a blank comment node surrounding a class that has no comment" do
@@ -62,7 +65,8 @@ describe RipperParser::CommentingRipperParser do
                                  s(:class,
                                    s(:const_ref, s(:@const, "Foo", s(1, 6))),
                                    nil,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(1, 10))), nil, nil, nil)))))
     end
 
     it "produces a comment node surrounding a commented module" do
@@ -73,7 +77,8 @@ describe RipperParser::CommentingRipperParser do
                                  "# Foo\n",
                                  s(:module,
                                    s(:const_ref, s(:@const, "Foo", s(2, 7))),
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(2, 11))), nil, nil, nil)))))
     end
 
     it "produces a blank comment node surrounding a module that has no comment" do
@@ -84,7 +89,8 @@ describe RipperParser::CommentingRipperParser do
                                  "",
                                  s(:module,
                                    s(:const_ref, s(:@const, "Foo", s(1, 7))),
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(1, 11))), nil, nil, nil)))))
     end
 
     it "is not confused by a symbol containing a keyword" do
@@ -97,22 +103,24 @@ describe RipperParser::CommentingRipperParser do
                                  s(:def,
                                    s(:@ident, "foo", s(1, 12)),
                                    empty_params_list,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(1, 20))), nil, nil, nil)))))
     end
 
     it "is not confused by a dynamic symbol" do
       result = parse_with_builder ":'foo'; def bar; end"
-      _(result)
-        .must_equal s(:program,
-                      s(:stmts,
-                        s(:dyna_symbol,
-                          s(dsym_string_type, s(:@tstring_content, "foo", s(1, 2), ":'"))),
-                        s(:comment,
-                          "",
-                          s(:def,
-                            s(:@ident, "bar", s(1, 12)),
-                            empty_params_list,
-                            s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+      _(result).must_equal s(:program,
+                             s(:stmts,
+                               s(:dyna_symbol,
+                                 s(dsym_string_type,
+                                   s(:@tstring_content, "foo", s(1, 2), ":'"))),
+                               s(:comment,
+                                 "",
+                                 s(:def,
+                                   s(:@ident, "bar", s(1, 12)),
+                                   empty_params_list,
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(1, 20))), nil, nil, nil)))))
     end
 
     it "is not confused by a dynamic symbol containing a class definition" do
@@ -130,10 +138,8 @@ describe RipperParser::CommentingRipperParser do
                                            s(:const_ref, s(:@const, "Bar", s(1, 13))),
                                            nil,
                                            s(:bodystmt,
-                                             s(:stmts, s(:void_stmt)),
-                                             nil,
-                                             nil,
-                                             nil)))))))))
+                                             s(:stmts, s(:void_stmt, s(1, 17))),
+                                             nil, nil, nil)))))))))
     end
 
     it "turns an embedded document into a comment node" do
@@ -145,7 +151,8 @@ describe RipperParser::CommentingRipperParser do
                                  s(:class,
                                    s(:const_ref, s(:@const, "Foo", s(4, 6))),
                                    nil,
-                                   s(:bodystmt, s(:stmts, s(:void_stmt)), nil, nil, nil)))))
+                                   s(:bodystmt,
+                                     s(:stmts, s(:void_stmt, s(4, 10))), nil, nil, nil)))))
     end
   end
 
