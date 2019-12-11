@@ -117,7 +117,7 @@ module RipperParser
       REGEXP_LITERALS = ["/", /^%r.$/].freeze
 
       def process_at_tstring_content(exp)
-        _, content, _, delim = exp.shift 4
+        _, content, pos, delim = exp.shift 4
         content = perform_line_continuation_unescapes content, delim
 
         parts = case delim
@@ -130,11 +130,12 @@ module RipperParser
         parts = parts.map { |it| perform_unescapes(it, delim) }
         parts = parts.map { |it| s(:str, it) }
 
-        if parts.length == 1
-          parts.first
-        else
-          s(:dstr, *parts)
+        result = if parts.length == 1
+                   parts.first
+                 else
+                   s(:dstr, *parts)
         end
+        with_position(pos, result)
       end
 
       private
