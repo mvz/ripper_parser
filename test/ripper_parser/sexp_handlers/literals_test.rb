@@ -159,6 +159,11 @@ describe RipperParser::Parser do
         _("1000r")
           .must_be_parsed_as s(:rational, 1000r)
       end
+
+      it "works for imaginary numbers" do
+        _("1i")
+          .must_be_parsed_as s(:complex, 1i)
+      end
     end
   end
 end

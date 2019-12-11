@@ -61,6 +61,11 @@ module RipperParser
         _, val, pos = exp.shift 3
         with_position(pos, s(:rational, val.to_r))
       end
+
+      def process_at_imaginary(exp)
+        _, val, pos = exp.shift 3
+        with_position(pos, s(:complex, val.to_c))
+      end
     end
   end
 end
