@@ -480,61 +480,6 @@ describe RipperParser::Parser do
                                s(:resbody, nil, nil,
                                  s(:next)), nil)
       end
-
-      it "works with assignment" do
-        _("foo = bar rescue baz")
-          .must_be_parsed_as s(:lvasgn, :foo,
-                               s(:rescue,
-                                 s(:send, nil, :bar),
-                                 s(:resbody, nil, nil, s(:send, nil, :baz)), nil))
-      end
-
-      it "works with assignment with argument" do
-        _("foo = bar(baz) rescue qux")
-          .must_be_parsed_as s(:lvasgn, :foo,
-                               s(:rescue,
-                                 s(:send, nil, :bar, s(:send, nil, :baz)),
-                                 s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
-      end
-
-      it "works with assignment with argument without brackets" do
-        expected = if RUBY_VERSION < "2.4.0"
-                     s(:rescue,
-                       s(:lvasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
-                       s(:resbody, nil, nil, s(:send, nil, :qux)))
-                   else
-                     s(:lvasgn, :foo,
-                       s(:rescue,
-                         s(:send, nil, :bar, s(:send, nil, :baz)),
-                         s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
-                   end
-        _("foo = bar baz rescue qux").must_be_parsed_as expected
-      end
-
-      it "works with assignment with class method call with argument without brackets" do
-        expected = if RUBY_VERSION < "2.4.0"
-                     s(:rescue,
-                       s(:lvasgn, :foo,
-                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
-                       s(:resbody, nil, nil, s(:send, nil, :quuz)))
-                   else
-                     s(:lvasgn, :foo,
-                       s(:rescue,
-                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
-                         s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
-                   end
-        _("foo = Bar.baz qux rescue quuz")
-          .must_be_parsed_as expected
-      end
-
-      it "works with multiple assignment" do
-        _("foo, bar = baz rescue qux")
-          .must_be_parsed_as s(:rescue,
-                               s(:masgn,
-                                 s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
-                                 s(:send, nil, :baz)),
-                               s(:resbody, nil, nil, s(:send, nil, :qux)), nil)
-      end
     end
 
     describe "for the ensure statement" do
@@ -761,6 +706,47 @@ describe RipperParser::Parser do
                                s(:begin,
                                  s(:send, nil, :bar),
                                  s(:send, nil, :baz)))
+      end
+
+      it "sets line numbers correctly for lambdas with empty bodies" do
+        _("->(foo) { }\nbar")
+          .must_be_parsed_as s(:begin,
+                               s(:block,
+                                 s(:lambda).line(1),
+                                 s(:args, s(:arg, :foo).line(1)).line(1),
+                                 nil).line(1),
+                               s(:send, nil, :bar).line(2)).line(1),
+                             with_line_numbers: true
+      end
+
+      it "sets line numbers correctly for empty lambdas" do
+        _("->() { }\nfoo")
+          .must_be_parsed_as s(:begin,
+                               s(:block,
+                                 s(:lambda).line(1),
+                                 s(:args).line(1),
+                                 nil).line(1),
+                               s(:send, nil, :foo).line(2)).line(1),
+                             with_line_numbers: true
+      end
+    end
+
+    describe "for lambda keyword" do
+      it "works in the simple case" do
+        _("lambda { |foo| bar }")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :lambda),
+                               s(:args,
+                                 s(:procarg0, :foo)),
+                               s(:send, nil, :bar))
+      end
+
+      it "works with trailing argument comma" do
+        _("lambda { |foo,| bar }")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :lambda),
+                               s(:args, s(:arg, :foo)),
+                               s(:send, nil, :bar))
       end
     end
   end

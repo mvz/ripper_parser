@@ -76,6 +76,20 @@ describe RipperParser::Parser do
                                  s(:send, nil, :bar)),
                                s(:send, nil, :foo))
       end
+
+      it "works with do and an empty body" do
+        _("while foo do; end")
+          .must_be_parsed_as s(:while,
+                               s(:send, nil, :foo),
+                               nil)
+      end
+
+      it "works without do and with an empty body" do
+        _("while foo; end")
+          .must_be_parsed_as s(:while,
+                               s(:send, nil, :foo),
+                               nil)
+      end
     end
 
     describe "for the until statement" do

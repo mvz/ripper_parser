@@ -139,6 +139,13 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz,
                                    s(:send, nil, :qux)))
         end
+
+        it "keeps :begin around a method receiver" do
+          _("begin; foo; end.bar")
+            .must_be_parsed_as s(:send,
+                                 s(:kwbegin,
+                                   s(:send, nil, :foo)), :bar)
+        end
       end
 
       describe "for collection indexing" do
@@ -163,12 +170,12 @@ describe RipperParser::Parser do
 
       describe "safe call" do
         it "works without arguments" do
-          _("foo&.bar").must_be_parsed_as s(:safe_call, s(:send, nil, :foo), :bar)
+          _("foo&.bar").must_be_parsed_as s(:csend, s(:send, nil, :foo), :bar)
         end
 
         it "works with arguments" do
           _("foo&.bar baz")
-            .must_be_parsed_as s(:safe_call,
+            .must_be_parsed_as s(:csend,
                                  s(:send, nil, :foo),
                                  :bar,
                                  s(:send, nil, :baz))

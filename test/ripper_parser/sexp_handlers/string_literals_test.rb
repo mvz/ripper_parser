@@ -116,6 +116,14 @@ describe RipperParser::Parser do
                                    s(:send, nil, :bar)), s(:regopt, :u))
         end
 
+        it "works with unicode flag plus other flag" do
+          _('/foo#{bar}/un')
+            .must_be_parsed_as s(:regexp,
+                                 s(:str, "foo"),
+                                 s(:begin,
+                                   s(:send, nil, :bar)), s(:regopt, :n, :u))
+        end
+
         it "works with the euc-encoding flag" do
           _('/foo#{bar}/e')
             .must_be_parsed_as s(:regexp,
@@ -391,6 +399,47 @@ describe RipperParser::Parser do
                                  s(:begin),
                                  s(:str, "bar"))
         end
+
+        it "correctly handles interpolation with __FILE__ before another interpolation" do
+          _("\"foo\#{__FILE__}\#{bar}\"")
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin, s(:str, "(string)")),
+                                 s(:begin, s(:send, nil, :bar)))
+        end
+
+        it "correctly handles interpolation with __FILE__ after another interpolation" do
+          _("\"\#{bar}foo\#{__FILE__}\"")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, "foo"),
+                                 s(:begin, s(:str, "(string)")))
+        end
+
+        it "correctly handles nested interpolation" do
+          _('"foo#{"bar#{baz}"}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin,
+                                   s(:dstr,
+                                     s(:str, "bar"),
+                                     s(:begin, s(:send, nil, :baz)))))
+        end
+
+        it "correctly handles consecutive nested interpolation" do
+          _('"foo#{"bar#{baz}"}foo#{"bar#{baz}"}"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo"),
+                                 s(:begin,
+                                   s(:dstr,
+                                     s(:str, "bar"),
+                                     s(:begin, s(:send, nil, :baz)))),
+                                 s(:str, "foo"),
+                                 s(:begin,
+                                   s(:dstr,
+                                     s(:str, "bar"),
+                                     s(:begin, s(:send, nil, :baz)))))
+        end
       end
 
       describe "with interpolations and escape sequences" do
@@ -420,6 +469,13 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:dstr,
                                  s(:begin, s(:send, nil, :foo)),
                                  s(:str, "\u0000"))
+        end
+
+        it "converts string with null to unicode after interpolation" do
+          _('"#{foo}bar\0"')
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :foo)),
+                                 s(:str, "bar\x00"))
         end
       end
 
@@ -521,7 +577,6 @@ describe RipperParser::Parser do
         end
 
         it "works with line continuations" do
-          # NOTE: Incompatibility with Parser
           _("%(foo\\\nbar)")
             .must_be_parsed_as s(:str, "foobar")
         end
@@ -621,6 +676,11 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:str, "bar\tbaz\n")
         end
 
+        it 'converts \r to carriage returns' do
+          _("<<FOO\nbar\\rbaz\\r\nFOO")
+            .must_be_parsed_as s(:str, "bar\rbaz\r\n")
+        end
+
         it "does not unescape with single quoted version" do
           _("<<'FOO'\nbar\\tbaz\nFOO")
             .must_be_parsed_as s(:str, "bar\\tbaz\n")
@@ -659,6 +719,29 @@ describe RipperParser::Parser do
         it "converts to unicode" do
           _("<<FOO\n2\\302\\275\nFOO")
             .must_be_parsed_as s(:str, "2½\n")
+        end
+
+        it "handles interpolation" do
+          _("<<FOO\n\#{bar}\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, "\n"))
+        end
+
+        it "handles line continuation after interpolation" do
+          _("<<FOO\n\#{bar}\nbaz\\\nqux\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, "\n"),
+                                 s(:str, "bazqux\n"))
+        end
+
+        it "handles line continuation after interpolation for the indentable case" do
+          _("<<-FOO\n\#{bar}\nbaz\\\nqux\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, "\n"),
+                                 s(:str, "bazqux\n"))
         end
       end
     end
@@ -726,6 +809,10 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:array,
                                s(:str, "foo\nbar"),
                                s(:str, "baz"))
+      end
+
+      it "converts to unicode if possible" do
+        _('%W(2\302\275)').must_be_parsed_as s(:array, s(:str, "2½"))
       end
 
       it "correctly handles line continuation" do
@@ -872,7 +959,6 @@ describe RipperParser::Parser do
       end
 
       it "works for dsyms with line continuations" do
-        # NOTE: Incompatibility with Parser
         _(":\"foo\\\nbar\"")
           .must_be_parsed_as s(:sym, :foobar)
       end
@@ -950,7 +1036,6 @@ describe RipperParser::Parser do
       end
 
       it "works for backtick strings with line continuations" do
-        # NOTE: Incompatibility with Parser
         _("`foo\\\nbar`")
           .must_be_parsed_as s(:xstr,
                                s(:str, "foobar"))

@@ -117,7 +117,7 @@ module RipperParser
       REGEXP_LITERALS = ["/", /^%r.$/].freeze
 
       def process_at_tstring_content(exp)
-        _, content, _, delim = exp.shift 4
+        _, content, pos, delim = exp.shift 4
         content = perform_line_continuation_unescapes content, delim
 
         parts = case delim
@@ -130,16 +130,18 @@ module RipperParser
         parts = parts.map { |it| perform_unescapes(it, delim) }
         parts = parts.map { |it| s(:str, it) }
 
-        if parts.length == 1
-          parts.first
-        else
-          s(:dstr, *parts)
+        result = if parts.length == 1
+                   parts.first
+                 else
+                   s(:dstr, *parts)
         end
+        with_position(pos, result)
       end
 
       private
 
       def extract_string_parts(list)
+        list = merge_raw_string_literals list
         parts = map_process_list list
         result = []
         parts.each do |sub_expr|
@@ -147,10 +149,23 @@ module RipperParser
           when :dstr
             result.push(*sub_expr.sexp_body)
           when :str
-            result.push(sub_expr) unless sub_expr[1] == ""
+            result.push(sub_expr)
           end
         end
         result
+      end
+
+      def merge_raw_string_literals(list)
+        chunks = list.chunk { |it| it.sexp_type == :@tstring_content }
+        chunks.flat_map do |is_simple, items|
+          if is_simple && items.count > 1
+            head = items.first
+            contents = items.map { |it| it[1] }.join
+            [s(:@tstring_content, contents, head[2], head[3])]
+          else
+            items
+          end
+        end
       end
 
       def character_flags_to_regopt(flags)

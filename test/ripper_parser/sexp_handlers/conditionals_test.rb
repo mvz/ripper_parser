@@ -361,6 +361,17 @@ describe RipperParser::Parser do
                                  nil))
       end
 
+      it "works with an else" do
+        _("if foo; bar; elsif baz; qux; else; quuz; end")
+          .must_be_parsed_as s(:if,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar),
+                               s(:if,
+                                 s(:send, nil, :baz),
+                                 s(:send, nil, :qux),
+                                 s(:send, nil, :quuz)))
+      end
+
       it "works with an empty else" do
         _("if foo; bar; elsif baz; qux; else; end")
           .must_be_parsed_as s(:if,
@@ -503,6 +514,42 @@ describe RipperParser::Parser do
                                  s(:splat, s(:send, nil, :bar)),
                                  s(:send, nil, :baz)),
                                nil)
+      end
+
+      it "keeps a multi-statement begin..end in the when clause" do
+        _("case foo; when bar; begin; baz; qux; end; end")
+          .must_be_parsed_as s(:case,
+                               s(:send, nil, :foo),
+                               s(:when,
+                                 s(:send, nil, :bar),
+                                 s(:kwbegin,
+                                   s(:send, nil, :baz),
+                                   s(:send, nil, :qux))), nil)
+      end
+
+      it "keeps a multi-statement begin..end at start of the when clause" do
+        _("case foo; when bar; begin; baz; qux; end; quuz; end")
+          .must_be_parsed_as s(:case,
+                               s(:send, nil, :foo),
+                               s(:when,
+                                 s(:send, nil, :bar),
+                                 s(:begin,
+                                   s(:kwbegin,
+                                     s(:send, nil, :baz),
+                                     s(:send, nil, :qux)),
+                                   s(:send, nil, :quuz))), nil)
+      end
+
+      it "keeps a multi-statement begin..end in the else clause" do
+        _("case foo; when bar; baz; else; begin; qux; quuz; end; end")
+          .must_be_parsed_as s(:case,
+                               s(:send, nil, :foo),
+                               s(:when,
+                                 s(:send, nil, :bar),
+                                 s(:send, nil, :baz)),
+                               s(:kwbegin,
+                                 s(:send, nil, :qux),
+                                 s(:send, nil, :quuz)))
       end
     end
   end
