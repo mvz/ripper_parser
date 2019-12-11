@@ -141,6 +141,7 @@ module RipperParser
       private
 
       def extract_string_parts(list)
+        list = merge_raw_string_literals list
         parts = map_process_list list
         result = []
         parts.each do |sub_expr|
@@ -152,6 +153,19 @@ module RipperParser
           end
         end
         result
+      end
+
+      def merge_raw_string_literals(list)
+        chunks = list.chunk { |it| it.sexp_type == :@tstring_content }
+        chunks.flat_map do |is_simple, items|
+          if is_simple && items.count > 1
+            head = items.first
+            contents = items.map { |it| it[1] }.join
+            [s(:@tstring_content, contents, head[2], head[3])]
+          else
+            items
+          end
+        end
       end
 
       def character_flags_to_regopt(flags)
