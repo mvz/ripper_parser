@@ -86,6 +86,14 @@ describe RipperParser::Parser do
                                nil)
       end
 
+      it "works with a nameless kwrest argument" do
+        _("def foo **; end")
+          .must_be_parsed_as s(:def,
+                               :foo,
+                               s(:args, s(:kwrestarg)),
+                               nil)
+      end
+
       it "works for a simple case with explicit block parameter" do
         _("def foo &bar; end")
           .must_be_parsed_as s(:def,
@@ -178,10 +186,54 @@ describe RipperParser::Parser do
                                nil)
       end
 
+      it "works with argument destructuring" do
+        _("def foo((bar, baz)); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args,
+                                 s(:mlhs,
+                                   s(:arg, :bar),
+                                   s(:arg, :baz))),
+                               nil)
+      end
+
+      it "works with argument destructuring including splat" do
+        _("def foo((bar, *baz)); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args,
+                                 s(:mlhs,
+                                   s(:arg, :bar),
+                                   s(:restarg, :baz))),
+                               nil)
+      end
+
+      it "works with nested argument destructuring" do
+        _("def foo((bar, (baz, qux))); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args,
+                                 s(:mlhs,
+                                   s(:arg, :bar),
+                                   s(:mlhs,
+                                     s(:arg, :baz),
+                                     s(:arg, :qux)))), nil)
+      end
+
       it "works when the method name is an operator" do
         _("def +; end")
           .must_be_parsed_as s(:def, :+, s(:args),
                                nil)
+      end
+
+      it "works when the method name is a keyword" do
+        _("def for; end")
+          .must_be_parsed_as s(:def, :for, s(:args),
+                               nil)
+      end
+
+      it "assigns correct line numbers when the body is empty" do
+        _("def bar\nend")
+          .must_be_parsed_as s(:def, :bar,
+                               s(:args).line(1), nil).line(1),
+                             with_line_numbers: true
       end
     end
 
@@ -204,6 +256,23 @@ describe RipperParser::Parser do
                                s(:begin,
                                  s(:send, nil, :baz),
                                  s(:send, nil, :qux)))
+      end
+
+      it "works with a simple splat" do
+        _("def foo.bar *baz; end")
+          .must_be_parsed_as s(:defs,
+                               s(:send, nil, :foo),
+                               :bar,
+                               s(:args, s(:restarg, :baz)),
+                               nil)
+      end
+
+      it "works when the method name is a keyword" do
+        _("def foo.for; end")
+          .must_be_parsed_as s(:defs,
+                               s(:send, nil, :foo),
+                               :for, s(:args),
+                               nil)
       end
     end
 

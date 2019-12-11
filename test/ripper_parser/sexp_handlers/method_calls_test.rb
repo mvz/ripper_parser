@@ -139,6 +139,13 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz,
                                    s(:send, nil, :qux)))
         end
+
+        it "keeps :begin around a method receiver" do
+          _("begin; foo; end.bar")
+            .must_be_parsed_as s(:send,
+                                 s(:kwbegin,
+                                   s(:send, nil, :foo)), :bar)
+        end
       end
 
       describe "for collection indexing" do

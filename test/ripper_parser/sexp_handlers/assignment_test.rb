@@ -173,6 +173,60 @@ describe RipperParser::Parser do
                                :$foo,
                                s(:send, nil, :bar))
       end
+
+      describe "with a rescue modifier" do
+        it "works with assigning a bare method call" do
+          _("foo = bar rescue baz")
+            .must_be_parsed_as s(:lvasgn, :foo,
+                                 s(:rescue,
+                                   s(:send, nil, :bar),
+                                   s(:resbody, nil, nil, s(:send, nil, :baz)), nil))
+        end
+
+        it "works with a method call with argument" do
+          _("foo = bar(baz) rescue qux")
+            .must_be_parsed_as s(:lvasgn, :foo,
+                                 s(:rescue,
+                                   s(:send, nil, :bar, s(:send, nil, :baz)),
+                                   s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
+        end
+
+        it "works with a method call with argument without brackets" do
+          expected = if RUBY_VERSION < "2.4.0"
+                       s(:rescue,
+                         s(:lvasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
+                         s(:resbody, nil, nil, s(:send, nil, :qux)))
+                     else
+                       s(:lvasgn, :foo,
+                         s(:rescue,
+                           s(:send, nil, :bar, s(:send, nil, :baz)),
+                           s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
+                     end
+          _("foo = bar baz rescue qux").must_be_parsed_as expected
+        end
+
+        it "works with a class method call with argument without brackets" do
+          expected = if RUBY_VERSION < "2.4.0"
+                       s(:rescue,
+                         s(:lvasgn, :foo,
+                           s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
+                         s(:resbody, nil, nil, s(:send, nil, :quuz)))
+                     else
+                       s(:lvasgn, :foo,
+                         s(:rescue,
+                           s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
+                           s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
+                     end
+          _("foo = Bar.baz qux rescue quuz")
+            .must_be_parsed_as expected
+        end
+      end
+
+      it "sets the correct line numbers" do
+        _("foo = {}")
+          .must_be_parsed_as s(:lvasgn, :foo, s(:hash).line(1)).line(1),
+                             with_line_numbers: true
+      end
     end
 
     describe "for multiple assignment" do
@@ -199,6 +253,22 @@ describe RipperParser::Parser do
                                  s(:splat, s(:lvasgn, :foo)),
                                  s(:lvasgn, :bar)),
                                s(:send, nil, :baz))
+      end
+
+      it "works with blocks" do
+        _("foo, bar = begin; baz; end")
+          .must_be_parsed_as s(:masgn,
+                               s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                               s(:kwbegin, s(:send, nil, :baz)))
+      end
+
+      it "works with a rescue modifier" do
+        _("foo, bar = baz rescue qux")
+          .must_be_parsed_as s(:rescue,
+                               s(:masgn,
+                                 s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                                 s(:send, nil, :baz)),
+                               s(:resbody, nil, nil, s(:send, nil, :qux)), nil)
       end
 
       it "works the same number of items on each side" do
@@ -253,6 +323,15 @@ describe RipperParser::Parser do
                                  s(:array,
                                    s(:send, nil, :quz),
                                    s(:send, nil, :quuz))))
+      end
+
+      it "works with destructuring with multiple levels" do
+        _("((foo, bar)) = baz")
+          .must_be_parsed_as s(:masgn,
+                               s(:mlhs,
+                                 s(:lvasgn, :foo),
+                                 s(:lvasgn, :bar)),
+                               s(:send, nil, :baz))
       end
 
       it "works with instance variables" do
@@ -330,6 +409,18 @@ describe RipperParser::Parser do
                                  s(:splat,
                                    s(:kwbegin,
                                      s(:send, nil, :baz)))))
+      end
+
+      it "sets the correct line numbers" do
+        _("foo, bar = {}, {}")
+          .must_be_parsed_as s(:masgn,
+                               s(:mlhs,
+                                 s(:lvasgn, :foo).line(1),
+                                 s(:lvasgn, :bar).line(1)).line(1),
+                               s(:array,
+                                 s(:hash).line(1),
+                                 s(:hash).line(1)).line(1)).line(1),
+                             with_line_numbers: true
       end
     end
 
@@ -465,8 +556,49 @@ describe RipperParser::Parser do
                                s(:indexasgn,
                                  s(:send, nil, :foo),
                                  s(:send, nil, :bar),
-                                 s(:send, nil, :baz)), :+,
+                                 s(:send, nil, :baz)),
+                               :+,
                                s(:send, nil, :qux))
+      end
+
+      it "works with a function call without parentheses" do
+        _("foo[bar] += baz qux")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               :+,
+                               s(:send, nil, :baz, s(:send, nil, :qux)))
+      end
+
+      it "works with a function call with parentheses" do
+        _("foo[bar] += baz(qux)")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               :+,
+                               s(:send, nil, :baz, s(:send, nil, :qux)))
+      end
+
+      it "works with a method call without parentheses" do
+        _("foo[bar] += baz.qux quuz")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               :+,
+                               s(:send, s(:send, nil, :baz), :qux, s(:send, nil, :quuz)))
+      end
+
+      it "works with a method call with parentheses" do
+        _("foo[bar] += baz.qux(quuz)")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               :+,
+                               s(:send, s(:send, nil, :baz), :qux, s(:send, nil, :quuz)))
       end
     end
   end

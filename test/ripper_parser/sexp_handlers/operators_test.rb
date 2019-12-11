@@ -215,11 +215,31 @@ describe RipperParser::Parser do
                                s(:str, "z"))
       end
 
+      it "handles non-literal begin" do
+        _("foo..3")
+          .must_be_parsed_as s(:irange,
+                               s(:send, nil, :foo),
+                               s(:int, 3))
+      end
+
+      it "handles non-literal end" do
+        _("3..foo")
+          .must_be_parsed_as s(:irange,
+                               s(:int, 3),
+                               s(:send, nil, :foo))
+      end
+
       it "handles non-literals" do
         _("foo..bar")
           .must_be_parsed_as s(:irange,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
+      end
+
+      it "handles endless range literals" do
+        skip "This Ruby version does not support endless ranges" if RUBY_VERSION < "2.6.0"
+        _("1..")
+          .must_be_parsed_as s(:irange, s(:int, 1), nil)
       end
     end
 
@@ -252,7 +272,21 @@ describe RipperParser::Parser do
                                s(:str, "z"))
       end
 
-      it "handles non-literals" do
+      it "handles non-literal begin" do
+        _("foo...3")
+          .must_be_parsed_as s(:erange,
+                               s(:send, nil, :foo),
+                               s(:int, 3))
+      end
+
+      it "handles non-literal end" do
+        _("3...foo")
+          .must_be_parsed_as s(:erange,
+                               s(:int, 3),
+                               s(:send, nil, :foo))
+      end
+
+      it "handles two non-literals" do
         _("foo...bar")
           .must_be_parsed_as s(:erange,
                                s(:send, nil, :foo),

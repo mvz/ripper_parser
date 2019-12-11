@@ -144,6 +144,21 @@ describe RipperParser::Parser do
         _("END { }")
           .must_be_parsed_as s(:postexe, nil)
       end
+
+      it "assigns correct line numbers" do
+        _("END {\nfoo\n}")
+          .must_be_parsed_as s(:postexe,
+                               s(:send, nil, :foo).line(2)).line(1),
+                             with_line_numbers: true
+      end
+
+      it "assigns correct line numbers to a embedded begin block" do
+        _("END {\nbegin\nfoo\nend\n}")
+          .must_be_parsed_as s(:postexe,
+                               s(:kwbegin,
+                                 s(:send, nil, :foo).line(3)).line(2)).line(1),
+                             with_line_numbers: true
+      end
     end
 
     describe "for the BEGIN keyword" do
@@ -155,6 +170,21 @@ describe RipperParser::Parser do
       it "works with an empty block" do
         _("BEGIN { }")
           .must_be_parsed_as s(:preexe, nil)
+      end
+
+      it "assigns correct line numbers" do
+        _("BEGIN {\nfoo\n}")
+          .must_be_parsed_as s(:preexe,
+                               s(:send, nil, :foo).line(2)).line(1),
+                             with_line_numbers: true
+      end
+
+      it "assigns correct line numbers to a embedded begin block" do
+        _("BEGIN {\nbegin\nfoo\nend\n}")
+          .must_be_parsed_as s(:preexe,
+                               s(:kwbegin,
+                                 s(:send, nil, :foo).line(3)).line(2)).line(1),
+                             with_line_numbers: true
       end
     end
 
@@ -311,6 +341,37 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz)))
         _(result.comments).must_equal "# Foo\n"
       end
+
+      it "assigns comments on BEGIN blocks to the BEGIN block" do
+        result = parser.parse "# Bar\nBEGIN { }\n# Foo\ndef foo; end"
+        _(result).must_equal s(:begin,
+                               s(:preexe, nil),
+                               s(:def, :foo, s(:args), nil))
+        _(result[1].comments).must_equal "# Bar\n"
+        _(result[2].comments).must_equal "# Foo\n"
+      end
+
+      it "assigns comments on multiple BEGIN blocks to each block" do
+        result = parser.parse "# Bar\nBEGIN { }\n# Baz\nBEGIN { }\n# Foo\ndef foo; end"
+        _(result).must_equal s(:begin,
+                               s(:preexe, nil),
+                               s(:preexe, nil),
+                               s(:def, :foo, s(:args), nil))
+        _(result[1].comments).must_equal "# Bar\n"
+        _(result[2].comments).must_equal "# Baz\n"
+        _(result[3].comments).must_equal "# Foo\n"
+      end
+
+      it "assigns comments on BEGIN blocks to the first following item" do
+        result = parser.parse "# Bar\nBEGIN { }\n# Foo\nclass Bar\n# foo\ndef foo; end\nend"
+        _(result).must_equal s(:begin,
+                               s(:preexe, nil),
+                               s(:class, s(:const, nil, :Bar), nil,
+                                 s(:def, :foo, s(:args), nil)))
+        _(result[1].comments).must_equal "# Bar\n"
+        _(result[2].comments).must_equal "# Foo\n"
+        _(result[2][3].comments).must_equal "# foo\n"
+      end
     end
 
     # Note: differences in the handling of line numbers are not caught by
@@ -370,11 +431,11 @@ describe RipperParser::Parser do
       end
 
       it "works for a local variable" do
-        result = parser.parse "foo = bar\nfoo\n"
-        _(result.sexp_type).must_equal :begin
-        _(result[1].line).must_equal 1
-        _(result[2].line).must_equal 2
-        _(result.line).must_equal 1
+        _("foo = bar\nfoo\n")
+          .must_be_parsed_as s(:begin,
+                               s(:lvasgn, :foo, s(:send, nil, :bar).line(1)).line(1),
+                               s(:lvar, :foo).line(2)).line(1),
+                             with_line_numbers: true
       end
 
       it "works for an integer literal" do
@@ -384,6 +445,41 @@ describe RipperParser::Parser do
 
       it "works for a float literal" do
         result = parser.parse "3.14"
+        _(result.line).must_equal 1
+      end
+
+      it "works for a range literal" do
+        result = parser.parse "0..4"
+        _(result.line).must_equal 1
+      end
+
+      it "works for an exclusive range literal" do
+        result = parser.parse "0...4"
+        _(result.line).must_equal 1
+      end
+
+      it "works for a symbol literal" do
+        result = parser.parse ":foo"
+        _(result.line).must_equal 1
+      end
+
+      it "works for a keyword-like symbol literal" do
+        result = parser.parse ":and"
+        _(result.line).must_equal 1
+      end
+
+      it "works for a string literal" do
+        result = parser.parse '"foo"'
+        _(result.line).must_equal 1
+      end
+
+      it "works for a backtick string literal" do
+        result = parser.parse "`foo`"
+        _(result.line).must_equal 1
+      end
+
+      it "works for a plain regexp literal" do
+        result = parser.parse "/foo/"
         _(result.line).must_equal 1
       end
 
@@ -438,15 +534,12 @@ describe RipperParser::Parser do
       end
 
       it "assigns line numbers to nested sexps without their own line numbers" do
-        result = parser.parse "foo(bar) do\nnext baz\nend\n"
-        _(result).must_equal s(:block,
-                               s(:send, nil, :foo, s(:send, nil, :bar)),
+        _("foo(bar) do\nnext baz\nend\n")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :foo, s(:send, nil, :bar).line(1)).line(1),
                                s(:args),
-                               s(:next, s(:send, nil, :baz)))
-        arglist = result[1][3]
-        block = result[3]
-        nums = [arglist.line, block.line]
-        _(nums).must_equal [1, 2]
+                               s(:next, s(:send, nil, :baz).line(2)).line(2)).line(1),
+                             with_line_numbers: true
       end
 
       describe "when a line number is passed" do
