@@ -149,9 +149,13 @@ module RipperParser
       def process_lambda(exp)
         _, args, statements = exp.shift 3
         args = convert_special_args(process(args))
-        make_iter(s(:lambda),
-                  args,
-                  safe_unwrap_void_stmt(process(statements)))
+        statements = process(statements)
+        line = args.line || statements.line
+
+        call = s(:lambda)
+        call.line = line
+
+        make_iter call, args, safe_unwrap_void_stmt(statements)
       end
 
       private
@@ -219,11 +223,9 @@ module RipperParser
 
       def make_iter(call, args, stmt)
         args ||= s(:args)
-        if stmt.empty?
-          s(:block, call, args, nil)
-        else
-          s(:block, call, args, stmt)
-        end
+        line = call.line || args.line
+        stmt = nil if stmt.empty?
+        s(:block, call, args, stmt).line(line)
       end
 
       def wrap_in_begin(statements)
