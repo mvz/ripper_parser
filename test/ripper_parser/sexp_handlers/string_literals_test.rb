@@ -665,12 +665,6 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:str, "  bar\n")
         end
 
-        it "works for the automatically outdenting case" do
-          skip "This is not valid syntax below Ruby 2.3" if RUBY_VERSION < "2.3.0"
-          _("  <<~FOO\n  bar\n  FOO")
-            .must_be_parsed_as s(:str, "bar\n")
-        end
-
         it "works for escape sequences" do
           _("<<FOO\nbar\\tbaz\nFOO")
             .must_be_parsed_as s(:str, "bar\tbaz\n")
@@ -696,12 +690,6 @@ describe RipperParser::Parser do
         it "does not unescape with indentable single quoted version" do
           _("<<-'FOO'\n  bar\\tbaz\n  FOO")
             .must_be_parsed_as s(:str, "  bar\\tbaz\n")
-        end
-
-        it "does not unescape the automatically outdenting single quoted version" do
-          skip "This is not valid syntax below Ruby 2.3" if RUBY_VERSION < "2.3.0"
-          _("<<~'FOO'\n  bar\\tbaz\n  FOO")
-            .must_be_parsed_as s(:str, "bar\\tbaz\n")
         end
 
         it "handles line continuation" do
@@ -742,6 +730,28 @@ describe RipperParser::Parser do
                                  s(:begin, s(:send, nil, :bar)),
                                  s(:str, "\n"),
                                  s(:str, "bazqux\n"))
+        end
+      end
+
+      describe "for squiggly heredocs" do
+        it "works for the simple case" do
+          _("  <<~FOO\n  bar\n  FOO")
+            .must_be_parsed_as s(:str, "bar\n")
+        end
+
+        it "does not unescape the single quoted version" do
+          _("<<~'FOO'\n  bar\\tbaz\n  FOO")
+            .must_be_parsed_as s(:str, "bar\\tbaz\n")
+        end
+
+        it "handles interpolation after a literal part when dedenting" do
+          _("<<~FOO\n  foo\n  \#{bar}\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, "foo\n"),
+                                 s(:str, ""),
+                                 s(:begin,
+                                   s(:send, nil, :bar)),
+                                 s(:str, "\n"))
         end
       end
     end

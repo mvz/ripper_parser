@@ -51,11 +51,17 @@ FOO
 foo\rbar\tbaz\r
 FOO
 
-# Dedented heredocs
-foo = <<~BAR
+# Squiggly heredocs
+foo = <<~BAR # dedenting
   baz
   #{qux}
   quuz
+BAR
+
+foo = <<~BAR # no dedenting
+baz
+#{qux}
+quuz
 BAR
 
 # Line continuation
