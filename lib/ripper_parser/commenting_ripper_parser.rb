@@ -54,14 +54,15 @@ module RipperParser
     end
 
     def on_kw(tok)
+      result = super
       case tok
       when "class", "def", "module"
         unless @in_symbol
-          @comment_stack.push [tok.to_sym, @comment]
+          @comment_stack.push [result, @comment]
           @comment = ""
         end
       end
-      super
+      result
     end
 
     def on_module(*args)
@@ -303,8 +304,9 @@ module RipperParser
     private
 
     def commentize(_name, exp)
-      _tok, comment = @comment_stack.pop
+      (_, _kw, loc), comment = @comment_stack.pop
       @comment = ""
+      exp.push loc
       [:comment, comment, exp]
     end
   end

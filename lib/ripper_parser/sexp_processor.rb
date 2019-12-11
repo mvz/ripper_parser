@@ -48,23 +48,23 @@ module RipperParser
     end
 
     def process_module(exp)
-      _, const_ref, body = exp.shift 3
-      const, line = const_ref_to_const_with_line_number const_ref
-      with_line_number(line,
-                       s(:module, const, class_or_module_body(body)))
+      _, const_ref, body, pos = exp.shift 4
+      const = process(const_ref)
+      with_position(pos,
+                    s(:module, const, class_or_module_body(body)))
     end
 
     def process_class(exp)
-      _, const_ref, parent, body = exp.shift 4
-      const, line = const_ref_to_const_with_line_number const_ref
+      _, const_ref, parent, body, pos = exp.shift 5
+      const = process(const_ref)
       parent = process(parent)
-      with_line_number(line,
-                       s(:class, const, parent, class_or_module_body(body)))
+      with_position(pos,
+                    s(:class, const, parent, class_or_module_body(body)))
     end
 
     def process_sclass(exp)
-      _, klass, block = exp.shift 3
-      s(:sclass, process(klass), class_or_module_body(block))
+      _, klass, block, pos = exp.shift 4
+      with_position pos, s(:sclass, process(klass), class_or_module_body(block))
     end
 
     def process_stmts(exp)
@@ -218,12 +218,6 @@ module RipperParser
     end
 
     private
-
-    def const_ref_to_const_with_line_number(const_ref)
-      const = process(const_ref)
-      line = const.line
-      return const, line
-    end
 
     def class_or_module_body(exp)
       nil_if_empty process(exp)
