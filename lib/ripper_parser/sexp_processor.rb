@@ -17,6 +17,7 @@ module RipperParser
       @processors[:@int] = :process_at_int
       @processors[:@float] = :process_at_float
       @processors[:@rational] = :process_at_rational
+      @processors[:@imaginary] = :process_at_imaginary
       @processors[:@CHAR] = :process_at_CHAR
       @processors[:@label] = :process_at_label
 
@@ -48,23 +49,23 @@ module RipperParser
     end
 
     def process_module(exp)
-      _, const_ref, body = exp.shift 3
-      const, line = const_ref_to_const_with_line_number const_ref
-      with_line_number(line,
-                       s(:module, const, class_or_module_body(body)))
+      _, const_ref, body, pos = exp.shift 4
+      const = process(const_ref)
+      with_position(pos,
+                    s(:module, const, class_or_module_body(body)))
     end
 
     def process_class(exp)
-      _, const_ref, parent, body = exp.shift 4
-      const, line = const_ref_to_const_with_line_number const_ref
+      _, const_ref, parent, body, pos = exp.shift 5
+      const = process(const_ref)
       parent = process(parent)
-      with_line_number(line,
-                       s(:class, const, parent, class_or_module_body(body)))
+      with_position(pos,
+                    s(:class, const, parent, class_or_module_body(body)))
     end
 
     def process_sclass(exp)
-      _, klass, block = exp.shift 3
-      s(:sclass, process(klass), class_or_module_body(block))
+      _, klass, block, pos = exp.shift 4
+      with_position pos, s(:sclass, process(klass), class_or_module_body(block))
     end
 
     def process_stmts(exp)
@@ -93,6 +94,11 @@ module RipperParser
     def process_var_alias(exp)
       _, left, right = exp.shift 3
       s(:valias, left[1].to_sym, right[1].to_sym)
+    end
+
+    def process_void_stmt(exp)
+      _, pos = exp.shift 2
+      with_position pos, s(:void_stmt)
     end
 
     def process_const_path_ref(exp)
@@ -139,15 +145,15 @@ module RipperParser
     end
 
     def process_BEGIN(exp)
-      _, body = exp.shift 2
+      _, body, pos = exp.shift 3
       body = map_process_list_nils body.sexp_body
-      s(:preexe, *body)
+      with_position pos, s(:preexe, *body)
     end
 
     def process_END(exp)
-      _, body = exp.shift 2
+      _, body, pos = exp.shift 3
       body = map_process_list_nils body.sexp_body
-      s(:postexe, *body)
+      with_position pos, s(:postexe, *body)
     end
 
     def process_at_label(exp)
@@ -213,12 +219,6 @@ module RipperParser
     end
 
     private
-
-    def const_ref_to_const_with_line_number(const_ref)
-      const = process(const_ref)
-      line = const.line
-      return const, line
-    end
 
     def class_or_module_body(exp)
       nil_if_empty process(exp)

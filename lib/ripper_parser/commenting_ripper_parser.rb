@@ -29,6 +29,16 @@ module RipperParser
 
     def on_backtick(delimiter)
       @delimiter_stack.push delimiter
+      super
+    end
+
+    def on_begin(*args)
+      commentize(:begin, super)
+    end
+
+    def on_void_stmt
+      result = super
+      result << [lineno, column]
     end
 
     def on_comment(tok)
@@ -48,14 +58,15 @@ module RipperParser
     end
 
     def on_kw(tok)
+      result = super
       case tok
-      when "class", "def", "module"
+      when "class", "def", "module", "BEGIN", "begin", "END"
         unless @in_symbol
-          @comment_stack.push [tok.to_sym, @comment]
+          @comment_stack.push [result, @comment]
           @comment = ""
         end
       end
-      super
+      result
     end
 
     def on_module(*args)
@@ -274,6 +285,14 @@ module RipperParser
       super
     end
 
+    def on_BEGIN(*args)
+      commentize(:BEGIN, super)
+    end
+
+    def on_END(*args)
+      commentize(:END, super)
+    end
+
     def on_parse_error(*args)
       raise SyntaxError, *args
     end
@@ -297,8 +316,9 @@ module RipperParser
     private
 
     def commentize(_name, exp)
-      _tok, comment = @comment_stack.pop
+      (_, _kw, loc), comment = @comment_stack.pop
       @comment = ""
+      exp.push loc
       [:comment, comment, exp]
     end
   end

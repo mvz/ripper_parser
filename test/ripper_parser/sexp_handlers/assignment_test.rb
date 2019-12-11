@@ -103,6 +103,14 @@ describe RipperParser::Parser do
                                s(:send, nil, :baz))
       end
 
+      it "works when safe-assigning to an attribute" do
+        _("foo&.bar = baz")
+          .must_be_parsed_as s(:csend,
+                               s(:send, nil, :foo),
+                               :bar=,
+                               s(:send, nil, :baz))
+      end
+
       describe "when assigning to a class variable" do
         it "works outside a method" do
           _("@@foo = bar")
@@ -192,133 +200,7 @@ describe RipperParser::Parser do
                                  s(:lvasgn, :bar)),
                                s(:send, nil, :baz))
       end
-    end
 
-    describe "for assignment to a collection element" do
-      it "handles multiple indices" do
-        _("foo[bar, baz] = qux")
-          .must_be_parsed_as s(:indexasgn,
-                               s(:send, nil, :foo),
-                               s(:send, nil, :bar),
-                               s(:send, nil, :baz),
-                               s(:send, nil, :qux))
-      end
-    end
-
-    describe "for operator assignment" do
-      it "works with +=" do
-        _("foo += bar")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:lvasgn, :foo),
-                               :+,
-                               s(:send, nil, :bar))
-      end
-
-      it "works with -=" do
-        _("foo -= bar")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:lvasgn, :foo),
-                               :-,
-                               s(:send, nil, :bar))
-      end
-
-      it "works with *=" do
-        _("foo *= bar")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:lvasgn, :foo),
-                               :*,
-                               s(:send, nil, :bar))
-      end
-
-      it "works with /=" do
-        _("foo /= bar")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:lvasgn, :foo),
-                               :/,
-                               s(:send, nil, :bar))
-      end
-
-      it "works with ||=" do
-        _("foo ||= bar")
-          .must_be_parsed_as s(:or_asgn,
-                               s(:lvasgn, :foo),
-                               s(:send, nil, :bar))
-      end
-
-      it "works when assigning to an instance variable" do
-        _("@foo += bar")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:ivasgn, :@foo),
-                               :+,
-                               s(:send, nil, :bar))
-      end
-
-      it "works when assigning to a collection element" do
-        _("foo[bar] += baz")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
-                               :+,
-                               s(:send, nil, :baz))
-      end
-
-      it "works with ||= when assigning to a collection element" do
-        _("foo[bar] ||= baz")
-          .must_be_parsed_as s(:or_asgn,
-                               s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
-                               s(:send, nil, :baz))
-      end
-
-      it "works when assigning to an attribute" do
-        _("foo.bar += baz")
-          .must_be_parsed_as s(:op_asgn,
-                               s(:send, s(:send, nil, :foo), :bar),
-                               :+,
-                               s(:send, nil, :baz))
-      end
-
-      it "works with ||= when assigning to an attribute" do
-        _("foo.bar ||= baz")
-          .must_be_parsed_as s(:or_asgn,
-                               s(:send, s(:send, nil, :foo), :bar),
-                               s(:send, nil, :baz))
-      end
-      describe "assigning to a collection element" do
-        it "handles multiple indices" do
-          _("foo[bar, baz] += qux")
-            .must_be_parsed_as s(:op_asgn,
-                                 s(:indexasgn,
-                                   s(:send, nil, :foo),
-                                   s(:send, nil, :bar),
-                                   s(:send, nil, :baz)), :+,
-                                 s(:send, nil, :qux))
-        end
-
-        it "works with boolean operators" do
-          _("foo &&= bar")
-            .must_be_parsed_as s(:and_asgn,
-                                 s(:lvasgn, :foo),
-                                 s(:send, nil, :bar))
-        end
-
-        it "works with boolean operators and blocks" do
-          _("foo &&= begin; bar; end")
-            .must_be_parsed_as s(:and_asgn,
-                                 s(:lvasgn, :foo),
-                                 s(:kwbegin,
-                                   s(:send, nil, :bar)))
-        end
-
-        it "works with arithmetic operators and blocks" do
-          _("foo += begin; bar; end")
-            .must_be_parsed_as s(:op_asgn,
-                                 s(:lvasgn, :foo), :+,
-                                 s(:kwbegin,
-                                   s(:send, nil, :bar)))
-        end
-      end
-    end
-
-    describe "for multiple assignment" do
       it "works the same number of items on each side" do
         _("foo, bar = baz, qux")
           .must_be_parsed_as s(:masgn,
@@ -448,6 +330,143 @@ describe RipperParser::Parser do
                                  s(:splat,
                                    s(:kwbegin,
                                      s(:send, nil, :baz)))))
+      end
+    end
+
+    describe "for assignment to a collection element" do
+      it "handles multiple indices" do
+        _("foo[bar, baz] = qux")
+          .must_be_parsed_as s(:indexasgn,
+                               s(:send, nil, :foo),
+                               s(:send, nil, :bar),
+                               s(:send, nil, :baz),
+                               s(:send, nil, :qux))
+      end
+
+      it "handles safe-assigning to an attribute of the collection element" do
+        _("foo[bar]&.baz = qux")
+          .must_be_parsed_as s(:csend,
+                               s(:index,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar)),
+                               :baz=,
+                               s(:send, nil, :qux))
+      end
+    end
+
+    describe "for operator assignment" do
+      it "works with +=" do
+        _("foo += bar")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:lvasgn, :foo),
+                               :+,
+                               s(:send, nil, :bar))
+      end
+
+      it "works with -=" do
+        _("foo -= bar")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:lvasgn, :foo),
+                               :-,
+                               s(:send, nil, :bar))
+      end
+
+      it "works with *=" do
+        _("foo *= bar")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:lvasgn, :foo),
+                               :*,
+                               s(:send, nil, :bar))
+      end
+
+      it "works with /=" do
+        _("foo /= bar")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:lvasgn, :foo),
+                               :/,
+                               s(:send, nil, :bar))
+      end
+
+      it "works with ||=" do
+        _("foo ||= bar")
+          .must_be_parsed_as s(:or_asgn,
+                               s(:lvasgn, :foo),
+                               s(:send, nil, :bar))
+      end
+
+      it "works when assigning to an instance variable" do
+        _("@foo += bar")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:ivasgn, :@foo),
+                               :+,
+                               s(:send, nil, :bar))
+      end
+
+      it "works with boolean operators" do
+        _("foo &&= bar")
+          .must_be_parsed_as s(:and_asgn,
+                               s(:lvasgn, :foo),
+                               s(:send, nil, :bar))
+      end
+
+      it "works with boolean operators and blocks" do
+        _("foo &&= begin; bar; end")
+          .must_be_parsed_as s(:and_asgn,
+                               s(:lvasgn, :foo),
+                               s(:kwbegin,
+                                 s(:send, nil, :bar)))
+      end
+
+      it "works with arithmetic operators and blocks" do
+        _("foo += begin; bar; end")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:lvasgn, :foo), :+,
+                               s(:kwbegin,
+                                 s(:send, nil, :bar)))
+      end
+    end
+
+    describe "for operator assignment to an attribute" do
+      it "works with +=" do
+        _("foo.bar += baz")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:send, s(:send, nil, :foo), :bar),
+                               :+,
+                               s(:send, nil, :baz))
+      end
+
+      it "works with ||=" do
+        _("foo.bar ||= baz")
+          .must_be_parsed_as s(:or_asgn,
+                               s(:send, s(:send, nil, :foo), :bar),
+                               s(:send, nil, :baz))
+      end
+    end
+
+    describe "for operator assignment to a collection element" do
+      it "works with +=" do
+        _("foo[bar] += baz")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
+                               :+,
+                               s(:send, nil, :baz))
+      end
+
+      it "works with ||=" do
+        _("foo[bar] ||= baz")
+          .must_be_parsed_as s(:or_asgn,
+                               s(:indexasgn, s(:send, nil, :foo), s(:send, nil, :bar)),
+                               s(:send, nil, :baz))
+      end
+
+      it "handles multiple indices" do
+        _("foo[bar, baz] += qux")
+          .must_be_parsed_as s(:op_asgn,
+                               s(:indexasgn,
+                                 s(:send, nil, :foo),
+                                 s(:send, nil, :bar),
+                                 s(:send, nil, :baz)), :+,
+                               s(:send, nil, :qux))
       end
     end
   end

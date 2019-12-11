@@ -14,7 +14,7 @@ module RipperParser
         _, elems = exp.shift 2
         return s(:array) if elems.nil?
 
-        s(:array, *handle_array_elements(elems))
+        s(:array, *process(elems).sexp_body)
       end
 
       # Handle hash literals sexps. These can be either empty, or contain a
@@ -60,6 +60,11 @@ module RipperParser
       def process_at_rational(exp)
         _, val, pos = exp.shift 3
         with_position(pos, s(:rational, val.to_r))
+      end
+
+      def process_at_imaginary(exp)
+        _, val, pos = exp.shift 3
+        with_position(pos, s(:complex, val.to_c))
       end
     end
   end

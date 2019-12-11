@@ -7,19 +7,19 @@ module RipperParser
   module Unescape
     ESCAPE_SEQUENCE_REGEXP =
       /\\(
-        [0-7]{1,3}        | # octal character
-        x[0-9a-fA-F]{1,2} | # hex byte
-        u[0-9a-fA-F]{4}   | # unicode character
-        u{[0-9a-fA-F]{4}} | # unicode character
-        M-\\C-.           | # meta-ctrl
-        C-\\M-.           | # ctrl-meta
-        M-\\c.            | # meta-ctrl (shorthand)
-        c\\M-.            | # ctrl-meta (shorthand)
-        C-.               | # control (regular)
-        c.                | # control (shorthand)
-        M-.               | # meta
-        \n                | # line break
-        .                   # other single character
+        [0-7]{1,3}          | # octal character
+        x[0-9a-fA-F]{1,2}   | # hex byte
+        u[0-9a-fA-F]{4}     | # unicode character
+        u{[0-9a-fA-F]{4,6}} | # unicode character
+        M-\\C-.             | # meta-ctrl
+        C-\\M-.             | # ctrl-meta
+        M-\\c.              | # meta-ctrl (shorthand)
+        c\\M-.              | # ctrl-meta (shorthand)
+        C-.                 | # control (regular)
+        c.                  | # control (shorthand)
+        M-.                 | # meta
+        \n                  | # line break
+        .                     # other single character
       )/x.freeze
 
     SINGLE_LETTER_ESCAPES = {
@@ -104,7 +104,7 @@ module RipperParser
         SINGLE_LETTER_ESCAPES[bare]
       when /^x/
         hex_to_char(bare[1..-1])
-      when /^u{/
+      when /^u\{/
         hex_to_unicode_char(bare[2..-2])
       when /^u/
         hex_to_unicode_char(bare[1..4])

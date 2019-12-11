@@ -126,8 +126,14 @@ module RipperParser
           arglist.shift
           s(:indexasgn, arr, *arglist)
         when :field
-          _, obj, _, (_, field) = lvalue
+          _, obj, call_op, (_, field) = lvalue
           s(:send, obj, :"#{field}=", value)
+          case call_op
+          when :"&.", s(:op, :"&.") # Handle both 2.5 and 2.6 style ops
+            s(:csend, obj, :"#{field}=", value)
+          else
+            s(:send, obj, :"#{field}=", value)
+          end
         else
           create_assignment_sub_type lvalue, value
         end
