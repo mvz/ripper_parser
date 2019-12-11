@@ -144,15 +144,15 @@ module RipperParser
     end
 
     def process_BEGIN(exp)
-      _, body = exp.shift 2
+      _, body, pos = exp.shift 3
       body = map_process_list_nils body.sexp_body
-      s(:preexe, *body)
+      with_position pos, s(:preexe, *body)
     end
 
     def process_END(exp)
-      _, body = exp.shift 2
+      _, body, pos = exp.shift 3
       body = map_process_list_nils body.sexp_body
-      s(:postexe, *body)
+      with_position pos, s(:postexe, *body)
     end
 
     def process_at_label(exp)

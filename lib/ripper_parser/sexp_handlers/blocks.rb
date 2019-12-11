@@ -63,17 +63,19 @@ module RipperParser
       end
 
       def process_begin(exp)
-        _, body = exp.shift 2
+        _, body, pos = exp.shift 3
 
         body = process(body)
 
-        return s(:kwbegin) if body.empty?
+        result = if body.empty?
+                   s(:kwbegin)
+                 elsif body.sexp_type == :begin
+                   s(:kwbegin, *body.sexp_body)
+                 else
+                   s(:kwbegin, body)
+                 end
 
-        if body.sexp_type == :begin
-          s(:kwbegin, *body.sexp_body)
-        else
-          s(:kwbegin, body)
-        end
+        with_position(pos, result)
       end
 
       def process_rescue(exp)

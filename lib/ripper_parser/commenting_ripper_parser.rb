@@ -32,6 +32,10 @@ module RipperParser
       super
     end
 
+    def on_begin(*args)
+      commentize(:begin, super)
+    end
+
     def on_void_stmt
       result = super
       result << [lineno, column]
@@ -56,7 +60,7 @@ module RipperParser
     def on_kw(tok)
       result = super
       case tok
-      when "class", "def", "module"
+      when "class", "def", "module", "BEGIN", "begin", "END"
         unless @in_symbol
           @comment_stack.push [result, @comment]
           @comment = ""
@@ -279,6 +283,14 @@ module RipperParser
     def on_dyna_symbol(*args)
       @in_symbol = false
       super
+    end
+
+    def on_BEGIN(*args)
+      commentize(:BEGIN, super)
+    end
+
+    def on_END(*args)
+      commentize(:END, super)
     end
 
     def on_parse_error(*args)

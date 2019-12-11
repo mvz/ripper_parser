@@ -37,7 +37,7 @@ module RipperParser
       private
 
       def check_at_start?(block)
-        block.sexp_type != :begin
+        block.sexp_type != :kwbegin
       end
 
       def handle_conditional_loop(type, exp)
@@ -49,8 +49,10 @@ module RipperParser
       def handle_conditional_loop_mod(type, post_type, exp)
         _, cond, body = exp.shift 3
 
+        cond = process(cond)
+        body = process(body)
         type = post_type unless check_at_start?(body)
-        s(type, process(cond), process(body))
+        s(type, cond, body)
       end
     end
   end
