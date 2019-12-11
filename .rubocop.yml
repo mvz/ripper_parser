@@ -41,7 +41,7 @@ Metrics/BlockLength:
 
 # Set a lenient line length limit
 Metrics/LineLength:
-  Max: 95
+  Max: 92
 
 # Allow and/or for control flow only
 Style/AndOr:
