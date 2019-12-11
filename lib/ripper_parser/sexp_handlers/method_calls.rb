@@ -44,7 +44,7 @@ module RipperParser
       CALL_OP_MAP = {
         '.': :send,
         '::': :send,
-        '&.': :safe_call
+        '&.': :csend
       }.freeze
 
       def process_call(exp)
