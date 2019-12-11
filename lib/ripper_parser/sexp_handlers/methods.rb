@@ -76,6 +76,7 @@ module RipperParser
       }.freeze
 
       def convert_special_args(args)
+        args.line ||= args.sexp_body.first&.line
         args.map! { |item| convert_argument item }
       end
 

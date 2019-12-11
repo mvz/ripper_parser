@@ -713,7 +713,7 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:begin,
                                s(:block,
                                  s(:lambda).line(1),
-                                 s(:args, s(:arg, :foo)).line(1),
+                                 s(:args, s(:arg, :foo).line(1)).line(1),
                                  nil).line(1),
                                s(:send, nil, :bar).line(2)).line(1),
                              with_line_numbers: true
