@@ -241,6 +241,12 @@ describe RipperParser::Parser do
         _("1..")
           .must_be_parsed_as s(:irange, s(:int, 1), nil)
       end
+
+      it "handles beginless range literals" do
+        skip "This Ruby version does not support beginless ranges" if RUBY_VERSION < "2.7.0"
+        _("..1")
+          .must_be_parsed_as s(:irange, nil, s(:int, 1))
+      end
     end
 
     describe "for the exclusive range operator" do
@@ -291,6 +297,18 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:erange,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
+      end
+
+      it "handles endless range literals" do
+        skip "This Ruby version does not support endless ranges" if RUBY_VERSION < "2.6.0"
+        _("1...")
+          .must_be_parsed_as s(:erange, s(:int, 1), nil)
+      end
+
+      it "handles beginless range literals" do
+        skip "This Ruby version does not support beginless ranges" if RUBY_VERSION < "2.7.0"
+        _("...1")
+          .must_be_parsed_as s(:erange, nil, s(:int, 1))
       end
     end
 
