@@ -8,7 +8,7 @@ AllCops:
     - 'test/samples/*'
   TargetRubyVersion: 2.4
 
-# Set a lenient line length limit
+# Be lenient with line length
 Layout/LineLength:
   Max: 92
 
@@ -30,7 +30,7 @@ Layout/MultilineOperationIndentation:
 Layout/SpaceBeforeBlockBraces:
   EnforcedStyleForEmptyBraces: space
 
-# This cop gives bad advice
+# Assume the programmer knows how bracketed block syntax works
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
@@ -51,9 +51,24 @@ Style/AndOr:
 Style/GuardClause:
   MinBodyLength: 2
 
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
 # This cop gives confusing results for objects that may not be numbers.
 Style/NumericPredicate:
   Enabled: false
+
+# Use older RuboCop default
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%W': ()
+    '%w': ()
 
 # Allow explicit return with multiple return values
 Style/RedundantReturn:
