@@ -6,7 +6,7 @@ require:
 AllCops:
   Exclude:
     - 'test/samples/*'
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
 
 # Be lenient with line length
 Layout/LineLength:
