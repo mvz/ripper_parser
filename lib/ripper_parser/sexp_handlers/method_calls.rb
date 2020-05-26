@@ -30,8 +30,9 @@ module RipperParser
 
       def process_arg_paren(exp)
         _, args = exp.shift 2
-        args = s() if args.nil?
-        args.unshift :arglist unless args.first.is_a? Symbol
+        return s(:arglist) if args.nil?
+        return s(:args, s(:forwarded_args)) if args == s(:args_forward)
+
         process(args)
       end
 

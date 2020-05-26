@@ -76,30 +76,29 @@ module RipperParser
       }.freeze
 
       def convert_special_args(args)
+        return s(:forward_args) if args.sexp_body.first == s(:args_forward)
+
         args.line ||= args.sexp_body.first&.line
-        args.map! { |item| convert_argument item }
+        args.sexp_body = args.sexp_body.map { |item| convert_argument item }
+        args
       end
 
       def convert_argument(item)
-        if item.is_a? Symbol
-          item
-        else
-          case item.sexp_type
-          when :lvar
+        case item.sexp_type
+        when :lvar
+          s(:arg, item[1])
+        when :mlhs
+          s(:mlhs, *item.sexp_body.map { |it| convert_argument it })
+        when :lvasgn
+          if item.length == 2
             s(:arg, item[1])
-          when :mlhs
-            s(:mlhs, *convert_special_args(item.sexp_body))
-          when :lvasgn
-            if item.length == 2
-              s(:arg, item[1])
-            else
-              s(:optarg, *item.sexp_body)
-            end
-          when *SPECIAL_ARG_MARKER.keys
-            convert_marked_argument item
           else
-            item
+            s(:optarg, *item.sexp_body)
           end
+        when *SPECIAL_ARG_MARKER.keys
+          convert_marked_argument item
+        else
+          item
         end
       end
 
