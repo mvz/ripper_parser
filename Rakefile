@@ -3,7 +3,7 @@
 require "bundler/gem_tasks"
 require "rake/clean"
 require "rake/testtask"
-require 'rake/manifest/task'
+require "rake/manifest/task"
 
 namespace :test do
   Rake::TestTask.new(:unit) do |t|
@@ -26,9 +26,9 @@ desc "Alias to test:run"
 task test: "test:run"
 
 Rake::Manifest::Task.new do |t|
-  t.patterns = ['lib/**/*', 'CHANGELOG.md', 'README.md']
+  t.patterns = ["lib/**/*", "CHANGELOG.md", "README.md"]
 end
 
-task build: 'manifest:check'
+task build: "manifest:check"
 
 task default: :test
