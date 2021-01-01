@@ -748,7 +748,6 @@ describe RipperParser::Parser do
           _("<<~FOO\n  foo\n  \#{bar}\nFOO")
             .must_be_parsed_as s(:dstr,
                                  s(:str, "foo\n"),
-                                 s(:str, ""),
                                  s(:begin,
                                    s(:send, nil, :bar)),
                                  s(:str, "\n"))
