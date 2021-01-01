@@ -166,7 +166,7 @@ module RipperParser
             chunks = items.chunk { |it| it[1].empty? }
             chunks.flat_map do |empty, content_items|
               if empty
-                content_items
+                []
               else
                 head = content_items.first
                 contents = content_items.map { |it| it[1] }.join
