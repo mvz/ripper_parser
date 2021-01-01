@@ -57,7 +57,7 @@ RipperParser is based on RipperRubyParser, started in 2012.
 
 (The MIT License)
 
-Copyright (c) 2012, 2014-2018 Matijs van Zuijlen
+Copyright (c) 2012, 2014-2021 Matijs van Zuijlen
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
