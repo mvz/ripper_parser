@@ -17,11 +17,7 @@ describe RipperParser::CommentingRipperParser do
     # Ruby 2.6.3 and up, and backported to 2.5.6 and 2.5.7.
     # See https://bugs.ruby-lang.org/issues/15670
     let(:dsym_string_type) do
-      if RUBY_VERSION < "2.5.6"
-        :xstring
-      elsif RUBY_VERSION < "2.6.0"
-        :string_content
-      elsif RUBY_VERSION < "2.6.3"
+      if RUBY_VERSION < "2.5.6" || RUBY_VERSION >= "2.6.0" && RUBY_VERSION < "2.6.3"
         :xstring
       else
         :string_content
