@@ -979,7 +979,7 @@ describe RipperParser::Parser do
 
       it "works with single quoted dsyms with escaped single quotes" do
         _(":'foo\\'bar'")
-          .must_be_parsed_as s(:sym, :'foo\'bar')
+          .must_be_parsed_as s(:sym, :"foo'bar")
       end
 
       it "works with single quoted dsyms with multiple lines" do

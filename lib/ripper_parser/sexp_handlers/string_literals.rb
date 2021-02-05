@@ -204,7 +204,7 @@ module RipperParser
       end
 
       def handle_symbol_content(node)
-        if node.sexp_type == :'@tstring_content'
+        if node.sexp_type == :@tstring_content
           processed = process(node)
           symbol = processed[1].to_sym
           with_line_number(processed.line, s(:sym, symbol))
