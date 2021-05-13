@@ -92,7 +92,7 @@ module RipperParser
 
     def unescape_regexp(string)
       string.gsub(/\\\\/) do
-        '\\\\'
+        "\\\\"
       end
     end
 
