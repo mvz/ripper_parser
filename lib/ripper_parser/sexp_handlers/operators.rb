@@ -5,8 +5,8 @@ module RipperParser
     # Sexp handlers for operators
     module Operators
       BINARY_OPERATOR_MAP = {
-        '&&': :and,
-        '||': :or,
+        "&&": :and,
+        "||": :or,
         and: :and,
         or: :or
       }.freeze

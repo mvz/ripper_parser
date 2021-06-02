@@ -95,8 +95,8 @@ module RipperParser
       end
 
       OPERATOR_ASSIGNMENT_MAP = {
-        '||': :or_asgn,
-        '&&': :and_asgn
+        "||": :or_asgn,
+        "&&": :and_asgn
       }.freeze
 
       def create_operator_assignment_sub_type(lvalue, value, operator)
