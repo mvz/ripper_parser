@@ -219,8 +219,18 @@ module RipperParser
         [process(block)]
       end
 
+      LVAR_MATCHER = Sexp::Matcher.new(:lvar, Sexp._)
+      NUMBERED_PARAMS = (1..9).map { |it| :"_#{it}" }.freeze
+
       def make_iter_block(call, args, stmt)
+        if args.nil? && RUBY_VERSION >= "2.7.0"
+          lvar_names = (LVAR_MATCHER / stmt).map { |it| it[1] }
+          count = (NUMBERED_PARAMS & lvar_names).length
+          return s(:numblock, call, count, stmt).line(call.line) if count > 0
+        end
+
         args ||= s(:args)
+
         stmt = nil if stmt.empty?
 
         s(:block, call, args, stmt).line(call.line)

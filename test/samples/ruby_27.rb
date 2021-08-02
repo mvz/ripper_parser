@@ -32,3 +32,6 @@ case foo
   in { bar: [baz, qux] }
   quz = bar(baz) + baz
 end
+
+# Numbered parameters (experimental)
+[1, 2, 3].each { foo _1 }
