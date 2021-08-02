@@ -56,7 +56,9 @@ module RipperParser
         when 1
           child = args.sexp_body.first
           case child.sexp_type
-          when :arg, :mlhs
+          when :arg
+            args.sexp_body = [s(:procarg0, child)]
+          when :mlhs
             child.sexp_type = :procarg0
           end
         when 2

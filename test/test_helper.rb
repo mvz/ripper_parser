@@ -13,10 +13,11 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 require "ripper_parser"
 require "parser/current"
-Parser::Builders::Default.emit_lambda   = true
-Parser::Builders::Default.emit_procarg0 = true
-Parser::Builders::Default.emit_encoding = true
-Parser::Builders::Default.emit_index    = true
+Parser::Builders::Default.emit_lambda              = true
+Parser::Builders::Default.emit_procarg0            = true
+Parser::Builders::Default.emit_encoding            = true
+Parser::Builders::Default.emit_index               = true
+Parser::Builders::Default.emit_arg_inside_procarg0 = true
 
 module MiniTest
   class Spec
