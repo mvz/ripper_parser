@@ -65,7 +65,6 @@ module RipperParser
         elsif falsepart.first.is_a? Symbol
           falsepart = s(falsepart)
         end
-        falsepart = [nil] if falsepart.empty?
 
         values = handle_argument_list values
 
