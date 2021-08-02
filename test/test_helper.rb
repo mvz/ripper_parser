@@ -20,6 +20,7 @@ Parser::Builders::Default.emit_index               = true
 Parser::Builders::Default.emit_arg_inside_procarg0 = true
 Parser::Builders::Default.emit_forward_arg         = true
 Parser::Builders::Default.emit_kwargs              = true
+Parser::Builders::Default.emit_match_pattern       = true
 
 module MiniTest
   class Spec
