@@ -192,31 +192,18 @@ describe RipperParser::Parser do
         end
 
         it "works with a method call with argument without brackets" do
-          expected = if RUBY_VERSION < "2.4.0"
+          expected = s(:lvasgn, :foo,
                        s(:rescue,
-                         s(:lvasgn, :foo, s(:send, nil, :bar, s(:send, nil, :baz))),
-                         s(:resbody, nil, nil, s(:send, nil, :qux)))
-                     else
-                       s(:lvasgn, :foo,
-                         s(:rescue,
-                           s(:send, nil, :bar, s(:send, nil, :baz)),
-                           s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
-                     end
+                         s(:send, nil, :bar, s(:send, nil, :baz)),
+                         s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
           _("foo = bar baz rescue qux").must_be_parsed_as expected
         end
 
         it "works with a class method call with argument without brackets" do
-          expected = if RUBY_VERSION < "2.4.0"
+          expected = s(:lvasgn, :foo,
                        s(:rescue,
-                         s(:lvasgn, :foo,
-                           s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux))),
-                         s(:resbody, nil, nil, s(:send, nil, :quuz)))
-                     else
-                       s(:lvasgn, :foo,
-                         s(:rescue,
-                           s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
-                           s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
-                     end
+                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
+                         s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
           _("foo = Bar.baz qux rescue quuz")
             .must_be_parsed_as expected
         end
