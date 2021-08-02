@@ -103,6 +103,15 @@ module RipperParser
         s(:array_pattern, *elements)
       end
 
+      def process_hshptn(exp)
+        _, _, body, = exp.shift 4
+
+        elements = body.map do |key, value|
+          s(:pair, process(key), handle_pattern(value))
+        end
+        s(:hash_pattern, *elements)
+      end
+
       private
 
       def handle_condition(cond)

@@ -27,3 +27,8 @@ case foo
   in blub
   p blub
 end
+
+case foo
+  in { bar: [baz, qux] }
+  quz = bar(baz) + baz
+end

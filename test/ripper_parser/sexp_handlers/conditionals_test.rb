@@ -594,6 +594,19 @@ describe RipperParser::Parser do
                                    s(:lvar, :bar),
                                    s(:lvar, :baz))), nil)
       end
+
+      it "works with an in clause for hash matching" do
+        _("case foo; in { bar: baz }; qux baz; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:hash_pattern,
+                                   s(:pair,
+                                     s(:sym, :bar),
+                                     s(:match_var, :baz))), nil,
+                                 s(:send, nil, :qux,
+                                   s(:lvar, :baz))), nil)
+      end
     end
   end
 end
