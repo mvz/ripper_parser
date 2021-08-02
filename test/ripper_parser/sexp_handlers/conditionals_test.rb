@@ -430,7 +430,7 @@ describe RipperParser::Parser do
       end
     end
 
-    describe "for case block" do
+    describe "for case block with when clauses" do
       it "works with a single when clause" do
         _("case foo; when bar; baz; end")
           .must_be_parsed_as s(:case,
@@ -550,6 +550,35 @@ describe RipperParser::Parser do
                                s(:kwbegin,
                                  s(:send, nil, :qux),
                                  s(:send, nil, :quuz)))
+      end
+    end
+
+    describe "for a case block with in clauses" do
+      before do
+        skip "This Ruby version does not support pattern matching" if RUBY_VERSION < "2.7.0"
+      end
+
+      it "works with a single in clause" do
+        _("case foo; in bar; qux bar; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:match_var, :bar), nil,
+                                 s(:send, nil, :qux,
+                                   s(:lvar, :bar))), nil)
+      end
+
+      it "works with an in clause for array matching" do
+        _("case foo; in [bar, baz]; qux bar, baz; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:array_pattern,
+                                   s(:match_var, :bar),
+                                   s(:match_var, :baz)), nil,
+                                 s(:send, nil, :qux,
+                                   s(:lvar, :bar),
+                                   s(:lvar, :baz))), nil)
       end
     end
   end

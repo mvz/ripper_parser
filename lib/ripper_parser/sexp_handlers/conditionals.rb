@@ -51,7 +51,11 @@ module RipperParser
 
       def process_case(exp)
         _, expr, clauses = exp.shift 3
-        s(:case, process(expr), *process(clauses))
+        if clauses.sexp_type == :in
+          s(:case_match, process(expr), *process(clauses))
+        else
+          s(:case, process(expr), *process(clauses))
+        end
       end
 
       def process_when(exp)
@@ -76,9 +80,24 @@ module RipperParser
           *falsepart)
       end
 
+      def process_in(exp)
+        _, pattern, truepart, falsepart = exp.shift 4
+
+        pattern = handle_pattern(pattern)
+        s(s(:in_pattern, pattern, nil, process(truepart)),
+          process(falsepart))
+      end
+
       def process_else(exp)
         _, body = exp.shift 2
         process(body)
+      end
+
+      def process_aryptn(exp)
+        _, _, body, = exp.shift 5
+
+        elements = body.map { |it| handle_pattern(it) }
+        s(:array_pattern, *elements)
       end
 
       private
@@ -98,6 +117,12 @@ module RipperParser
 
       def handle_consequent(exp)
         unwrap_nil process(exp) if exp
+      end
+
+      def handle_pattern(exp)
+        pattern = process(exp)
+        pattern.sexp_type = :match_var if pattern.sexp_type == :lvar
+        pattern
       end
     end
   end

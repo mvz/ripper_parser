@@ -12,6 +12,11 @@ end
 
 # Pattern matching (experimental)
 case foo
+  in blub
+  p blub
+end
+
+case foo
   in [bar, baz]
   quz = bar + baz
 end
