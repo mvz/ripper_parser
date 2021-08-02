@@ -20,3 +20,10 @@ case foo
   in [bar, baz]
   quz = bar + baz
 end
+
+case foo
+  in [bar, baz]
+  quz = bar + baz
+  in blub
+  p blub
+end

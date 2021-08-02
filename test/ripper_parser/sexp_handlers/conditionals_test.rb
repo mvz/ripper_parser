@@ -568,6 +568,20 @@ describe RipperParser::Parser do
                                    s(:lvar, :bar))), nil)
       end
 
+      it "works with a multiple in clauses" do
+        _("case foo; in [\"a\"]; bar; in qux; quuz qux; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:array_pattern,
+                                   s(:str, "a")), nil,
+                                 s(:send, nil, :bar)),
+                               s(:in_pattern,
+                                 s(:match_var, :qux), nil,
+                                 s(:send, nil, :quuz,
+                                   s(:lvar, :qux))), nil)
+      end
+
       it "works with an in clause for array matching" do
         _("case foo; in [bar, baz]; qux bar, baz; end")
           .must_be_parsed_as s(:case_match,

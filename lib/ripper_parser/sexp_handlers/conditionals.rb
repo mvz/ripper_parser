@@ -83,9 +83,12 @@ module RipperParser
       def process_in(exp)
         _, pattern, truepart, falsepart = exp.shift 4
 
+        falsepart = process(falsepart)
+        falsepart = [nil] if falsepart.nil?
         pattern = handle_pattern(pattern)
+
         s(s(:in_pattern, pattern, nil, process(truepart)),
-          process(falsepart))
+          *falsepart)
       end
 
       def process_else(exp)
