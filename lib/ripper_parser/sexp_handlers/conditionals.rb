@@ -49,12 +49,26 @@ module RipperParser
           process(truepart))
       end
 
+      # NOTE: Ripper generates a :case node even for one-line pattern matching,
+      # which doesn't use the case keyword at all.
       def process_case(exp)
         _, expr, clauses = exp.shift 3
+        expr = process(expr)
+
         if clauses.sexp_type == :in
-          s(:case_match, process(expr), *process(clauses))
+          first, *rest = process(clauses)
+          _, pattern, _, truepart = first
+          if truepart.nil?
+            if RUBY_VERSION < "3.0.0"
+              s(:match_pattern, expr, pattern)
+            else
+              s(:match_pattern_p, expr, pattern)
+            end
+          else
+            s(:case_match, expr, first, *rest)
+          end
         else
-          s(:case, process(expr), *process(clauses))
+          s(:case, expr, *process(clauses))
         end
       end
 
