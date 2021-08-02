@@ -192,12 +192,6 @@ module RipperParser
           else
             s(:sym, body.first.to_sym)
           end
-        when :xstr
-          if body.length == 1 && body.first.sexp_type == :str
-            s(:sym, body.first[1].to_sym)
-          else
-            s(:dsym, *body)
-          end
         when :dstr
           s(:dsym, *body)
         end
