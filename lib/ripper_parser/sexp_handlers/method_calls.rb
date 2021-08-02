@@ -37,7 +37,7 @@ module RipperParser
       # Handle implied hashes, such as at the end of argument lists.
       def process_bare_assoc_hash(exp)
         _, elems = exp.shift 2
-        s(:hash, *map_process_list(elems))
+        s(:kwargs, *map_process_list(elems))
       end
 
       CALL_OP_MAP = {

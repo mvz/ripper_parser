@@ -67,7 +67,7 @@ describe RipperParser::Parser do
                                  nil,
                                  :foo,
                                  s(:send, nil, :bar),
-                                 s(:hash,
+                                 s(:kwargs,
                                    s(:pair,
                                      s(:sym, :baz), s(:send, nil, :qux))))
         end
@@ -78,7 +78,7 @@ describe RipperParser::Parser do
                                  nil,
                                  :foo,
                                  s(:send, nil, :bar),
-                                 s(:hash,
+                                 s(:kwargs,
                                    s(:pair, s(:sym, :baz), s(:send, nil, :qux)),
                                    s(:pair, s(:sym, :quux), s(:send, nil, :quuz))))
         end
@@ -89,7 +89,7 @@ describe RipperParser::Parser do
                                  nil,
                                  :foo,
                                  s(:send, nil, :bar),
-                                 s(:hash,
+                                 s(:kwargs,
                                    s(:kwsplat, s(:send, nil, :baz))))
         end
 
@@ -99,7 +99,7 @@ describe RipperParser::Parser do
                                  nil,
                                  :foo,
                                  s(:send, nil, :bar),
-                                 s(:hash,
+                                 s(:kwargs,
                                    s(:pair, s(:sym, :baz), s(:send, nil, :qux)),
                                    s(:kwsplat, s(:send, nil, :quuz))))
         end
