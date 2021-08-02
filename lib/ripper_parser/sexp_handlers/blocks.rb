@@ -55,7 +55,10 @@ module RipperParser
         case args.sexp_body.length
         when 1
           child = args.sexp_body.first
-          child.sexp_type = :procarg0 if child.sexp_type == :arg
+          case child.sexp_type
+          when :arg, :mlhs
+            child.sexp_type = :procarg0
+          end
         when 2
           args.pop if args.sexp_body.last.sexp_type == :excessed_comma
         end

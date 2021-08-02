@@ -279,5 +279,7 @@ end
 [:`, :|, :*, :&, :%, :'^', :-@, :+@, :'~@']
 
 # Blocks
+foo do |bar| end
 foo do |bar, | end
 foo do |bar, **| end
+foo do |(bar, baz)| end
