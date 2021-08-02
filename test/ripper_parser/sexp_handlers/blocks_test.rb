@@ -214,6 +214,33 @@ describe RipperParser::Parser do
                                s(:send, nil, :qux,
                                  s(:lvar, :bar)))
       end
+
+      it "works with numbered parameters" do
+        if RUBY_VERSION < "2.7.0"
+          skip "This Ruby version does not support numbered parameters"
+        end
+        _("foo { bar _1, _2 }")
+          .must_be_parsed_as s(:numblock,
+                               s(:send, nil, :foo), 2,
+                               s(:send, nil, :bar,
+                                 s(:lvar, :_1),
+                                 s(:lvar, :_2)))
+      end
+
+      it "parser code that looks numbered parameters correctly on older rubies" do
+        if RUBY_VERSION > "2.7.0"
+          skip "This Ruby version interprets this code as numbered parameters"
+        end
+        _("_1 = 1; foo { bar _1, _2 }")
+          .must_be_parsed_as s(:begin,
+                               s(:lvasgn, :_1, s(:int, 1)),
+                               s(:block,
+                                 s(:send, nil, :foo),
+                                 s(:args),
+                                 s(:send, nil, :bar,
+                                   s(:lvar, :_1),
+                                   s(:send, nil, :_2))))
+      end
     end
 
     describe "for begin" do
