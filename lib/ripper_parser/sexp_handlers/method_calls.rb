@@ -7,10 +7,8 @@ module RipperParser
       def process_method_add_arg(exp)
         _, call, parens = exp.shift 3
         call = process(call)
-        unless parens.empty?
-          parens = process(parens)
-          parens.shift
-        end
+        parens = process(parens)
+        parens.shift
         parens.each do |arg|
           call << arg
         end
