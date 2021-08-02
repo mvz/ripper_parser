@@ -4,3 +4,8 @@
 ..1
 foo = 2; # Extra ; needed here: https://github.com/whitequark/parser/issues/814
 ..foo
+
+# Argument forwarding
+def bar(...)
+  qux(...)
+end
