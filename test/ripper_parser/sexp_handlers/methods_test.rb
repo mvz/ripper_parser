@@ -235,7 +235,7 @@ describe RipperParser::Parser do
         end
         _("def foo(...); bar(...); end")
           .must_be_parsed_as s(:def, :foo,
-                               s(:forward_args),
+                               s(:args, s(:forward_arg)),
                                s(:send, nil, :bar,
                                  s(:forwarded_args)))
       end
