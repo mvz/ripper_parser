@@ -55,7 +55,7 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:block,
                                s(:send, nil, :foo),
                                s(:args,
-                                 s(:mlhs,
+                                 s(:procarg0,
                                    s(:arg, :bar),
                                    s(:arg, :baz))), nil)
       end
@@ -65,7 +65,7 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:block,
                                s(:send, nil, :foo),
                                s(:args,
-                                 s(:mlhs,
+                                 s(:procarg0,
                                    s(:arg, :bar),
                                    s(:restarg, :baz))), nil)
       end
