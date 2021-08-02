@@ -10,7 +10,7 @@ module RipperParser
         _, args, stmt = block
         call = process(call)
         stmts = stmt.first || s()
-        make_iter call, args, stmts
+        make_iter_block call, args, stmts
       end
 
       def process_brace_block(exp)
@@ -158,7 +158,7 @@ module RipperParser
         call = s(:lambda)
         call.line = line
 
-        make_iter call, args, safe_unwrap_void_stmt(statements)
+        make_iter_lambda call, args, safe_unwrap_void_stmt(statements)
       end
 
       private
@@ -219,11 +219,17 @@ module RipperParser
         [process(block)]
       end
 
-      def make_iter(call, args, stmt)
+      def make_iter_block(call, args, stmt)
         args ||= s(:args)
-        line = call.line || args.line
         stmt = nil if stmt.empty?
-        s(:block, call, args, stmt).line(line)
+
+        s(:block, call, args, stmt).line(call.line)
+      end
+
+      def make_iter_lambda(call, args, stmt)
+        stmt = nil if stmt.empty?
+
+        s(:block, call, args, stmt).line(call.line)
       end
 
       def wrap_in_begin(statements)
