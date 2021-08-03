@@ -159,6 +159,11 @@ module RipperParser
       with_position pos, s(:postexe, *body)
     end
 
+    def process_defined(exp)
+      _, arg = exp.shift 2
+      s(:defined?, process(arg))
+    end
+
     def process_at_label(exp)
       _, val, pos = exp.shift 3
       with_position(pos, s(:sym, val.chop.to_sym))

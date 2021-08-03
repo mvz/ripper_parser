@@ -283,3 +283,8 @@ foo do |bar| end
 foo do |bar, | end
 foo do |bar, **| end
 foo do |(bar, baz)| end
+
+# defined? keyword
+if defined? foo
+  bar
+end
