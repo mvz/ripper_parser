@@ -218,6 +218,16 @@ describe RipperParser::Parser do
                                s(:str, "bar"))
       end
 
+      it "replaces carriage return/line feed combinations with line feeds" do
+        _("\"bar\r\n\"")
+          .must_be_parsed_as s(:str, "bar\n")
+      end
+
+      it "keeps carriage returns without line feeds" do
+        _("\"bar\rbaz\r\n\"")
+          .must_be_parsed_as s(:str, "bar\rbaz\n")
+      end
+
       describe "with double-quoted strings with escape sequences" do
         it "works for strings with escape sequences" do
           _('"\\n"')
@@ -673,6 +683,16 @@ describe RipperParser::Parser do
         it 'converts \r to carriage returns' do
           _("<<FOO\nbar\\rbaz\\r\nFOO")
             .must_be_parsed_as s(:str, "bar\rbaz\r\n")
+        end
+
+        it "replaces carriage return/line feed combinations with line feeds" do
+          _("<<FOO\nbar\r\nFOO")
+            .must_be_parsed_as s(:str, "bar\n")
+        end
+
+        it "keeps carriage returns without line feeds" do
+          _("<<FOO\nbar\rbaz\r\nFOO")
+            .must_be_parsed_as s(:str, "bar\rbaz\n")
         end
 
         it "does not unescape with single quoted version" do
