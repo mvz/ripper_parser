@@ -224,6 +224,7 @@ module RipperParser
       end
 
       def perform_unescapes(content, delim)
+        content.gsub!(/\r\n/, "\n")
         case delim
         when NON_INTERPOLATING_HEREDOC
           content
