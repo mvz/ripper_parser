@@ -114,8 +114,18 @@ bar]
 
 %q[foo\[bar\]baz]
 
+%q[foo\{{\((\<<bar\]baz]
+
 %w[food\
 bar baz]
+
+%w[foo\'bar]
+
+%w[foo [bar] baz]
+
+%w[foo \[bar\] baz]
+
+%w[foo \{{ \(( \<< bar\] baz]
 
 %i[fooe\
 bar baz]
