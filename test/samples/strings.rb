@@ -108,6 +108,12 @@ bar baz]
 %q[fooc\
 bar]
 
+%q[foo\'bar]
+
+%q[foo[bar]baz]
+
+%q[foo\[bar\]baz]
+
 %w[food\
 bar baz]
 

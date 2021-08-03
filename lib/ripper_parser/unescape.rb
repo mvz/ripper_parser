@@ -39,12 +39,22 @@ module RipperParser
 
     LINE_CONTINUATION_REGEXP = /\\(\n|.)/.freeze
 
-    def simple_unescape(string)
+    DELIMITER_PAIRS = {
+      "(" => "()",
+      "<" => "<>",
+      "[" => "[]",
+      "{" => "{}"
+    }.freeze
+
+    def simple_unescape(string, delimiter)
+      delimiter = delimiter[-1]
+      delimiters = DELIMITER_PAIRS.fetch(delimiter, delimiter)
+      delimiters = delimiters.each_char.map { |it| Regexp.escape it }.join(" | ")
       string.gsub(/
                   \\ # a backslash
                   (  # followed by a
-                   '   | # single quote or
-                   \\    # backslash
+                    #{delimiters} | # delimiter or
+                    \\              # backslash
                   )/x) do
                     Regexp.last_match[1]
                   end
