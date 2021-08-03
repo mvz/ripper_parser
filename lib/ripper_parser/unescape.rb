@@ -39,25 +39,34 @@ module RipperParser
 
     LINE_CONTINUATION_REGEXP = /\\(\n|.)/.freeze
 
-    def simple_unescape(string)
+    DELIMITER_PAIRS = {
+      "(" => "()",
+      "<" => "<>",
+      "[" => "[]",
+      "{" => "{}"
+    }.freeze
+
+    def simple_unescape(string, delimiter)
+      delimiters = delimiter_regexp_pattern(delimiter)
       string.gsub(/
                   \\ # a backslash
                   (  # followed by a
-                   '   | # single quote or
-                   \\    # backslash
+                    #{delimiters} | # delimiter or
+                    \\              # backslash
                   )/x) do
                     Regexp.last_match[1]
                   end
     end
 
-    def simple_unescape_wordlist_word(string)
+    def simple_unescape_wordlist_word(string, delimiter)
+      delimiters = delimiter_regexp_pattern(delimiter)
       string.gsub(/
                   \\ # a backslash
                   (  # followed by a
-                    '   | # single quote or
-                    \\  | # backslash or
-                    [ ] | # space or
-                    \n    # newline
+                    #{delimiters} | # delimiter or
+                    \\            | # backslash or
+                    [ ]           | # space or
+                    \n              # newline
                   )
                   /x) do
                     Regexp.last_match[1]
@@ -135,6 +144,12 @@ module RipperParser
 
     def meta(val)
       val | 0b1000_0000
+    end
+
+    def delimiter_regexp_pattern(delimiter)
+      delimiter = delimiter[-1]
+      delimiters = DELIMITER_PAIRS.fetch(delimiter, delimiter)
+      delimiters.each_char.map { |it| Regexp.escape it }.join(" | ")
     end
   end
 end

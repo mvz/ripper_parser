@@ -231,11 +231,11 @@ module RipperParser
         when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
           fix_encoding unescape(content)
         when *NON_INTERPOLATING_STRINGS
-          fix_encoding simple_unescape(content)
+          fix_encoding simple_unescape(content, delim)
         when *REGEXP_LITERALS
           fix_encoding unescape_regexp(content)
         when NON_INTERPOLATING_WORD_LIST
-          fix_encoding simple_unescape_wordlist_word(content)
+          fix_encoding simple_unescape_wordlist_word(content, delim)
         end
       end
     end
