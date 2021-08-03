@@ -608,5 +608,24 @@ describe RipperParser::Parser do
                                    s(:lvar, :baz))), nil)
       end
     end
+
+    describe "for one-line pattern matching" do
+      before do
+        skip "This Ruby version does not support pattern matching" if RUBY_VERSION < "2.7.0"
+      end
+
+      it "works for the simple case" do
+        expected = if RUBY_VERSION < "3.0.0"
+                     s(:match_pattern,
+                       s(:int, 1),
+                       s(:match_var, :foo))
+                   else
+                     s(:match_pattern_p,
+                       s(:int, 1),
+                       s(:match_var, :foo))
+                   end
+        _("1 in foo").must_be_parsed_as expected
+      end
+    end
   end
 end
