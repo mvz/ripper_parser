@@ -188,6 +188,13 @@ describe RipperParser::Parser do
       end
     end
 
+    describe "for the defined? keyword" do
+      it "converts to a sexp of type :defined?" do
+        _("defined? foo")
+          .must_be_parsed_as s(:defined?, s(:send, nil, :foo))
+      end
+    end
+
     describe "for constant lookups" do
       it "works when explicitely starting from the root namespace" do
         _("::Foo")
