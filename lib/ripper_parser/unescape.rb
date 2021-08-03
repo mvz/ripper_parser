@@ -91,9 +91,9 @@ module RipperParser
       end
     end
 
-    def fix_encoding(string)
-      unless string.encoding == Encoding::UTF_8
-        dup = string.dup.force_encoding Encoding::UTF_8
+    def fix_encoding(string, encoding)
+      unless string.encoding == encoding
+        dup = string.dup.force_encoding encoding
         return dup if dup.valid_encoding?
       end
       string

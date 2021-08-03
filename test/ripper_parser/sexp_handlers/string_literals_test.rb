@@ -228,6 +228,11 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:str, "bar\rbaz\n")
       end
 
+      it "honors encoding comments" do
+        _("# encoding: ascii-8bit\n\"\\0\"")
+          .must_be_parsed_as s(:str, (+"\x00").force_encoding("ASCII-8BIT"))
+      end
+
       describe "with double-quoted strings with escape sequences" do
         it "works for strings with escape sequences" do
           _('"\\n"')
