@@ -235,7 +235,7 @@ module RipperParser
         when *REGEXP_LITERALS
           fix_encoding unescape_regexp(content)
         when NON_INTERPOLATING_WORD_LIST
-          fix_encoding simple_unescape_wordlist_word(content)
+          fix_encoding simple_unescape_wordlist_word(content, delim)
         end
       end
     end

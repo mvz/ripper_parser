@@ -835,6 +835,41 @@ describe RipperParser::Parser do
         _('%w(foo bar\ baz)')
           .must_be_parsed_as s(:array, s(:str, "foo"), s(:str, "bar baz"))
       end
+
+      it "handles escaped delimiters for brackets" do
+        _("%w[foo \\[bar\\] baz]")
+          .must_be_parsed_as s(:array, s(:str, "foo"), s(:str, "[bar]"), s(:str, "baz"))
+      end
+
+      it "handles escaped delimiters for parentheses" do
+        _("%w(foo\\(bar\\)baz)")
+          .must_be_parsed_as s(:array, s(:str, "foo(bar)baz"))
+      end
+
+      it "handles escaped delimiters for braces" do
+        _("%w{foo\\{bar\\}baz}")
+          .must_be_parsed_as s(:array, s(:str, "foo{bar}baz"))
+      end
+
+      it "handles escaped delimiters for angle brackets" do
+        _("%w<foo\\<bar\\>baz>")
+          .must_be_parsed_as s(:array, s(:str, "foo<bar>baz"))
+      end
+
+      it "handles escaped delimiters for slashes" do
+        _("%w/foo\\/bar]baz/")
+          .must_be_parsed_as s(:array, s(:str, "foo/bar]baz"))
+      end
+
+      it "does not unescape unused delimiters" do
+        _("%w[foo\\{\\}\\<\\>\\(\\)baz]")
+          .must_be_parsed_as s(:array, s(:str, "foo\\{\\}\\<\\>\\(\\)baz"))
+      end
+
+      it "does not unescape escape sequences for single quotes" do
+        _("%w[foo\\'bar]")
+          .must_be_parsed_as s(:array, s(:str, "foo\\'bar"))
+      end
     end
 
     describe "for word list literals with %W delimiter" do
