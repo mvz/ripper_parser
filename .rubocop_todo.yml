@@ -24,7 +24,7 @@ Metrics/MethodLength:
 
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ModuleLength:
-  Max: 201
+  Max: 202
 
 # Configuration parameters: IgnoredMethods.
 Metrics/PerceivedComplexity:
