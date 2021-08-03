@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - 'test/samples/*'
     - 'vendor/bundle/**/*'
+    - 'tmp/**/*'
   NewCops: enable
   TargetRubyVersion: 2.5
 
