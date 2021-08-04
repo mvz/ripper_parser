@@ -91,14 +91,6 @@ module RipperParser
       end
     end
 
-    def fix_encoding(string, encoding)
-      unless string.encoding == encoding
-        dup = string.dup.force_encoding encoding
-        return dup if dup.valid_encoding?
-      end
-      string
-    end
-
     def unescape_regexp(string)
       string.gsub(/\\\\/) do
         "\\\\"
@@ -124,7 +116,7 @@ module RipperParser
       when /^(M-\\C-|C-\\M-|M-\\c|c\\M-).$/
         meta(control(bare[-1].ord)).chr
       when /^[0-7]+/
-        bare.to_i(8).chr
+        bare.to_i(8).chr.force_encoding(bare.encoding)
       else
         bare
       end
@@ -135,7 +127,7 @@ module RipperParser
     end
 
     def hex_to_char(str)
-      str.to_i(16).chr
+      str.to_i(16).chr.force_encoding(str.encoding)
     end
 
     def control(val)
