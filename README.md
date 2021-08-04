@@ -20,7 +20,6 @@ advanced location information and rewriting, use Parser!
 * Produces Sexp objects with the same structure as Parser's AST::Node results
 * Does not produce compatible location data
 * Does not produce compatible comment data
-* Accepts some non-UTF8 compatible string literals, which are rejected by Parser
 
 ## Install
 
