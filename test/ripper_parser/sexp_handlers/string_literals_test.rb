@@ -331,13 +331,9 @@ describe RipperParser::Parser do
           _('"\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"').must_be_parsed_as s(:str, "日本語")
         end
 
-        # TODO: Raise error instead
-        it "converts to unicode even if result is not valid" do
-          bytes = ["2".ord, 0x82, 0o302, 0o275]
-          string = bytes.pack("c4")
-          string.force_encoding("UTF-8")
-          _('"2\x82\302\275"')
-            .must_be_parsed_as s(:str, string)
+        it "raises an error if resulting string literal encoding" do
+          parser = RipperParser::Parser.new
+          _(proc { parser.parse '"2\x82\302\275"' }).must_raise RipperParser::SyntaxError
         end
       end
 

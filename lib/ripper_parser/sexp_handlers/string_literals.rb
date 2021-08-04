@@ -225,18 +225,21 @@ module RipperParser
 
       def perform_unescapes(content, delim)
         content.gsub!(/\r\n/, "\n")
-        case delim
-        when NON_INTERPOLATING_HEREDOC
-          content
-        when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
-          unescape(content)
-        when *NON_INTERPOLATING_STRINGS
-          simple_unescape(content, delim)
-        when *REGEXP_LITERALS
-          unescape_regexp(content)
-        when NON_INTERPOLATING_WORD_LIST
-          simple_unescape_wordlist_word(content, delim)
-        end
+        result = case delim
+                 when NON_INTERPOLATING_HEREDOC
+                   content
+                 when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
+                   unescape(content)
+                 when *NON_INTERPOLATING_STRINGS
+                   simple_unescape(content, delim)
+                 when *REGEXP_LITERALS
+                   unescape_regexp(content)
+                 when NON_INTERPOLATING_WORD_LIST
+                   simple_unescape_wordlist_word(content, delim)
+                 end
+        raise SyntaxError unless result.valid_encoding?
+
+        result
       end
     end
   end
