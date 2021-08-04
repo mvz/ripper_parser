@@ -228,6 +228,16 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:str, "bar\rbaz\n")
       end
 
+      it "honors encoding comments" do
+        _("# encoding: ascii-8bit\n\"\\0\"")
+          .must_be_parsed_as s(:str, (+"\x00").force_encoding("ASCII-8BIT"))
+      end
+
+      it "switches to UTF8 if multi-byte escapes are used" do
+        _("# encoding: ascii-8bit\n\"\\u00a4\"")
+          .must_be_parsed_as s(:str, "\u00a4")
+      end
+
       describe "with double-quoted strings with escape sequences" do
         it "works for strings with escape sequences" do
           _('"\\n"')
@@ -313,16 +323,17 @@ describe RipperParser::Parser do
           _('"foo\\u{10FFFF}bar"').must_be_parsed_as s(:str, "foo\u{10FFFF}bar")
         end
 
-        it "converts to unicode if possible" do
+        it "converts octal escapes to unicode if possible" do
           _('"2\302\275"').must_be_parsed_as s(:str, "2½")
         end
 
-        # TODO: Raise error instead
-        it "does not convert to unicode if result is not valid" do
-          bytes = ["2".ord, 0x82, 0o302, 0o275]
-          string = bytes.pack("c4")
-          _('"2\x82\302\275"')
-            .must_be_parsed_as s(:str, string)
+        it "converts hex escapes to unicode if possible" do
+          _('"\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"').must_be_parsed_as s(:str, "日本語")
+        end
+
+        it "raises an error if resulting string literal encoding" do
+          parser = RipperParser::Parser.new
+          _(proc { parser.parse '"2\x82\302\275"' }).must_raise RipperParser::SyntaxError
         end
       end
 

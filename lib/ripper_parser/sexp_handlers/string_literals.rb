@@ -125,7 +125,7 @@ module RipperParser
                   [content]
                 else
                   if /\n/.match?(content)
-                    content.split(/(\n)/).each_slice(2).map { |*it| it.join }
+                    content.split(/(\n)/).each_slice(2).map(&:join)
                   else
                     [content]
                   end
@@ -225,18 +225,21 @@ module RipperParser
 
       def perform_unescapes(content, delim)
         content.gsub!(/\r\n/, "\n")
-        case delim
-        when NON_INTERPOLATING_HEREDOC
-          content
-        when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
-          fix_encoding unescape(content)
-        when *NON_INTERPOLATING_STRINGS
-          fix_encoding simple_unescape(content, delim)
-        when *REGEXP_LITERALS
-          fix_encoding unescape_regexp(content)
-        when NON_INTERPOLATING_WORD_LIST
-          fix_encoding simple_unescape_wordlist_word(content, delim)
-        end
+        result = case delim
+                 when NON_INTERPOLATING_HEREDOC
+                   content
+                 when INTERPOLATING_HEREDOC, *INTERPOLATING_STRINGS, INTERPOLATING_WORD_LIST
+                   unescape(content)
+                 when *NON_INTERPOLATING_STRINGS
+                   simple_unescape(content, delim)
+                 when *REGEXP_LITERALS
+                   unescape_regexp(content)
+                 when NON_INTERPOLATING_WORD_LIST
+                   simple_unescape_wordlist_word(content, delim)
+                 end
+        raise SyntaxError unless result.valid_encoding?
+
+        result
       end
     end
   end

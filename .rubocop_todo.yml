@@ -8,7 +8,7 @@
 
 # Configuration parameters: IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 25
+  Max: 26
 
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
@@ -24,7 +24,7 @@ Metrics/MethodLength:
 
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ModuleLength:
-  Max: 201
+  Max: 203
 
 # Configuration parameters: IgnoredMethods.
 Metrics/PerceivedComplexity:
