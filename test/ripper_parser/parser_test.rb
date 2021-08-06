@@ -42,9 +42,17 @@ describe RipperParser::Parser do
       end
     end
 
-    describe "for empty parentheses" do
+    describe "for parentheses" do
       it "works with lone ()" do
         _("()").must_be_parsed_as s(:nil)
+      end
+
+      it "works with simple wrapping ()" do
+        _("(bar)").must_be_parsed_as s(:begin, s(:send, nil, :bar))
+      end
+
+      it "works with multiple wrapping ()" do
+        _("((bar))").must_be_parsed_as s(:begin, s(:begin, s(:send, nil, :bar)))
       end
     end
 
