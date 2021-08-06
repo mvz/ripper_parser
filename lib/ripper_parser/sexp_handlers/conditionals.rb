@@ -132,13 +132,14 @@ module RipperParser
         cond = process(cond)
         case cond.sexp_type
         when :regexp
-          return s(:match_current_line, cond)
+          s(:match_current_line, cond)
         when :irange
-          return s(:iflipflop, *cond[1..-1])
+          s(:iflipflop, *cond[1..-1])
         when :erange
-          return s(:eflipflop, *cond[1..-1])
+          s(:eflipflop, *cond[1..-1])
+        else
+          cond
         end
-        cond
       end
 
       def handle_consequent(exp)
