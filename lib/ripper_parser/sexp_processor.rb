@@ -129,12 +129,20 @@ module RipperParser
 
     def process_paren(exp)
       _, body = exp.shift 2
+
+      has_nested_paren = body.sexp_type == :stmts && body[1].sexp_type == :paren
       result = process body
       case result.sexp_type
       when :void_stmt
         s(:nil)
-      when :begin, :args, :arglist
+      when :args, :arglist
         result
+      when :begin
+        if has_nested_paren
+          s(:begin, result)
+        else
+          result
+        end
       else
         s(:begin, result)
       end
