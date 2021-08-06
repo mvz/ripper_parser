@@ -236,6 +236,13 @@ describe RipperParser::Parser do
                                s(:send, nil, :bar))
       end
 
+      it "handles parentheses" do
+        _("(foo)..(bar)")
+          .must_be_parsed_as s(:irange,
+                               s(:begin, s(:send, nil, :foo)),
+                               s(:begin, s(:send, nil, :bar)))
+      end
+
       it "handles endless range literals" do
         skip "This Ruby version does not support endless ranges" if RUBY_VERSION < "2.6.0"
         _("1..")
@@ -297,6 +304,13 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:erange,
                                s(:send, nil, :foo),
                                s(:send, nil, :bar))
+      end
+
+      it "handles parentheses" do
+        _("(foo)...(bar)")
+          .must_be_parsed_as s(:erange,
+                               s(:begin, s(:send, nil, :foo)),
+                               s(:begin, s(:send, nil, :bar)))
       end
 
       it "handles endless range literals" do

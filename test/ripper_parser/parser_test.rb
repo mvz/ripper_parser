@@ -246,13 +246,22 @@ describe RipperParser::Parser do
     end
 
     describe "for expressions" do
-      it "handles assignment inside binary operator expressions" do
+      it "handles assignment in the right-hand side of binary operator expressions" do
         _("foo + (bar = baz)")
           .must_be_parsed_as s(:send,
                                s(:send, nil, :foo), :+,
                                s(:begin,
                                  s(:lvasgn, :bar,
                                    s(:send, nil, :baz))))
+      end
+
+      it "handles assignment in the left-hand side of binary operator expressions" do
+        _("(foo = bar) + baz")
+          .must_be_parsed_as s(:send,
+                               s(:begin,
+                                 s(:lvasgn, :foo,
+                                   s(:send, nil, :bar))), :+,
+                               s(:send, nil, :baz))
       end
 
       it "handles assignment inside unary operator expressions" do
