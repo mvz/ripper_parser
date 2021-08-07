@@ -676,5 +676,20 @@ describe RipperParser::Parser do
         _("1 in foo => bar").must_be_parsed_as expected
       end
     end
+
+    describe "for rightward assignment" do
+      before do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support rightward assignment"
+        end
+      end
+
+      it "works for the simple case" do
+        _("1 => foo")
+          .must_be_parsed_as s(:match_pattern,
+                               s(:int, 1),
+                               s(:match_var, :foo))
+      end
+    end
   end
 end
