@@ -228,14 +228,21 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:str, "bar\rbaz\n")
       end
 
-      it "honors encoding comments" do
-        _("# encoding: ascii-8bit\n\"\\0\"")
-          .must_be_parsed_as s(:str, (+"\x00").force_encoding("ASCII-8BIT"))
-      end
+      describe "when an encoding comment is used" do
+        it "honors the encoding comment" do
+          _("# encoding: ascii-8bit\n\"\\0\"")
+            .must_be_parsed_as s(:str, (+"\x00").force_encoding("ASCII-8BIT"))
+        end
 
-      it "switches to UTF8 if multi-byte escapes are used" do
-        _("# encoding: ascii-8bit\n\"\\u00a4\"")
-          .must_be_parsed_as s(:str, "\u00a4")
+        it "switches to UTF8 if multi-byte escapes are used" do
+          _("# encoding: ascii-8bit\n\"\\u00a4\"")
+            .must_be_parsed_as s(:str, "\u00a4")
+        end
+
+        it "honors the encoding comment escaped multi-byte characters" do
+          _("# encoding: ascii-8bit\n'\\あ'")
+            .must_be_parsed_as s(:str, (+"\\\xE3\x81\x82").force_encoding("ASCII-8bit"))
+        end
       end
 
       describe "with double-quoted strings with escape sequences" do
@@ -721,11 +728,6 @@ describe RipperParser::Parser do
                                  s(:str, "baz\n"))
         end
 
-        it "works for the indentable case" do
-          _("<<-FOO\n  bar\n  FOO")
-            .must_be_parsed_as s(:str, "  bar\n")
-        end
-
         it "works for escape sequences" do
           _("<<FOO\nbar\\tbaz\nFOO")
             .must_be_parsed_as s(:str, "bar\tbaz\n")
@@ -758,11 +760,6 @@ describe RipperParser::Parser do
                                  s(:str, "baz\n"))
         end
 
-        it "does not unescape with indentable single quoted version" do
-          _("<<-'FOO'\n  bar\\tbaz\n  FOO")
-            .must_be_parsed_as s(:str, "  bar\\tbaz\n")
-        end
-
         it "handles line continuation" do
           _("<<FOO\nbar\\\nbaz\nFOO")
             .must_be_parsed_as s(:str, "barbaz\n")
@@ -787,12 +784,31 @@ describe RipperParser::Parser do
                                  s(:str, "\n"))
         end
 
+        it "handles interpolation with subsequent whitespace" do
+          _("<<FOO\n\#{bar} baz\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin, s(:send, nil, :bar)),
+                                 s(:str, " baz\n"))
+        end
+
         it "handles line continuation after interpolation" do
           _("<<FOO\n\#{bar}\nbaz\\\nqux\nFOO")
             .must_be_parsed_as s(:dstr,
                                  s(:begin, s(:send, nil, :bar)),
                                  s(:str, "\n"),
                                  s(:str, "bazqux\n"))
+        end
+      end
+
+      describe "for the indentable case" do
+        it "works for the indentable case" do
+          _("<<-FOO\n  bar\n  FOO")
+            .must_be_parsed_as s(:str, "  bar\n")
+        end
+
+        it "does not unescape with indentable single quoted version" do
+          _("<<-'FOO'\n  bar\\tbaz\n  FOO")
+            .must_be_parsed_as s(:str, "  bar\\tbaz\n")
         end
 
         it "handles line continuation after interpolation for the indentable case" do
@@ -1116,6 +1132,11 @@ describe RipperParser::Parser do
       it "works for empty dsyms" do
         _(':""')
           .must_be_parsed_as s(:dsym)
+      end
+
+      it "assigns a line number to the result" do
+        _(":foo")
+          .must_be_parsed_as s(:sym, :foo).line(1), with_line_numbers: true
       end
     end
 

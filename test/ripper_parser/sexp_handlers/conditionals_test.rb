@@ -71,6 +71,14 @@ describe RipperParser::Parser do
                                nil)
       end
 
+      it "handles bare integer literal in condition" do
+        _("if 1; bar; end")
+          .must_be_parsed_as s(:if,
+                               s(:int, 1),
+                               s(:send, nil, :bar),
+                               nil)
+      end
+
       it "handles bare regex literal in condition" do
         _("if /foo/; bar; end")
           .must_be_parsed_as s(:if,

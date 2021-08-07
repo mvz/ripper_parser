@@ -192,20 +192,22 @@ describe RipperParser::Parser do
         end
 
         it "works with a method call with argument without brackets" do
-          expected = s(:lvasgn, :foo,
-                       s(:rescue,
-                         s(:send, nil, :bar, s(:send, nil, :baz)),
-                         s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
-          _("foo = bar baz rescue qux").must_be_parsed_as expected
+          _("foo = bar baz rescue qux")
+            .must_be_parsed_as s(:lvasgn, :foo,
+                                 s(:rescue,
+                                   s(:send, nil, :bar, s(:send, nil, :baz)),
+                                   s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
         end
 
         it "works with a class method call with argument without brackets" do
-          expected = s(:lvasgn, :foo,
-                       s(:rescue,
-                         s(:send, s(:const, nil, :Bar), :baz, s(:send, nil, :qux)),
-                         s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
           _("foo = Bar.baz qux rescue quuz")
-            .must_be_parsed_as expected
+            .must_be_parsed_as s(:lvasgn, :foo,
+                                 s(:rescue,
+                                   s(:send,
+                                     s(:const, nil, :Bar),
+                                     :baz,
+                                     s(:send, nil, :qux)),
+                                   s(:resbody, nil, nil, s(:send, nil, :quuz)), nil))
         end
       end
 
