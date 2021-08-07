@@ -423,11 +423,70 @@ describe RipperParser::Parser do
                                s(:send, nil, :bar))
       end
 
-      it "handles :=~ with literal regexp on the left hand side" do
-        _("/foo/ =~ bar")
-          .must_be_parsed_as s(:match_with_lvasgn,
-                               s(:regexp, s(:str, "foo"), s(:regopt)),
-                               s(:send, nil, :bar))
+      describe "with a regexp literal on the left hand side" do
+        it "handles :=~ with a simple regexp literal" do
+          _("/foo/ =~ bar")
+            .must_be_parsed_as s(:match_with_lvasgn,
+                                 s(:regexp, s(:str, "foo"), s(:regopt)),
+                                 s(:send, nil, :bar))
+        end
+
+        it "handles :=~ with statically interpolated regexp" do
+          _("/foo\#{'bar'}/ =~ baz")
+            .must_be_parsed_as s(:match_with_lvasgn,
+                                 s(:regexp,
+                                   s(:str, "foo"),
+                                   s(:begin,
+                                     s(:str, "bar")),
+                                   s(:regopt)),
+                                 s(:send, nil, :baz))
+        end
+
+        it "handles :=~ with variable-assigning regexp" do
+          _("/(?<foo>bar)/ =~ baz; foo")
+            .must_be_parsed_as s(:begin,
+                                 s(:match_with_lvasgn,
+                                   s(:regexp,
+                                     s(:str, "(?<foo>bar)"),
+                                     s(:regopt)),
+                                   s(:send, nil, :baz)),
+                                 s(:lvar, :foo))
+        end
+
+        it "handles :=~ with statically interpolated variable-assigning regexp" do
+          _("/(?<foo>\#{'bar'})/ =~ baz; foo")
+            .must_be_parsed_as s(:begin,
+                                 s(:match_with_lvasgn,
+                                   s(:regexp,
+                                     s(:str, "(?<foo>"),
+                                     s(:begin,
+                                       s(:str, "bar")),
+                                     s(:str, ")"),
+                                     s(:regopt)),
+                                   s(:send, nil, :baz)),
+                                 s(:lvar, :foo))
+        end
+
+        it "handles :=~ with interpolated regexp" do
+          _("/\#{foo}/ =~ bar")
+            .must_be_parsed_as s(:send,
+                                 s(:regexp,
+                                   s(:begin, s(:send, nil, :foo)),
+                                   s(:regopt)), :=~,
+                                 s(:send, nil, :bar))
+        end
+
+        it "handles :=~ with multi-part interpolated regexp" do
+          _("/foo\#{bar}baz/ =~ qux")
+            .must_be_parsed_as s(:send,
+                                 s(:regexp,
+                                   s(:str, "foo"),
+                                   s(:begin,
+                                     s(:send, nil, :bar)),
+                                   s(:str, "baz"),
+                                   s(:regopt)), :=~,
+                                 s(:send, nil, :qux))
+        end
       end
 
       it "handles :=~ with literal regexp on the right hand side" do

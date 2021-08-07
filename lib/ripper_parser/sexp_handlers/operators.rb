@@ -65,11 +65,30 @@ module RipperParser
       def make_regexp_match_operator(left, right)
         left = process(left)
         right = process(right)
-        if left.sexp_type == :regexp
+        if left.sexp_type == :regexp && (regexp = static_regexp(left))
+          @local_variables += regexp.names.map(&:to_sym)
           s(:match_with_lvasgn, left, right)
         else
           s(:send, left, :=~, right)
         end
+      end
+
+      def static_regexp(exp)
+        body = static_string(exp.sexp_body[0..-2]) or return
+
+        Regexp.new(body)
+      end
+
+      def static_string(nodes)
+        parts = nodes.map do |it|
+          case it.sexp_type
+          when :str
+            it[1]
+          when :begin
+            static_string(it.sexp_body)
+          end
+        end
+        parts.all? && parts.join
       end
     end
   end

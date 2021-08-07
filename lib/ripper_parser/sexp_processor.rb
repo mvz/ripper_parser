@@ -37,7 +37,7 @@ module RipperParser
 
       @errors = []
 
-      @kwrest = []
+      @local_variables = []
     end
 
     include SexpHandlers

@@ -79,7 +79,7 @@ module RipperParser
       def process_vcall(exp)
         _, ident = exp.shift 2
         with_position_from_node_symbol(ident) do |method|
-          if @kwrest.include? method
+          if @local_variables.include? method
             s(:lvar, method)
           else
             s(:send, nil, method)
