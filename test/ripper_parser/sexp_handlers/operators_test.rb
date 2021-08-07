@@ -442,6 +442,31 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz))
         end
 
+        it "handles :=~ with variable-assigning regexp" do
+          _("/(?<foo>bar)/ =~ baz; foo")
+            .must_be_parsed_as s(:begin,
+                                 s(:match_with_lvasgn,
+                                   s(:regexp,
+                                     s(:str, "(?<foo>bar)"),
+                                     s(:regopt)),
+                                   s(:send, nil, :baz)),
+                                 s(:lvar, :foo))
+        end
+
+        it "handles :=~ with statically interpolated variable-assigning regexp" do
+          _("/(?<foo>\#{'bar'})/ =~ baz; foo")
+            .must_be_parsed_as s(:begin,
+                                 s(:match_with_lvasgn,
+                                   s(:regexp,
+                                     s(:str, "(?<foo>"),
+                                     s(:begin,
+                                       s(:str, "bar")),
+                                     s(:str, ")"),
+                                     s(:regopt)),
+                                   s(:send, nil, :baz)),
+                                 s(:lvar, :foo))
+        end
+
         it "handles :=~ with interpolated regexp" do
           _("/\#{foo}/ =~ bar")
             .must_be_parsed_as s(:send,
