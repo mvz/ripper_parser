@@ -169,7 +169,7 @@ module RipperParser
         type, args, stmts = exp.shift 3
         args = process(args)
         kwrest = kwrest_param(args) if args
-        body = with_kwrest(kwrest) { process(stmts) }
+        body = with_new_lvar_scope(kwrest) { process(stmts) }
         s(type, args, s(unwrap_nil(body)))
       end
 

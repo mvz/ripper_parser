@@ -11,7 +11,7 @@ module RipperParser
 
         params = convert_special_args(process(params))
         kwrest = kwrest_param(params)
-        body = with_kwrest(kwrest) { method_body(body) }
+        body = with_new_lvar_scope(kwrest) { method_body(body) }
 
         with_position(pos, s(:def, ident, params, body))
       end
@@ -21,7 +21,7 @@ module RipperParser
 
         params = convert_special_args(process(params))
         kwrest = kwrest_param(params)
-        body = with_kwrest(kwrest) { method_body(body) }
+        body = with_new_lvar_scope(kwrest) { method_body(body) }
 
         receiver = unwrap_begin process(receiver)
 
@@ -117,10 +117,11 @@ module RipperParser
         found[1] if found
       end
 
-      def with_kwrest(kwrest)
-        @kwrest.push kwrest
+      def with_new_lvar_scope(extra_variable)
+        old_lvars = @local_variables.dup
+        @local_variables.push extra_variable if extra_variable
         result = yield
-        @kwrest.pop
+        @local_variables = old_lvars
         result
       end
     end
