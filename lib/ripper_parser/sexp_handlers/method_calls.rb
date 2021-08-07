@@ -31,7 +31,11 @@ module RipperParser
         return s(:arglist) if args.nil?
         return s(:args, s(:forwarded_args)) if args == s(:args_forward)
 
-        process(args)
+        args = process(args)
+        last_arg = args.sexp_body.last
+        last_arg.sexp_type = :forwarded_args if last_arg.sexp_type == :args_forward
+
+        args
       end
 
       # Handle implied hashes, such as at the end of argument lists.
