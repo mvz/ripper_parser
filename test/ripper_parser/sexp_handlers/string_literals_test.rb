@@ -831,13 +831,22 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:str, "bar\\tbaz\n")
         end
 
-        it "handles interpolation after a literal part when dedenting" do
+        it "handles interpolation after a literal part" do
           _("<<~FOO\n  foo\n  \#{bar}\nFOO")
             .must_be_parsed_as s(:dstr,
                                  s(:str, "foo\n"),
                                  s(:begin,
                                    s(:send, nil, :bar)),
                                  s(:str, "\n"))
+        end
+
+        it "handles interpolation with subsequent whitespace" do
+          _("<<~FOO\n  \#{bar} baz\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:str, ""),
+                                 s(:begin,
+                                   s(:send, nil, :bar)),
+                                 s(:str, " baz\n"))
         end
       end
     end

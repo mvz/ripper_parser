@@ -12,7 +12,7 @@ Metrics/AbcSize:
 
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
-  Max: 243
+  Max: 254
 
 # Configuration parameters: IgnoredMethods.
 Metrics/CyclomaticComplexity:
