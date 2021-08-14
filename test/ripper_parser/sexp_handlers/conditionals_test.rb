@@ -603,6 +603,19 @@ describe RipperParser::Parser do
                                    s(:lvar, :baz))), nil)
       end
 
+      it "works with an in clause with rest argument" do
+        _("case foo; in bar, *baz; qux bar, baz; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:array_pattern,
+                                   s(:match_var, :bar),
+                                   s(:match_rest, s(:match_var, :baz))), nil,
+                                 s(:send, nil, :qux,
+                                   s(:lvar, :bar),
+                                   s(:lvar, :baz))), nil)
+      end
+
       it "works with an in clause for hash matching" do
         _("case foo; in { bar: baz }; qux baz; end")
           .must_be_parsed_as s(:case_match,
@@ -614,6 +627,17 @@ describe RipperParser::Parser do
                                      s(:match_var, :baz))), nil,
                                  s(:send, nil, :qux,
                                    s(:lvar, :baz))), nil)
+      end
+
+      it "works with an in clause for abbreviated hash matching" do
+        _("case foo; in { bar: }; baz bar; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:hash_pattern, s(:match_var, :bar)),
+                                 nil,
+                                 s(:send, nil, :baz, s(:lvar, :bar))),
+                               nil)
       end
     end
 
@@ -633,6 +657,23 @@ describe RipperParser::Parser do
                        s(:match_var, :foo))
                    end
         _("1 in foo").must_be_parsed_as expected
+      end
+
+      it "works for secondary assignment of matched expression" do
+        expected = if RUBY_VERSION < "3.0.0"
+                     s(:match_pattern,
+                       s(:int, 1),
+                       s(:match_as,
+                         s(:match_var, :foo),
+                         s(:match_var, :bar)))
+                   else
+                     s(:match_pattern_p,
+                       s(:int, 1),
+                       s(:match_as,
+                         s(:match_var, :foo),
+                         s(:match_var, :bar)))
+                   end
+        _("1 in foo => bar").must_be_parsed_as expected
       end
     end
   end

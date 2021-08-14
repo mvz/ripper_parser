@@ -22,6 +22,8 @@ module RipperParser
           make_regexp_match_operator(left, right)
         elsif (mapped = BINARY_OPERATOR_MAP[op])
           make_boolean_operator(mapped, left, right)
+        elsif op == :"=>"
+          s(:match_as, handle_pattern(left), handle_pattern(right))
         else
           s(:send, process(left), op, process(right))
         end
