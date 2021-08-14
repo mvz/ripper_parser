@@ -14,24 +14,29 @@ end
 # Pattern matching (experimental)
 case foo
   in blub
-  p blub
+    p blub
 end
 
 case foo
   in [bar, baz]
-  quz = bar + baz
+    quz = bar + baz
 end
 
 case foo
   in [bar, baz]
-  quz = bar + baz
+    quz = bar + baz
   in blub
-  p blub
+    p blub
 end
 
 case foo
   in { bar: [baz, qux] }
-  quz = bar(baz) + baz
+    quz = bar(baz) + baz
+end
+
+case { foo: 1, bar: 2 }
+  in { bar: }
+    baz bar
 end
 
 # One-line pattern matching (experimental)

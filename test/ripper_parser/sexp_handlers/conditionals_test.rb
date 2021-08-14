@@ -615,6 +615,17 @@ describe RipperParser::Parser do
                                  s(:send, nil, :qux,
                                    s(:lvar, :baz))), nil)
       end
+
+      it "works with an in clause for abbreviated hash matching" do
+        _("case foo; in { bar: }; baz bar; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:hash_pattern, s(:match_var, :bar)),
+                                 nil,
+                                 s(:send, nil, :baz, s(:lvar, :bar))),
+                               nil)
+      end
     end
 
     describe "for one-line pattern matching" do

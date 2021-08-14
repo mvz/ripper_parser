@@ -121,7 +121,11 @@ module RipperParser
         _, _, body, = exp.shift 4
 
         elements = body.map do |key, value|
-          s(:pair, process(key), handle_pattern(value))
+          if value
+            s(:pair, process(key), handle_pattern(value))
+          else
+            handle_pattern(key)
+          end
         end
         s(:hash_pattern, *elements)
       end
@@ -148,7 +152,13 @@ module RipperParser
 
       def handle_pattern(exp)
         pattern = process(exp)
-        pattern.sexp_type = :match_var if pattern.sexp_type == :lvar
+        case pattern.sexp_type
+        when :lvar
+          pattern.sexp_type = :match_var
+        when :sym
+          @local_variables << pattern[1]
+          pattern.sexp_type = :match_var
+        end
         pattern
       end
     end
