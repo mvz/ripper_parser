@@ -36,6 +36,7 @@ end
 
 # One-line pattern matching (experimental)
 1 in foo
+1 in foo => bar
 
 # Numbered parameters (experimental)
 [1, 2, 3].each { foo _1 }

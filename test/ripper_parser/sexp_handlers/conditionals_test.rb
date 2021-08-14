@@ -634,6 +634,23 @@ describe RipperParser::Parser do
                    end
         _("1 in foo").must_be_parsed_as expected
       end
+
+      it "works for secondary assignment of matched expression" do
+        expected = if RUBY_VERSION < "3.0.0"
+                     s(:match_pattern,
+                       s(:int, 1),
+                       s(:match_as,
+                         s(:match_var, :foo),
+                         s(:match_var, :bar)))
+                   else
+                     s(:match_pattern_p,
+                       s(:int, 1),
+                       s(:match_as,
+                         s(:match_var, :foo),
+                         s(:match_var, :bar)))
+                   end
+        _("1 in foo => bar").must_be_parsed_as expected
+      end
     end
   end
 end
