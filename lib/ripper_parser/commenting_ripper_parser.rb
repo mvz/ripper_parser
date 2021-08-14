@@ -13,8 +13,11 @@ module RipperParser
     def initialize(*args)
       super
       @comment = ""
+
       @comment_stack = []
       @delimiter_stack = []
+      @operator_stack = []
+
       @space_before = false
       @seen_space = false
       @in_symbol = false
@@ -67,6 +70,8 @@ module RipperParser
           @comment_stack.push [result, @comment]
           @comment = ""
         end
+      when "in"
+        @operator_stack.push tok
       end
       result
     end
@@ -245,8 +250,30 @@ module RipperParser
       list << elem
     end
 
+    def on_in(*args)
+      in_type = @operator_stack.pop
+      case in_type
+      when "in"
+        super
+      when "=>"
+        args.unshift :right_assign
+      else
+        raise "Expected either 'in' or '=>' operator"
+      end
+    end
+
     def on_op(token)
       @seen_space = false
+      @operator_stack.push token if token == "=>"
+      super
+    end
+
+    def on_binary(left, operator, right)
+      if operator == :"=>"
+        raise "Expected operator stack to contain '=>'" unless @operator_stack.last == "=>"
+
+        @operator_stack.pop
+      end
       super
     end
 

@@ -55,7 +55,8 @@ module RipperParser
         _, expr, clauses = exp.shift 3
         expr = process(expr)
 
-        if clauses.sexp_type == :in
+        case clauses.sexp_type
+        when :in
           first, *rest = process(clauses)
           _, pattern, _, truepart = first
           if truepart.nil?
@@ -67,6 +68,9 @@ module RipperParser
           else
             s(:case_match, expr, first, *rest)
           end
+        when :right_assign
+          _, pattern = process(clauses)
+          s(:match_pattern, expr, pattern)
         else
           s(:case, expr, *process(clauses))
         end
@@ -92,6 +96,12 @@ module RipperParser
             *values,
             truepart),
           *falsepart)
+      end
+
+      def process_right_assign(exp)
+        _, pattern, = exp.shift 4
+        pattern = handle_pattern(pattern)
+        s(:right_assign, pattern)
       end
 
       def process_in(exp)
