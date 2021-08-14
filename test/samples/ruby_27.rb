@@ -39,6 +39,10 @@ case { foo: 1, bar: 2 }
     baz bar
 end
 
+case foo
+  in bar, *baz then quz(bar, baz)
+end
+
 # One-line pattern matching (experimental)
 1 in foo
 1 in foo => bar

@@ -603,6 +603,19 @@ describe RipperParser::Parser do
                                    s(:lvar, :baz))), nil)
       end
 
+      it "works with an in clause with rest argument" do
+        _("case foo; in bar, *baz; qux bar, baz; end")
+          .must_be_parsed_as s(:case_match,
+                               s(:send, nil, :foo),
+                               s(:in_pattern,
+                                 s(:array_pattern,
+                                   s(:match_var, :bar),
+                                   s(:match_rest, s(:match_var, :baz))), nil,
+                                 s(:send, nil, :qux,
+                                   s(:lvar, :bar),
+                                   s(:lvar, :baz))), nil)
+      end
+
       it "works with an in clause for hash matching" do
         _("case foo; in { bar: baz }; qux baz; end")
           .must_be_parsed_as s(:case_match,

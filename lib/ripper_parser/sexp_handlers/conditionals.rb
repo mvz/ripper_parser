@@ -111,9 +111,13 @@ module RipperParser
       end
 
       def process_aryptn(exp)
-        _, _, body, = exp.shift 5
+        _, _, body, rest, = exp.shift 5
 
         elements = body.map { |it| handle_pattern(it) }
+        if rest
+          rest = s(:match_rest, handle_pattern(rest))
+          elements << rest
+        end
         s(:array_pattern, *elements)
       end
 
@@ -153,9 +157,7 @@ module RipperParser
       def handle_pattern(exp)
         pattern = process(exp)
         case pattern.sexp_type
-        when :lvar
-          pattern.sexp_type = :match_var
-        when :sym
+        when :lvar, :sym
           @local_variables << pattern[1]
           pattern.sexp_type = :match_var
         end
