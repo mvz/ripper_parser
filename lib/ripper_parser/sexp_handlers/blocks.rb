@@ -47,7 +47,7 @@ module RipperParser
       end
 
       def process_block_var(exp)
-        _, args, = exp.shift 3
+        _, args, shadowargs = exp.shift 3
 
         args = process(args)
 
@@ -64,6 +64,13 @@ module RipperParser
         when 2
           args.pop if args.sexp_body.last.sexp_type == :excessed_comma
         end
+
+        if shadowargs
+          map_process_list(shadowargs).each do |item|
+            args << s(:shadowarg, item[1])
+          end
+        end
+
         args
       end
 

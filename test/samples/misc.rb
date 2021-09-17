@@ -283,6 +283,9 @@ foo do |bar| end
 foo do |bar, | end
 foo do |bar, **| end
 foo do |(bar, baz)| end
+foo do |bar; baz| end
+foo do |bar, baz; qux| end
+foo do |bar, baz; qux, quuz| end
 
 # defined? keyword
 if defined? foo

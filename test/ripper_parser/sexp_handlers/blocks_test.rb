@@ -215,6 +215,27 @@ describe RipperParser::Parser do
                                  s(:lvar, :bar)))
       end
 
+      it "works with one regular and one shadow argument" do
+        _("foo do |bar; baz| end")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :foo),
+                               s(:args,
+                                 s(:procarg0, s(:arg, :bar)),
+                                 s(:shadowarg, :baz)),
+                               nil)
+      end
+
+      it "works with several regular and one shadow argument" do
+        _("foo do |bar, baz; qux| end")
+          .must_be_parsed_as s(:block,
+                               s(:send, nil, :foo),
+                               s(:args,
+                                 s(:arg, :bar),
+                                 s(:arg, :baz),
+                                 s(:shadowarg, :qux)),
+                               nil)
+      end
+
       it "works with numbered parameters" do
         if RUBY_VERSION < "2.7.0"
           skip "This Ruby version does not support numbered parameters"
