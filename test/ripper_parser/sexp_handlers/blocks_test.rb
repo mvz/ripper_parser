@@ -248,7 +248,7 @@ describe RipperParser::Parser do
                                  s(:lvar, :_2)))
       end
 
-      it "parser code that looks numbered parameters correctly on older rubies" do
+      it "parses code that looks like numbered parameters correctly on older rubies" do
         if RUBY_VERSION > "2.7.0"
           skip "This Ruby version interprets this code as numbered parameters"
         end
