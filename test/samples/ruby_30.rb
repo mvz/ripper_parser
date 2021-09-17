@@ -8,3 +8,9 @@ case foo
   in [bar, String => baz]
   quz = bar + baz
 end
+
+# Argument forwarding with leading argument
+def foo(bar, ...)
+  baz bar
+  qux(...)
+end

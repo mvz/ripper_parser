@@ -76,8 +76,6 @@ module RipperParser
       }.freeze
 
       def convert_special_args(args)
-        return s(:args, s(:forward_arg)) if args.sexp_body.first == s(:args_forward)
-
         args.line ||= args.sexp_body.first&.line
         args.sexp_body = args.sexp_body.map { |item| convert_argument item }
         args
@@ -97,6 +95,8 @@ module RipperParser
           end
         when *SPECIAL_ARG_MARKER.keys
           convert_marked_argument item
+        when :args_forward
+          s(:forward_arg)
         else
           item
         end
