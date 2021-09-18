@@ -48,4 +48,9 @@ end
 1 in foo => bar
 
 # Numbered parameters (experimental)
-[1, 2, 3].each { foo _1 }
+foos.each { foo _1 }
+foos.each do
+  foo _1
+end
+-> { bar _1 }
+proc do bar _1, _2; end

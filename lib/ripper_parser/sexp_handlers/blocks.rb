@@ -6,11 +6,12 @@ module RipperParser
     module Blocks
       def process_method_add_block(exp)
         _, call, block = exp.shift 3
+        call = process(call)
         block = process(block)
         _, args, stmt = block
-        call = process(call)
+        args ||= s(:args)
         stmts = stmt.first || s()
-        make_iter_block call, args, stmts
+        make_iter call, args, stmts
       end
 
       def process_brace_block(exp)
@@ -162,12 +163,9 @@ module RipperParser
         _, args, statements = exp.shift 3
         args = convert_special_args(process(args))
         statements = process(statements)
-        line = args.line || statements.line
+        call = s(:lambda).line(args.line || statements.line)
 
-        call = s(:lambda)
-        call.line = line
-
-        make_iter_lambda call, args, safe_unwrap_void_stmt(statements)
+        make_iter call, args, safe_unwrap_void_stmt(statements)
       end
 
       private
@@ -231,21 +229,13 @@ module RipperParser
       LVAR_MATCHER = Sexp::Matcher.new(:lvar, Sexp._)
       NUMBERED_PARAMS = (1..9).map { |it| :"_#{it}" }.freeze
 
-      def make_iter_block(call, args, stmt)
-        if args.nil? && RUBY_VERSION >= "2.7.0"
+      def make_iter(call, args, stmt)
+        if args.sexp_body.empty? && RUBY_VERSION >= "2.7.0"
           lvar_names = (LVAR_MATCHER / stmt).map { |it| it[1] }
           count = (NUMBERED_PARAMS & lvar_names).length
           return s(:numblock, call, count, stmt).line(call.line) if count > 0
         end
 
-        args ||= s(:args)
-
-        stmt = nil if stmt.empty?
-
-        s(:block, call, args, stmt).line(call.line)
-      end
-
-      def make_iter_lambda(call, args, stmt)
         stmt = nil if stmt.empty?
 
         s(:block, call, args, stmt).line(call.line)
