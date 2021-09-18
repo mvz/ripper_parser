@@ -58,6 +58,11 @@ foo = <<~BAR # dedenting
   quuz
 BAR
 
+foo = <<~BAR # with interpolation as firt item
+  #{baz} qux
+  quuz
+BAR
+
 foo = <<~BAR # no dedenting
 baz
 #{qux}

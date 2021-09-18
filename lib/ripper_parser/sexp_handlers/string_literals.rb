@@ -153,7 +153,7 @@ module RipperParser
           when :dstr
             result.push(*sub_expr.sexp_body)
           when :str
-            result.push(sub_expr)
+            result.push(sub_expr) unless sub_expr[1] == ""
           end
         end
         result
