@@ -246,6 +246,12 @@ module RipperParser
       end
 
       def make_iter_lambda(call, args, stmt)
+        if args.sexp_body.empty? && RUBY_VERSION >= "2.7.0"
+          lvar_names = (LVAR_MATCHER / stmt).map { |it| it[1] }
+          count = (NUMBERED_PARAMS & lvar_names).length
+          return s(:numblock, call, count, stmt).line(call.line) if count > 0
+        end
+
         stmt = nil if stmt.empty?
 
         s(:block, call, args, stmt).line(call.line)
