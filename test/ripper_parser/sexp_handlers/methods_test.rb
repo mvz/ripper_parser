@@ -251,6 +251,17 @@ describe RipperParser::Parser do
                                  s(:send, nil, :baz), s(:forwarded_args)))
       end
 
+      it "works with argument forwarding with leading method arguments" do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support this style of argument forwarding"
+        end
+        _("def foo(bar, ...); baz(...); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar), s(:forward_arg)),
+                               s(:send, nil, :baz,
+                                 s(:forwarded_args)))
+      end
+
       it "assigns correct line numbers when the body is empty" do
         _("def bar\nend")
           .must_be_parsed_as s(:def, :bar,
