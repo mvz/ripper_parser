@@ -14,3 +14,7 @@ def foo(bar, ...)
   baz bar
   qux(...)
 end
+
+# Endless methods
+def foo(bar) = baz(bar)
+def foo(bar) = baz(bar) rescue qux
