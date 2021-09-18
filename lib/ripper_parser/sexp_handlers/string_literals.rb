@@ -153,7 +153,7 @@ module RipperParser
           when :dstr
             result.push(*sub_expr.sexp_body)
           when :str
-            result.push(sub_expr) unless sub_expr[1] == ""
+            result.push(sub_expr)
           end
         end
         result
@@ -162,7 +162,7 @@ module RipperParser
       def merge_raw_string_literals(list)
         chunks = list.chunk { |it| it.sexp_type == :@tstring_content }
         chunks.flat_map do |is_simple, items|
-          if is_simple && items.count > 1
+          if is_simple
             chunks = items.chunk { |it| it[1].empty? }
             chunks.flat_map do |empty, content_items|
               if empty
