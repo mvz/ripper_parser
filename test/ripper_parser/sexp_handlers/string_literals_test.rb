@@ -831,6 +831,14 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:str, "bar\\tbaz\n")
         end
 
+        it "handles interpolation as the first part" do
+          _("<<~FOO\n  \#{bar}\nFOO")
+            .must_be_parsed_as s(:dstr,
+                                 s(:begin,
+                                   s(:send, nil, :bar)),
+                                 s(:str, "\n"))
+        end
+
         it "handles interpolation after a literal part" do
           _("<<~FOO\n  foo\n  \#{bar}\nFOO")
             .must_be_parsed_as s(:dstr,
@@ -843,7 +851,6 @@ describe RipperParser::Parser do
         it "handles interpolation with subsequent whitespace" do
           _("<<~FOO\n  \#{bar} baz\nFOO")
             .must_be_parsed_as s(:dstr,
-                                 s(:str, ""),
                                  s(:begin,
                                    s(:send, nil, :bar)),
                                  s(:str, " baz\n"))

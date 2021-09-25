@@ -162,16 +162,13 @@ module RipperParser
       def merge_raw_string_literals(list)
         chunks = list.chunk { |it| it.sexp_type == :@tstring_content }
         chunks.flat_map do |is_simple, items|
-          if is_simple && items.count > 1
-            chunks = items.chunk { |it| it[1].empty? }
-            chunks.flat_map do |empty, content_items|
-              if empty
-                []
-              else
-                head = content_items.first
-                contents = content_items.map { |it| it[1] }.join
-                [s(:@tstring_content, contents, head[2], head[3])]
-              end
+          if is_simple
+            head = items.first
+            contents = items.map { |it| it[1] }.join
+            if contents.empty?
+              []
+            else
+              [s(:@tstring_content, contents, head[2], head[3])]
             end
           else
             items
