@@ -104,7 +104,7 @@ module RipperParser
       when SINGLE_LETTER_ESCAPES_REGEXP
         SINGLE_LETTER_ESCAPES[bare]
       when /^x/
-        hex_to_char(bare[1..-1])
+        hex_to_char(bare[1..])
       when /^u\{/
         hex_to_unicode_char(bare[2..-2])
       when /^u/

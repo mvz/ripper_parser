@@ -152,9 +152,9 @@ module RipperParser
         when :regexp
           s(:match_current_line, cond)
         when :irange
-          s(:iflipflop, *cond[1..-1])
+          s(:iflipflop, *cond[1..])
         when :erange
-          s(:eflipflop, *cond[1..-1])
+          s(:eflipflop, *cond[1..])
         else
           cond
         end
