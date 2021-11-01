@@ -13,14 +13,14 @@ describe RipperParser::Parser do
       end
 
       it "works for regex literals with escaped right parenthesis" do
-        _('/\\)/')
-          .must_be_parsed_as s(:regexp, s(:str, '\\)'), s(:regopt))
+        _("/\\)/")
+          .must_be_parsed_as s(:regexp, s(:str, "\\)"), s(:regopt))
       end
 
       it "works for regex literals with escape sequences" do
-        _('/\\)\\n\\\\/')
+        _("/\\)\\n\\\\/")
           .must_be_parsed_as s(:regexp,
-                               s(:str, '\\)\\n\\\\'),
+                               s(:str, "\\)\\n\\\\"),
                                s(:regopt))
       end
 
@@ -65,7 +65,7 @@ describe RipperParser::Parser do
       describe "for a %r-delimited regex literal" do
         it "works for the simple case with escape sequences" do
           _('%r[foo\nbar]')
-            .must_be_parsed_as s(:regexp, s(:str, 'foo\\nbar'), s(:regopt))
+            .must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
         end
 
         it "works for a multi-line regex" do
@@ -78,7 +78,7 @@ describe RipperParser::Parser do
 
         it "works with odd delimiters and escape sequences" do
           _('%r_foo\nbar_')
-            .must_be_parsed_as s(:regexp, s(:str, 'foo\\nbar'), s(:regopt))
+            .must_be_parsed_as s(:regexp, s(:str, "foo\\nbar"), s(:regopt))
         end
       end
 
@@ -258,12 +258,12 @@ describe RipperParser::Parser do
 
         it "works for strings with escaped backslashes" do
           _('"\\\\n"')
-            .must_be_parsed_as s(:str, '\\n')
+            .must_be_parsed_as s(:str, "\\n")
         end
 
         it "works for a representation of a regex literal with escaped right parenthesis" do
           _('"/\\\\)/"')
-            .must_be_parsed_as s(:str, '/\\)/')
+            .must_be_parsed_as s(:str, "/\\)/")
         end
 
         it "works for a uselessly escaped right parenthesis" do
@@ -525,7 +525,7 @@ describe RipperParser::Parser do
 
         it "works with sequences of backslashes" do
           _("'foo\\\\\\abar'")
-            .must_be_parsed_as s(:str, 'foo\\\\abar')
+            .must_be_parsed_as s(:str, "foo\\\\abar")
         end
 
         it "does not process line continuation" do
@@ -543,7 +543,7 @@ describe RipperParser::Parser do
         end
 
         it "works for escape sequences" do
-          _('%Q[foo\\nbar]')
+          _("%Q[foo\\nbar]")
             .must_be_parsed_as s(:str, "foo\nbar")
         end
 
@@ -865,8 +865,8 @@ describe RipperParser::Parser do
       end
 
       it "does not perform interpolation" do
-        _('%w(foo\\nbar baz)')
-          .must_be_parsed_as s(:array, s(:str, 'foo\\nbar'), s(:str, "baz"))
+        _("%w(foo\\nbar baz)")
+          .must_be_parsed_as s(:array, s(:str, "foo\\nbar"), s(:str, "baz"))
       end
 
       it "handles line continuation" do
@@ -875,7 +875,7 @@ describe RipperParser::Parser do
       end
 
       it "handles escaped spaces" do
-        _('%w(foo bar\ baz)')
+        _("%w(foo bar\\ baz)")
           .must_be_parsed_as s(:array, s(:str, "foo"), s(:str, "bar baz"))
       end
 
@@ -922,7 +922,7 @@ describe RipperParser::Parser do
       end
 
       it "handles escaped spaces" do
-        _('%W(foo bar\ baz)')
+        _("%W(foo bar\\ baz)")
           .must_be_parsed_as s(:array, s(:str, "foo"), s(:str, "bar baz"))
       end
 
@@ -985,7 +985,7 @@ describe RipperParser::Parser do
       end
 
       it "does not perform interpolation" do
-        _('%i(foo\\nbar baz)')
+        _("%i(foo\\nbar baz)")
           .must_be_parsed_as s(:array, s(:sym, :"foo\\nbar"), s(:sym, :baz))
       end
 
@@ -1176,7 +1176,7 @@ describe RipperParser::Parser do
       end
 
       it "works for backtick strings with escape sequences" do
-        _('`foo\\n`')
+        _("`foo\\n`")
           .must_be_parsed_as s(:xstr, s(:str, "foo\n"))
       end
 
