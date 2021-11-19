@@ -5,7 +5,6 @@ require_relative "lib/ripper_parser/version"
 Gem::Specification.new do |spec|
   spec.name = "ripper_parser"
   spec.version = RipperParser::VERSION
-
   spec.authors = ["Matijs van Zuijlen"]
   spec.email = ["matijs@matijs.net"]
 
@@ -16,7 +15,6 @@ Gem::Specification.new do |spec|
   DESC
   spec.homepage = "http://www.github.com/mvz/ripper_parser"
   spec.license = "MIT"
-
   spec.required_ruby_version = ">= 2.6.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
@@ -25,10 +23,10 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = File.readlines("Manifest.txt", chomp: true)
+  spec.require_paths = ["lib"]
 
   spec.rdoc_options = ["--main", "README.md"]
   spec.extra_rdoc_files = ["README.md", "CHANGELOG.md"]
-  spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "sexp_processor", "~> 4.10"
 
