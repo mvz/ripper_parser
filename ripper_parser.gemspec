@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "sexp_processor", "~> 4.10"
 
-  spec.add_development_dependency "minitest", "~> 5.14.0"
+  spec.add_development_dependency "minitest", "~> 5.15.0"
   spec.add_development_dependency "minitest-focus", "~> 1.3.1"
   spec.add_development_dependency "parser", "~> 3.0.0"
   spec.add_development_dependency "rake", "~> 13.0"
