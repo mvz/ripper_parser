@@ -30,13 +30,13 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "sexp_processor", "~> 4.10"
 
-  spec.add_development_dependency "minitest", "~> 5.15.0"
-  spec.add_development_dependency "minitest-focus", "~> 1.3.1"
+  spec.add_development_dependency "minitest", "~> 5.15"
+  spec.add_development_dependency "minitest-focus", "~> 1.3"
   spec.add_development_dependency "parser", "~> 3.1.0"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rake-manifest", "~> 0.2.0"
-  spec.add_development_dependency "rubocop", "~> 1.25.0"
+  spec.add_development_dependency "rubocop", "~> 1.25"
   spec.add_development_dependency "rubocop-minitest", "~> 0.17.0"
-  spec.add_development_dependency "rubocop-performance", "~> 1.13.0"
+  spec.add_development_dependency "rubocop-performance", "~> 1.13"
   spec.add_development_dependency "simplecov"
 end
