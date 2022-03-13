@@ -90,6 +90,17 @@ module RipperParser
         end
       end
 
+      def wrap_in_begin(statements)
+        case statements.length
+        when 0
+          nil
+        when 1
+          statements.first
+        else
+          s(:begin, *statements)
+        end
+      end
+
       def handle_argument_list(exp)
         process(exp).tap(&:shift)
       end

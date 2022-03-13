@@ -120,7 +120,8 @@ module RipperParser
 
         body = s()
 
-        main = wrap_in_begin map_process_list_compact main.sexp_body
+        main = process main
+        main = nil if main.sexp_type == :void_stmt
         body << main
 
         if rescue_block
@@ -136,7 +137,6 @@ module RipperParser
           body << (ensure_block.empty? ? nil : ensure_block)
           body = s(s(:ensure, *body))
         end
-
         wrap_in_begin(body) || s()
       end
 
@@ -249,17 +249,6 @@ module RipperParser
         stmt = nil if stmt.empty?
 
         s(:block, call, args, stmt).line(call.line)
-      end
-
-      def wrap_in_begin(statements)
-        case statements.length
-        when 0
-          nil
-        when 1
-          statements.first
-        else
-          s(:begin, *statements)
-        end
       end
     end
   end
