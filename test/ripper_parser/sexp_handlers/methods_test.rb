@@ -322,6 +322,31 @@ describe RipperParser::Parser do
       end
     end
 
+    describe "for endless method definitions" do
+      before do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support endless method definitions"
+        end
+      end
+
+      it "works for the simple case" do
+        _("def foo(bar) = baz(bar)")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar)),
+                               s(:send, nil, :baz, s(:lvar, :bar)))
+      end
+
+      it "works with rescue" do
+        _("def foo(bar) = baz(bar) rescue qux")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar)),
+                               s(:rescue,
+                                 s(:send, nil, :baz, s(:lvar, :bar)),
+                                 s(:resbody, nil, nil,
+                                   s(:send, nil, :qux)), nil))
+      end
+    end
+
     describe "for the alias statement" do
       it "works with regular barewords" do
         _("alias foo bar")
