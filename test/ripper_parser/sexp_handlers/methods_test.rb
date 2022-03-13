@@ -262,6 +262,19 @@ describe RipperParser::Parser do
                                  s(:forwarded_args)))
       end
 
+      it "works for multi-statement method body with argument forwarding" \
+         " with leading method arguments" do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support this style of argument forwarding"
+        end
+        _("def foo(bar, ...); baz bar; qux(...); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar), s(:forward_arg)),
+                               s(:begin,
+                                 s(:send, nil, :baz, s(:lvar, :bar)),
+                                 s(:send, nil, :qux, s(:forwarded_args))))
+      end
+
       it "assigns correct line numbers when the body is empty" do
         _("def bar\nend")
           .must_be_parsed_as s(:def, :bar,
@@ -306,6 +319,31 @@ describe RipperParser::Parser do
                                s(:send, nil, :foo),
                                :for, s(:args),
                                nil)
+      end
+    end
+
+    describe "for endless method definitions" do
+      before do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support endless method definitions"
+        end
+      end
+
+      it "works for the simple case" do
+        _("def foo(bar) = baz(bar)")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar)),
+                               s(:send, nil, :baz, s(:lvar, :bar)))
+      end
+
+      it "works with rescue" do
+        _("def foo(bar) = baz(bar) rescue qux")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:arg, :bar)),
+                               s(:rescue,
+                                 s(:send, nil, :baz, s(:lvar, :bar)),
+                                 s(:resbody, nil, nil,
+                                   s(:send, nil, :qux)), nil))
       end
     end
 

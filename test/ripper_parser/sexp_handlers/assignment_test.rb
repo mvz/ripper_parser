@@ -600,5 +600,18 @@ describe RipperParser::Parser do
                                s(:send, s(:send, nil, :baz), :qux, s(:send, nil, :quuz)))
       end
     end
+
+    describe "for rightward assignment" do
+      before do
+        if RUBY_VERSION < "3.0.0"
+          skip "This Ruby version does not support rightward assignment"
+        end
+      end
+
+      it "works for the simple case" do
+        _("42 => foo")
+          .must_be_parsed_as s(:match_pattern, s(:int, 42), s(:match_var, :foo))
+      end
+    end
   end
 end

@@ -22,6 +22,9 @@ module RipperParser
         handle_generic_block exp
       end
 
+      # NOTE: Argument forwarding is handled differently in Ruby 3.0 and 3.1
+      # 3.0: s(:params, nil, nil, s(:args_forward), nil, nil, nil, nil)
+      # 3.1: s(:params, nil, nil, nil, nil, nil, s(:args_forward), :&)
       def process_params(exp)
         _, normal, defaults, splat, rest, kwargs, doublesplat, block = exp.shift 8
 
@@ -117,7 +120,8 @@ module RipperParser
 
         body = s()
 
-        main = wrap_in_begin map_process_list_compact main.sexp_body
+        main = process main
+        main = nil if main.sexp_type == :void_stmt
         body << main
 
         if rescue_block
@@ -133,7 +137,6 @@ module RipperParser
           body << (ensure_block.empty? ? nil : ensure_block)
           body = s(s(:ensure, *body))
         end
-
         wrap_in_begin(body) || s()
       end
 
@@ -217,11 +220,18 @@ module RipperParser
       def handle_double_splat(doublesplat)
         return [] unless doublesplat
 
-        [s(:dsplat, process(doublesplat))]
+        contents = process(doublesplat)
+        case contents.sexp_type
+        when :args_forward # Argument forwarding in Ruby 3.1
+          [contents]
+        else
+          [s(:dsplat, contents)]
+        end
       end
 
       def handle_block_argument(block)
         return [] unless block
+        return [] if block == :& # Part of argument forwarding in Ruby 3.1; ignore
 
         [process(block)]
       end
@@ -239,17 +249,6 @@ module RipperParser
         stmt = nil if stmt.empty?
 
         s(:block, call, args, stmt).line(call.line)
-      end
-
-      def wrap_in_begin(statements)
-        case statements.length
-        when 0
-          nil
-        when 1
-          statements.first
-        else
-          s(:begin, *statements)
-        end
       end
     end
   end

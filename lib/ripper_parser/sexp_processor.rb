@@ -74,14 +74,7 @@ module RipperParser
       statements = map_process_list statements
       line = statements.first.line
       statements = reject_void_stmt statements
-      case statements.count
-      when 0
-        s(:void_stmt).line(line)
-      when 1
-        statements.first
-      else
-        s(:begin, *statements)
-      end
+      wrap_in_begin(statements) || s(:void_stmt).line(line)
     end
 
     def process_var_ref(exp)
