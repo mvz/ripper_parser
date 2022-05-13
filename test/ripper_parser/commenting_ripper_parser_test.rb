@@ -14,13 +14,14 @@ describe RipperParser::CommentingRipperParser do
 
   describe "handling comments" do
     # Handle different results for dynamic symbol strings. This was changed in
-    # Ruby 2.6.3 and up, and backported to 2.5.6 and 2.5.7.
+    # Ruby 2.7.0, and backported to 2.6.3
+    #
     # See https://bugs.ruby-lang.org/issues/15670
     let(:dsym_string_type) do
-      if RUBY_VERSION < "2.5.6" || RUBY_VERSION >= "2.6.0" && RUBY_VERSION < "2.6.3"
-        :xstring
-      else
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.6.3")
         :string_content
+      else
+        :xstring
       end
     end
 
