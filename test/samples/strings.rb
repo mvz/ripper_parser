@@ -101,6 +101,11 @@ baz \
 qux
 EOS
 
+<<~'EOS'
+  foo4 \
+  bar
+EOS
+
 %Q[foo5\
 bar]
 

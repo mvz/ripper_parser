@@ -765,6 +765,11 @@ describe RipperParser::Parser do
             .must_be_parsed_as s(:str, "barbaz\n")
         end
 
+        it "ignores line continuation for the single quoted version" do
+          _("<<'FOO'\nbar \\\nbaz\nFOO")
+            .must_be_parsed_as s(:dstr, s(:str, "bar \\\n"), s(:str, "baz\n"))
+        end
+
         it "escapes line continuation" do
           _("<<FOO\nbar\\\\\nbaz\nFOO")
             .must_be_parsed_as s(:dstr,
@@ -829,6 +834,11 @@ describe RipperParser::Parser do
         it "does not unescape the single quoted version" do
           _("<<~'FOO'\n  bar\\tbaz\n  FOO")
             .must_be_parsed_as s(:str, "bar\\tbaz\n")
+        end
+
+        it "ignores line continuation for the single quoted version" do
+          _("<<~'FOO'\n  bar \\\n  baz\nFOO")
+            .must_be_parsed_as s(:dstr, s(:str, "bar \\\n"), s(:str, "baz\n"))
         end
 
         it "handles interpolation as the first part" do
