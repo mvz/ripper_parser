@@ -108,7 +108,7 @@ module RipperParser
         s(:symbols, *items)
       end
 
-      INTERPOLATING_HEREDOC = /^<<[-~]?[^']/.freeze
+      INTERPOLATING_HEREDOC = /^<<[-~]?[^-'~]/.freeze
       NON_INTERPOLATING_HEREDOC = /^<<[-~]?'/.freeze
       INTERPOLATING_STRINGS = ['"', "`", ':"', /^%Q.$/, /^%.$/].freeze
       NON_INTERPOLATING_STRINGS = ["'", ":'", /^%q.$/].freeze
