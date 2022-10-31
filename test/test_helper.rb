@@ -101,6 +101,7 @@ module MiniTest
       newparser = RipperParser::Parser.new
       expected = oldparser.parse code.dup
       result = newparser.parse code
+
       assert_equal(formatted_ast(expected, with_line_numbers: with_line_numbers),
                    formatted(result, with_line_numbers: with_line_numbers))
     end
