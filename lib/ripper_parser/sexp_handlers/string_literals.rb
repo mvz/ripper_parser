@@ -124,7 +124,7 @@ module RipperParser
                 when INTERPOLATING_WORD_LIST, NON_INTERPOLATING_WORD_LIST
                   [content]
                 else
-                  if /\n/.match?(content)
+                  if content.include?("\n")
                     content.split(/(\n)/).each_slice(2).map(&:join)
                   else
                     [content]
