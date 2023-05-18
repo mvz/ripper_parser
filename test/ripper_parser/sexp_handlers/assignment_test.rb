@@ -252,22 +252,12 @@ describe RipperParser::Parser do
       end
 
       it "works with a rescue modifier" do
-        expected = if RUBY_VERSION < "2.7.0"
-                     s(:rescue,
-                       s(:masgn,
-                         s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
-                         s(:send, nil, :baz)),
-                       s(:resbody, nil, nil, s(:send, nil, :qux)), nil)
-                   else
-                     s(:masgn,
-                       s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
-                       s(:rescue,
-                         s(:send, nil, :baz),
-                         s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
-                   end
-
         _("foo, bar = baz rescue qux")
-          .must_be_parsed_as expected
+          .must_be_parsed_as s(:masgn,
+                               s(:mlhs, s(:lvasgn, :foo), s(:lvasgn, :bar)),
+                               s(:rescue,
+                                 s(:send, nil, :baz),
+                                 s(:resbody, nil, nil, s(:send, nil, :qux)), nil))
       end
 
       it "works the same number of items on each side" do

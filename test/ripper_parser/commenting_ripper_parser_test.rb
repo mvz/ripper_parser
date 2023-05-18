@@ -13,18 +13,6 @@ describe RipperParser::CommentingRipperParser do
   end
 
   describe "handling comments" do
-    # Handle different results for dynamic symbol strings. This was changed in
-    # Ruby 2.7.0, and backported to 2.6.3
-    #
-    # See https://bugs.ruby-lang.org/issues/15670
-    let(:dsym_string_type) do
-      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.6.3")
-        :string_content
-      else
-        :xstring
-      end
-    end
-
     it "produces a comment node surrounding a commented def" do
       result = parse_with_builder "# Foo\ndef foo; end"
       _(result).must_equal s(:program,
@@ -127,7 +115,7 @@ describe RipperParser::CommentingRipperParser do
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:dyna_symbol,
-                                 s(dsym_string_type,
+                                 s(:string_content,
                                    s(:@tstring_content, "foo", s(1, 2), ":'"))),
                                s(:comment,
                                  "",
@@ -144,7 +132,7 @@ describe RipperParser::CommentingRipperParser do
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:dyna_symbol,
-                                 s(dsym_string_type,
+                                 s(:string_content,
                                    s(:@tstring_content, "foo", s(1, 2), ':"'),
                                    s(:string_embexpr,
                                      s(:stmts,
