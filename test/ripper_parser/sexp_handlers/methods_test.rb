@@ -237,7 +237,12 @@ describe RipperParser::Parser do
                                  s(:forwarded_args)))
       end
 
-      it "works with argument forwarding with extra parameters" do
+      it "works with argument forwarding with leading call arguments" do
+        # Implemented in 3.0 and backported to 2.7.3.
+        # See https://bugs.ruby-lang.org/issues/16378
+        if RUBY_VERSION < "2.7.3"
+          skip "This Ruby version does not support this style of argument forwarding"
+        end
         _("def foo(...); bar(baz, ...); end")
           .must_be_parsed_as s(:def, :foo,
                                s(:args, s(:forward_arg)),
@@ -246,7 +251,9 @@ describe RipperParser::Parser do
       end
 
       it "works with argument forwarding with leading method arguments" do
-        if RUBY_VERSION < "3.0.0"
+        # Implemented in 3.0 and backported to 2.7.3.
+        # See https://bugs.ruby-lang.org/issues/16378
+        if RUBY_VERSION < "2.7.3"
           skip "This Ruby version does not support this style of argument forwarding"
         end
         _("def foo(bar, ...); baz(...); end")
@@ -258,7 +265,9 @@ describe RipperParser::Parser do
 
       it "works for multi-statement method body with argument forwarding" \
          " with leading method arguments" do
-        if RUBY_VERSION < "3.0.0"
+        # Implemented in 3.0 and backported to 2.7.3.
+        # See https://bugs.ruby-lang.org/issues/16378
+        if RUBY_VERSION < "2.7.3"
           skip "This Ruby version does not support this style of argument forwarding"
         end
         _("def foo(bar, ...); baz bar; qux(...); end")
