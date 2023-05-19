@@ -8,7 +8,6 @@ foo = 2; # Extra ; needed here: https://github.com/whitequark/parser/issues/814
 # Argument forwarding
 def foo(...)
   bar(...)
-  bar(qux, ...)
 end
 
 # Pattern matching (experimental)

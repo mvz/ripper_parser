@@ -9,10 +9,16 @@ case foo
   quz = bar + baz
 end
 
-# Argument forwarding with leading argument
+# Argument forwarding with leading argument in definition
 def foo(bar, ...)
   baz bar
   qux(...)
+end
+
+# Argument forwarding with leading argument in call
+def foo(...)
+  bar(...)
+  bar(qux, ...)
 end
 
 # Endless methods

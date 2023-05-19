@@ -237,30 +237,12 @@ describe RipperParser::Parser do
       end
 
       it "works with numbered parameters" do
-        if RUBY_VERSION < "2.7.0"
-          skip "This Ruby version does not support numbered parameters"
-        end
         _("foo { bar _1, _2 }")
           .must_be_parsed_as s(:numblock,
                                s(:send, nil, :foo), 2,
                                s(:send, nil, :bar,
                                  s(:lvar, :_1),
                                  s(:lvar, :_2)))
-      end
-
-      it "parses code that looks like numbered parameters correctly on older rubies" do
-        if RUBY_VERSION >= "2.7.0"
-          skip "This Ruby version interprets this code as numbered parameters"
-        end
-        _("_1 = 1; foo { bar _1, _2 }")
-          .must_be_parsed_as s(:begin,
-                               s(:lvasgn, :_1, s(:int, 1)),
-                               s(:block,
-                                 s(:send, nil, :foo),
-                                 s(:args),
-                                 s(:send, nil, :bar,
-                                   s(:lvar, :_1),
-                                   s(:send, nil, :_2))))
       end
     end
 
@@ -757,30 +739,12 @@ describe RipperParser::Parser do
       end
 
       it "works with numbered parameters" do
-        if RUBY_VERSION < "2.7.0"
-          skip "This Ruby version does not support numbered parameters"
-        end
         _("-> { bar _1, _2 }").must_be_parsed_as \
           s(:numblock,
             s(:lambda), 2,
             s(:send, nil, :bar,
               s(:lvar, :_1),
               s(:lvar, :_2)))
-      end
-
-      it "parses code that looks like numbered parameters correctly on older rubies" do
-        if RUBY_VERSION >= "2.7.0"
-          skip "This Ruby version interprets this code as numbered parameters"
-        end
-        _("_1 = 1; -> { bar _1, _2 }")
-          .must_be_parsed_as s(:begin,
-                               s(:lvasgn, :_1, s(:int, 1)),
-                               s(:block,
-                                 s(:lambda),
-                                 s(:args),
-                                 s(:send, nil, :bar,
-                                   s(:lvar, :_1),
-                                   s(:send, nil, :_2))))
       end
 
       it "sets line numbers correctly for lambdas with empty bodies" do

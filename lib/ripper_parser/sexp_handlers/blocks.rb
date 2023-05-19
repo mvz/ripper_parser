@@ -240,7 +240,7 @@ module RipperParser
       NUMBERED_PARAMS = (1..9).map { |it| :"_#{it}" }.freeze
 
       def make_iter(call, args, stmt)
-        if args.sexp_body.empty? && RUBY_VERSION >= "2.7.0"
+        if args.sexp_body.empty?
           lvar_names = (LVAR_MATCHER / stmt).map { |it| it[1] }
           count = (NUMBERED_PARAMS & lvar_names).length
           return s(:numblock, call, count, stmt).line(call.line) if count > 0
