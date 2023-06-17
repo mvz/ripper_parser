@@ -278,6 +278,13 @@ describe RipperParser::Parser do
                                  s(:send, nil, :qux, s(:forwarded_args))))
       end
 
+      it "works with an anonymous double splat argument" do
+        _("def foo(**); end")
+          .must_be_parsed_as s(:def, :foo,
+                               s(:args, s(:kwrestarg)),
+                               nil)
+      end
+
       it "assigns correct line numbers when the body is empty" do
         _("def bar\nend")
           .must_be_parsed_as s(:def, :bar,
