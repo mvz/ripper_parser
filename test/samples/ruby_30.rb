@@ -24,3 +24,6 @@ end
 # Endless methods
 def foo(bar) = baz(bar)
 def foo(bar) = baz(bar) rescue qux
+def baz = qux
+
+def bar.baz = qux
