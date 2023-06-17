@@ -37,6 +37,7 @@ EOS
 
 "\C-a"
 "\C-z"
+"\C-?"
 
 # Quotes around heredoc names
 <<'FOO'
