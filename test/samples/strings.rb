@@ -16,6 +16,9 @@
 /2\302\275/
 "foo\u{101D1}bar"
 
+%Q(caf\xC3\xA9)
+"caf\xC3\xA9"
+
 # Encoding
 "日本語"
 /日本語/
@@ -31,6 +34,9 @@ EOS
 <<EOS
 \xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E
 EOS
+
+"\C-a"
+"\C-z"
 
 # Quotes around heredoc names
 <<'FOO'
@@ -68,6 +74,12 @@ baz
 #{qux}
 quuz
 BAR
+
+
+<<~FOO
+
+  #{bar} smurf
+FOO
 
 # Line continuation
 "foo\
@@ -179,3 +191,11 @@ FOO
 "foo#{"bar#{baz}"}"
 "foo#{"bar#{"baz#{qux}"}"}"
 "foo#{"bar#{baz}"}foo#{"bar#{baz}"}"
+"foo#{bar}baz#{__FILE__}qux#{__LINE__}quuz#{zyxxy}"
+
+# Line break inside interpolation
+str = <<~FOO
+     bar#{1
+}  quz
+  qux
+  FOO

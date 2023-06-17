@@ -17,9 +17,25 @@ foo..bar
 foo...bar
 0...4.0
 
+# endless ranges
+1..
+
+foo = 2
+foo..
+
+# beginless ranges
+..1
+foo = 2
+..foo
+
 # Regex matching
 /foo/ =~ bar
 foo =~ /bar/
 foo =~ bar
 /#{foo}/ =~ bar
 /(?<foo>bar)/ =~ baz; foo
+(/foo/) =~ bar
+foo =~ (/bar/)
+foo =~ 42
+42 =~ foo
+"aaa" =~ 42
