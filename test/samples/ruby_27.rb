@@ -1,10 +1,5 @@
 # Samples that need Ruby 2.7 or higher
 
-# Argument forwarding
-def foo(...)
-  bar(...)
-end
-
 # Pattern matching (experimental)
 case foo
   in blub
