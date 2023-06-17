@@ -1,5 +1,14 @@
 # Blocks
 
+# Block parameters
+foo do |bar| end
+foo do |bar, | end
+foo do |bar, **| end
+foo do |(bar, baz)| end
+foo do |bar; baz| end
+foo do |bar, baz; qux| end
+foo do |bar, baz; qux, quuz| end
+
 # Numbered block parameters
 
 foos.each { foo _1 }
