@@ -278,7 +278,38 @@ end
 # Special symbols
 [:`, :|, :*, :&, :%, :'^', :-@, :+@, :'~@']
 
+# Non-ascii symbols
+[:cosí, :😎, :проверка]
+
+# Non-ascii dsyms
+[:"cosí", :"Variet\303\240", :"проверка"]
+
+class Foö
+  def bär
+    "Röär!"
+  end
+end
+
 # defined? keyword
 if defined? foo
   bar
+end
+
+# Methods with names that are also keywords
+class Bar
+  # Command A
+  def begin
+    foo.end.begin
+  end
+
+  # Command B
+  def class
+    "Woof!"
+  end
+
+  # Foo
+  def def
+    # Bar
+    self.def.def;
+  end
 end
