@@ -2,7 +2,7 @@
 
 # Beginless ranges
 ..1
-foo = 2; # Extra ; needed here: https://github.com/whitequark/parser/issues/814
+foo = 2
 ..foo
 
 # Argument forwarding
