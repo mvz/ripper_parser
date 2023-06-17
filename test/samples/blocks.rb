@@ -1,7 +1,7 @@
-# Samples that need Ruby 2.7 or higher
+# Blocks
 
+# Numbered block parameters
 
-# Numbered parameters (experimental)
 foos.each { foo _1 }
 foos.each do
   foo _1
