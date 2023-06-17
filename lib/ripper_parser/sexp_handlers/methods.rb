@@ -71,8 +71,7 @@ module RipperParser
 
       SPECIAL_ARG_MARKER = {
         splat: :restarg,
-        dsplat: :kwrestarg,
-        blockarg: :blockarg
+        dsplat: :kwrestarg
       }.freeze
 
       def convert_special_args(args)
@@ -95,6 +94,8 @@ module RipperParser
           else
             s(:optarg, *item.sexp_body)
           end
+        when :blockarg
+          s(:blockarg, extract_node_symbol(item[1]))
         when *SPECIAL_ARG_MARKER.keys
           convert_marked_argument item
         when :args_forward
