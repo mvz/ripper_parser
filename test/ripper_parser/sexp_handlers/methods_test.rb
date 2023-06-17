@@ -291,6 +291,11 @@ describe RipperParser::Parser do
                                s(:args).line(1), nil).line(1),
                              with_line_numbers: true
       end
+
+      it "handles a method named 'class'" do
+        _("def class; end")
+          .must_be_parsed_as s(:def, :class, s(:args), nil)
+      end
     end
 
     describe "for singleton method definitions" do
