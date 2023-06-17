@@ -131,6 +131,9 @@ module RipperParser
     end
 
     def control(val)
+      # Special case the \C-? or DEL sequence
+      return 127 if val == 63
+
       val & 0b1001_1111
     end
 
