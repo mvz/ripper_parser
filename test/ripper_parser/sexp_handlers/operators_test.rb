@@ -324,11 +324,21 @@ describe RipperParser::Parser do
 
     describe "for unary operators" do
       it "handles unary minus with an integer literal" do
-        _("- 1").must_be_parsed_as s(:send, s(:int, 1), :-@)
+        _("- 1").must_be_parsed_as s(:int, -1)
       end
 
       it "handles unary minus with a float literal" do
-        _("- 3.14").must_be_parsed_as s(:send, s(:float, 3.14), :-@)
+        _("- 3.14").must_be_parsed_as s(:float, -3.14)
+      end
+
+      it "handles unary minus with a rational literal" do
+        _("- 1r")
+          .must_be_parsed_as s(:rational, -1r)
+      end
+
+      it "handles unary minus with an imaginary literal" do
+        _("- 1i")
+          .must_be_parsed_as s(:complex, -1i)
       end
 
       it "handles unary minus with a non-literal" do
@@ -342,8 +352,20 @@ describe RipperParser::Parser do
         _("- -1").must_be_parsed_as s(:send, s(:int, -1), :-@)
       end
 
-      it "handles unary plus with a number literal" do
-        _("+ 1").must_be_parsed_as s(:send, s(:int, 1), :+@)
+      it "handles unary plus with an integer literal" do
+        _("+ 1").must_be_parsed_as s(:int, 1)
+      end
+
+      it "handles unary plus with a float literal" do
+        _("+ 3.14").must_be_parsed_as s(:float, 3.14)
+      end
+
+      it "handles unary plus with a rational literal" do
+        _("+ 1r").must_be_parsed_as s(:rational, 1r)
+      end
+
+      it "handles unary plus with an imaginary literal" do
+        _("+ 1i").must_be_parsed_as s(:complex, 1i)
       end
 
       it "handles unary plus with a non-literal" do

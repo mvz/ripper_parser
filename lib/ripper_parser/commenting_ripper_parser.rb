@@ -18,8 +18,6 @@ module RipperParser
       @delimiter_stack = []
       @operator_stack = []
 
-      @space_before = false
-      @seen_space = false
       @in_symbol = false
     end
 
@@ -263,7 +261,6 @@ module RipperParser
     end
 
     def on_op(token)
-      @seen_space = false
       @operator_stack.push token if token == "=>"
       super
     end
@@ -277,29 +274,22 @@ module RipperParser
       super
     end
 
-    def on_sp(_token)
-      @seen_space = true
-    end
-
-    def on_int(_token)
-      @space_before = @seen_space
-      super
-    end
-
-    def on_float(_token)
-      @space_before = @seen_space
-      super
-    end
-
-    NUMBER_LITERAL_TYPES = [:@int, :@float].freeze
+    NUMBER_LITERAL_TYPES = [:@imaginary, :@int, :@float, :@rational].freeze
 
     def on_unary(operator, value)
-      if !@space_before && operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
+      if operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
         type, literal, lines = value
         if literal[0] == "-"
           super
         else
           [type, "-#{literal}", lines]
+        end
+      elsif operator == :+@ && NUMBER_LITERAL_TYPES.include?(value.first)
+        type, literal, lines = value
+        if literal[0] == "+"
+          super
+        else
+          [type, literal, lines]
         end
       else
         super
