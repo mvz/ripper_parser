@@ -304,7 +304,7 @@ module RipperParser
     NUMBER_LITERAL_TYPES = [:@imaginary, :@int, :@float, :@rational].freeze
 
     def on_unary(operator, value)
-      if !@space_before && operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
+      if operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
         type, literal, lines = value
         if literal[0] == "-"
           super
