@@ -18,8 +18,6 @@ module RipperParser
       @delimiter_stack = []
       @operator_stack = []
 
-      @space_before = false
-      @seen_space = false
       @in_symbol = false
     end
 
@@ -263,7 +261,6 @@ module RipperParser
     end
 
     def on_op(token)
-      @seen_space = false
       @operator_stack.push token if token == "=>"
       super
     end
@@ -274,30 +271,6 @@ module RipperParser
 
         @operator_stack.pop
       end
-      super
-    end
-
-    def on_sp(_token)
-      @seen_space = true
-    end
-
-    def on_imaginary(_token)
-      @space_before = @seen_space
-      super
-    end
-
-    def on_int(_token)
-      @space_before = @seen_space
-      super
-    end
-
-    def on_float(_token)
-      @space_before = @seen_space
-      super
-    end
-
-    def on_rational(_token)
-      @space_before = @seen_space
       super
     end
 
