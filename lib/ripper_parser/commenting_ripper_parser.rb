@@ -281,6 +281,11 @@ module RipperParser
       @seen_space = true
     end
 
+    def on_imaginary(_token)
+      @space_before = @seen_space
+      super
+    end
+
     def on_int(_token)
       @space_before = @seen_space
       super
@@ -291,7 +296,12 @@ module RipperParser
       super
     end
 
-    NUMBER_LITERAL_TYPES = [:@int, :@float].freeze
+    def on_rational(_token)
+      @space_before = @seen_space
+      super
+    end
+
+    NUMBER_LITERAL_TYPES = [:@imaginary, :@int, :@float, :@rational].freeze
 
     def on_unary(operator, value)
       if !@space_before && operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)

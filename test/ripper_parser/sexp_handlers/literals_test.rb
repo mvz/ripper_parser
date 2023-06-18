@@ -168,9 +168,33 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:rational, 1000r)
       end
 
+      it "handles negative sign for rationals" do
+        _("-1r")
+          .must_be_parsed_as s(:rational, -1r)
+      end
+
+      it "works for negative rational numbers with earlier spaces" do
+        _("foo bar(1), baz(-1r)")
+          .must_be_parsed_as s(:send, nil, :foo,
+                               s(:send, nil, :bar, s(:int, 1)),
+                               s(:send, nil, :baz, s(:rational, -1r)))
+      end
+
       it "works for imaginary numbers" do
         _("1i")
           .must_be_parsed_as s(:complex, 1i)
+      end
+
+      it "handles negative sign for imaginary numbers" do
+        _("-1i")
+          .must_be_parsed_as s(:complex, -1i)
+      end
+
+      it "works for negative imaginary numbers with earlier spaces" do
+        _("foo bar(1), baz(-1i)")
+          .must_be_parsed_as s(:send, nil, :foo,
+                               s(:send, nil, :bar, s(:int, 1)),
+                               s(:send, nil, :baz, s(:complex, -1i)))
       end
     end
   end
