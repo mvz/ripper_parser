@@ -43,7 +43,13 @@ module RipperParser
       #   s(:assoc_new, s(:@label, "baz:", s(1, 9)), s(:vcall, s(:@ident, "qux", s(1, 14))))
       def process_assoc_new(exp)
         _, left, right = exp.shift 3
-        s(:pair, process(left), process(right))
+        left = process(left)
+        if right
+          right = process(right)
+        elsif left.sexp_type == :sym
+          right = s(:lvar, *left.sexp_body)
+        end
+        s(:pair, left, right)
       end
 
       # number literals

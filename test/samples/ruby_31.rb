@@ -5,3 +5,8 @@ def foo &; end
 
 # Endless methods with bodies with arguments without parentheses
 def foo = bar 42
+
+# Hash shorthand
+def foo(bar)
+  { bar: }
+end
