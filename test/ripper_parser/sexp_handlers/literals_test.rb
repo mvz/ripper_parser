@@ -173,6 +173,11 @@ describe RipperParser::Parser do
           .must_be_parsed_as s(:rational, -1r)
       end
 
+      it "handles positive sign for rationals" do
+        _("+1r")
+          .must_be_parsed_as s(:rational, 1r)
+      end
+
       it "works for negative rational numbers with earlier spaces" do
         _("foo bar(1), baz(-1r)")
           .must_be_parsed_as s(:send, nil, :foo,

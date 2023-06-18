@@ -311,6 +311,13 @@ module RipperParser
         else
           [type, "-#{literal}", lines]
         end
+      elsif operator == :+@ && NUMBER_LITERAL_TYPES.include?(value.first)
+        type, literal, lines = value
+        if literal[0] == "+"
+          super
+        else
+          [type, literal, lines]
+        end
       else
         super
       end
