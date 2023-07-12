@@ -72,7 +72,7 @@ module MiniTest
                    else
                      exp.inspect
                    end
-      inspection.gsub(/^  */, "").gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
+      inspection.gsub(/^  */, "").gsub(", s(", ",\ns(").gsub("), ", "),\n")
     end
 
     def formatted_ast(exp, with_line_numbers: false)
@@ -81,7 +81,7 @@ module MiniTest
                    else
                      exp.inspect
                    end
-      inspection.gsub(/^  */, "").gsub(/, s\(/, ",\ns(").gsub(/\), /, "),\n")
+      inspection.gsub(/^  */, "").gsub(", s(", ",\ns(").gsub("), ", "),\n")
     end
 
     def assert_parsed_as(sexp, code, with_line_numbers: false)
