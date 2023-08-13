@@ -22,7 +22,7 @@ Parser::Builders::Default.emit_forward_arg         = true
 Parser::Builders::Default.emit_kwargs              = true
 Parser::Builders::Default.emit_match_pattern       = true
 
-module MiniTest
+module Minitest
   class Spec
     def inspect_with_line_numbers(exp)
       parts = exp.map do |sub_exp|
