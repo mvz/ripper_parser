@@ -639,43 +639,21 @@ describe RipperParser::Parser do
 
     describe "for one-line pattern matching" do
       it "works for the simple case" do
-        expected = if RUBY_VERSION < "3.0.0"
-                     s(:match_pattern,
-                       s(:int, 1),
-                       s(:match_var, :foo))
-                   else
-                     s(:match_pattern_p,
-                       s(:int, 1),
-                       s(:match_var, :foo))
-                   end
-        _("1 in foo").must_be_parsed_as expected
+        _("1 in foo").must_be_parsed_as s(:match_pattern_p,
+                                          s(:int, 1),
+                                          s(:match_var, :foo))
       end
 
       it "works for secondary assignment of matched expression" do
-        expected = if RUBY_VERSION < "3.0.0"
-                     s(:match_pattern,
-                       s(:int, 1),
-                       s(:match_as,
-                         s(:match_var, :foo),
-                         s(:match_var, :bar)))
-                   else
-                     s(:match_pattern_p,
-                       s(:int, 1),
-                       s(:match_as,
-                         s(:match_var, :foo),
-                         s(:match_var, :bar)))
-                   end
-        _("1 in foo => bar").must_be_parsed_as expected
+        _("1 in foo => bar").must_be_parsed_as s(:match_pattern_p,
+                                                 s(:int, 1),
+                                                 s(:match_as,
+                                                   s(:match_var, :foo),
+                                                   s(:match_var, :bar)))
       end
     end
 
     describe "for rightward assignment" do
-      before do
-        if RUBY_VERSION < "3.0.0"
-          skip "This Ruby version does not support rightward assignment"
-        end
-      end
-
       it "works for the simple case" do
         _("1 => foo")
           .must_be_parsed_as s(:match_pattern,
