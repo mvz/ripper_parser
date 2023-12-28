@@ -20,7 +20,7 @@ module RipperParser
         M-.                 | # meta
         \n                  | # line break
         .                     # other single character
-      )/x.freeze
+      )/x
 
     SINGLE_LETTER_ESCAPES = {
       "a" => "\a",
@@ -37,7 +37,7 @@ module RipperParser
     SINGLE_LETTER_ESCAPES_REGEXP =
       Regexp.new("^[#{SINGLE_LETTER_ESCAPES.keys.join}]$")
 
-    LINE_CONTINUATION_REGEXP = /\\(\n|.)/.freeze
+    LINE_CONTINUATION_REGEXP = /\\(\n|.)/
 
     DELIMITER_PAIRS = {
       "(" => "()",

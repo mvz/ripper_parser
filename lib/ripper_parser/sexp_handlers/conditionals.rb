@@ -60,11 +60,7 @@ module RipperParser
           first, *rest = process(clauses)
           _, pattern, _, truepart = first
           if truepart.nil?
-            if RUBY_VERSION < "3.0.0"
-              s(:match_pattern, expr, pattern)
-            else
-              s(:match_pattern_p, expr, pattern)
-            end
+            s(:match_pattern_p, expr, pattern)
           else
             s(:case_match, expr, first, *rest)
           end
