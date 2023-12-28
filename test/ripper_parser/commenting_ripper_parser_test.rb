@@ -175,7 +175,7 @@ describe RipperParser::CommentingRipperParser do
     end
   end
 
-  describe "handling syntax errors" do
+  describe "handling errors" do
     it "raises an error for an incomplete source" do
       _(proc {
         parse_with_builder "def foo"
@@ -216,6 +216,15 @@ describe RipperParser::CommentingRipperParser do
       _(proc {
         parse_with_builder "def foo(BAR); end"
       }).must_raise RipperParser::SyntaxError
+    end
+
+    it "records non-fatal errors" do
+      skip "No error is detected in this Ruby version" if RUBY_VERSION < "3.3.0"
+
+      builder = RipperParser::CommentingRipperParser.new "yield"
+      result = builder.parse
+      _(result).must_equal s(:program, s(:stmts, s(:yield0)))
+      _(builder.error).must_equal "Invalid yield"
     end
   end
 end
