@@ -212,7 +212,7 @@ module RipperParser
     end
 
     def on_tstring_content(content)
-      super(content) << @delimiter_stack.last
+      super << @delimiter_stack.last
     end
 
     def on_tstring_end(delimiter)
