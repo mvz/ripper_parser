@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.rdoc_options = ["--main", "README.md"]
   spec.extra_rdoc_files = ["README.md", "CHANGELOG.md"]
 
-  spec.add_runtime_dependency "sexp_processor", "~> 4.10"
+  spec.add_dependency "sexp_processor", "~> 4.10"
 
   spec.add_development_dependency "minitest", "~> 5.15"
   spec.add_development_dependency "minitest-focus", "~> 1.3"
