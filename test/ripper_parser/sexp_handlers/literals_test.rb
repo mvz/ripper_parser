@@ -119,9 +119,6 @@ describe RipperParser::Parser do
       end
 
       it "works for shorthand hash syntax" do
-        if RUBY_VERSION < "3.1.0"
-          skip "This Ruby version does not support shorthand hash syntax"
-        end
         _("{ foo: }")
           .must_be_parsed_as s(:hash, s(:pair, s(:sym, :foo), s(:lvar, :foo)))
       end
