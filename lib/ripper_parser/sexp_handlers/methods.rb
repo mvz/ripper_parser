@@ -73,6 +73,7 @@ module RipperParser
         splat: :restarg,
         dsplat: :kwrestarg
       }.freeze
+      private_constant :SPECIAL_ARG_MARKER
 
       def convert_special_args(args)
         return s(:args) if args.nil?
