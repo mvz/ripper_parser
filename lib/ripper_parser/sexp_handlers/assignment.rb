@@ -98,6 +98,7 @@ module RipperParser
         "||": :or_asgn,
         "&&": :and_asgn
       }.freeze
+      private_constant :OPERATOR_ASSIGNMENT_MAP
 
       def create_operator_assignment_sub_type(lvalue, value, operator)
         lvalue = case lvalue.sexp_type
@@ -146,6 +147,7 @@ module RipperParser
         cvar: :cvasgn,
         gvar: :gvasgn
       }.freeze
+      private_constant :ASSIGNMENT_SUB_TYPE_MAP
 
       def create_assignment_sub_type(lvalue, value)
         s(map_assignment_lvalue_type(lvalue.sexp_type), *lvalue.sexp_body, value)

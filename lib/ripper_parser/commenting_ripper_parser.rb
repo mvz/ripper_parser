@@ -275,6 +275,7 @@ module RipperParser
     end
 
     NUMBER_LITERAL_TYPES = [:@imaginary, :@int, :@float, :@rational].freeze
+    private_constant :NUMBER_LITERAL_TYPES
 
     def on_unary(operator, value)
       if operator == :-@ && NUMBER_LITERAL_TYPES.include?(value.first)
