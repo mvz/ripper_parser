@@ -15,6 +15,7 @@ describe RipperParser::CommentingRipperParser do
   describe "handling comments" do
     it "produces a comment node surrounding a commented def" do
       result = parse_with_builder "# Foo\ndef foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -29,6 +30,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "produces a blank comment node surrounding a def that has no comment" do
       result = parse_with_builder "def foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -43,6 +45,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "produces a comment node surrounding a commented class" do
       result = parse_with_builder "# Foo\nclass Foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -57,6 +60,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "produce a blank comment node surrounding a class that has no comment" do
       result = parse_with_builder "class Foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -71,6 +75,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "produces a comment node surrounding a commented module" do
       result = parse_with_builder "# Foo\nmodule Foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -84,6 +89,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "produces a blank comment node surrounding a module that has no comment" do
       result = parse_with_builder "module Foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -97,6 +103,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "is not confused by a symbol containing a keyword" do
       result = parse_with_builder ":class; def foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:symbol_literal, s(:symbol, s(:@kw, "class", s(1, 1)))),
@@ -112,6 +119,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "is not confused by a dynamic symbol" do
       result = parse_with_builder ":'foo'; def bar; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:dyna_symbol,
@@ -129,6 +137,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "is not confused by a dynamic symbol containing a class definition" do
       result = parse_with_builder ":\"foo\#{class Bar;end}\""
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:dyna_symbol,
@@ -149,6 +158,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "turns an embedded document into a comment node" do
       result = parse_with_builder "=begin Hello\nthere\n=end\nclass Foo; end"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:comment,
@@ -163,6 +173,7 @@ describe RipperParser::CommentingRipperParser do
 
     it "handles interpolation with subsequent whitespace for dedented heredocs" do
       result = parse_with_builder "<<~FOO\n  \#{bar} baz\nFOO"
+
       _(result).must_equal s(:program,
                              s(:stmts,
                                s(:string_literal,
@@ -223,6 +234,7 @@ describe RipperParser::CommentingRipperParser do
 
       builder = RipperParser::CommentingRipperParser.new "yield"
       result = builder.parse
+
       _(result).must_equal s(:program, s(:stmts, s(:yield0)))
       _(builder.error).must_equal "Invalid yield"
     end

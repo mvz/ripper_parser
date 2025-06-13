@@ -195,6 +195,7 @@ describe RipperParser::Parser do
       it "sets the encoding for literal strings to utf8 even if ascii would do" do
         parser = RipperParser::Parser.new
         result = parser.parse '"foo"'
+
         _(result).must_equal s(:str, "foo")
         _(result[1].encoding.to_s).must_equal "UTF-8"
       end
@@ -348,6 +349,7 @@ describe RipperParser::Parser do
 
         it "raises an error if resulting string literal encoding" do
           parser = RipperParser::Parser.new
+
           _(proc { parser.parse '"2\x82\302\275"' }).must_raise RipperParser::SyntaxError
         end
       end
