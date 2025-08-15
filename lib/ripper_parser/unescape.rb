@@ -144,7 +144,7 @@ module RipperParser
     def delimiter_regexp_pattern(delimiter)
       delimiter = delimiter[-1]
       delimiters = DELIMITER_PAIRS.fetch(delimiter, delimiter)
-      delimiters.each_char.map { |it| Regexp.escape it }.join(" | ")
+      delimiters.each_char.map { Regexp.escape _1 }.join(" | ")
     end
   end
 end

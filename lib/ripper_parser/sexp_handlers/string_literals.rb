@@ -131,8 +131,8 @@ module RipperParser
                   end
                 end
 
-        parts = parts.map { |it| perform_unescapes(it, delim) }
-        parts = parts.map { |it| s(:str, it) }
+        parts = parts.map { perform_unescapes(_1, delim) }
+        parts = parts.map { s(:str, _1) }
 
         result = if parts.length == 1
                    parts.first
@@ -160,11 +160,11 @@ module RipperParser
       end
 
       def merge_raw_string_literals(list)
-        chunks = list.chunk { |it| it.sexp_type == :@tstring_content }
+        chunks = list.chunk { _1.sexp_type == :@tstring_content }
         chunks.flat_map do |is_simple, items|
           if is_simple
             head = items.first
-            contents = items.map { |it| it[1] }.join
+            contents = items.map { _1[1] }.join
             if contents.empty?
               []
             else

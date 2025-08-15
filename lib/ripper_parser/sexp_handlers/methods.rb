@@ -88,7 +88,7 @@ module RipperParser
         when :lvar
           s(:arg, item[1])
         when :mlhs
-          s(:mlhs, *item.sexp_body.map { |it| convert_argument it })
+          s(:mlhs, *item.sexp_body.map { convert_argument _1 })
         when :lvasgn
           if item.length == 2
             s(:arg, item[1])
