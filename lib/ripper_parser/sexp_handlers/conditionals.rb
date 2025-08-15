@@ -119,7 +119,7 @@ module RipperParser
       def process_aryptn(exp)
         _, _, body, rest, = exp.shift 5
 
-        elements = body.map { |it| handle_pattern(it) }
+        elements = body.map { handle_pattern(_1) }
         if rest
           rest = s(:match_rest, handle_pattern(rest))
           elements << rest

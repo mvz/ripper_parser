@@ -82,12 +82,12 @@ module RipperParser
       end
 
       def static_string(nodes)
-        parts = nodes.map do |it|
-          case it.sexp_type
+        parts = nodes.map do |node|
+          case node.sexp_type
           when :str
-            it[1]
+            node[1]
           when :begin
-            static_string(it.sexp_body)
+            static_string(node.sexp_body)
           end
         end
         parts.all? && parts.join

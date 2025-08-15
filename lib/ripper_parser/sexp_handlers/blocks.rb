@@ -237,12 +237,12 @@ module RipperParser
       end
 
       LVAR_MATCHER = Sexp::Matcher.new(:lvar, Sexp._)
-      NUMBERED_PARAMS = (1..9).map { |it| :"_#{it}" }.freeze
+      NUMBERED_PARAMS = (1..9).map { :"_#{_1}" }.freeze
       private_constant :LVAR_MATCHER, :NUMBERED_PARAMS
 
       def make_iter(call, args, stmt)
         if args.sexp_body.empty?
-          lvar_names = (LVAR_MATCHER / stmt).map { |it| it[1] }
+          lvar_names = (LVAR_MATCHER / stmt).map { _1[1] }
           count = (NUMBERED_PARAMS & lvar_names).length
           return s(:numblock, call, count, stmt).line(call.line) if count > 0
         end
