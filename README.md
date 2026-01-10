@@ -2,6 +2,11 @@
 
 by Matijs van Zuijlen
 
+## This project is no longer maintained
+
+Ruby's new Prism parser already provides a translation layer for
+Parser-compatible ASTs. There is no need for another one based on Ripper.
+
 ## Description
 
 Parse with Ripper, produce sexps that are compatible with Parser.
